@@ -1,0 +1,41 @@
+{% extends "default-layout.html" %}
+
+{% block body %}
+<article>
+    <!--lbox begin-->
+    <div class="">
+        <div class="whitebg lanmu">
+            <h1>与 <b style="color: red">{{keyword}}</b> 相关的记录</h1>
+        </div>
+        <div class="whitebg bloglist">
+                {% for post in list %}
+                <li>
+                    <h3 class="blogtitle">
+                        <a href="/post/{{post.id}}">{{post.title}}</a>
+                    </h3>
+                    <p class="blogtext">{{post.desc|striptags}}</p>
+                    <p class="bloginfo">
+                        <i class="avatar"><img src="/images/avatar.jpg"></i>
+                        <span>{{post.author}}</span><span>{{post.publish_at}}</span>
+                        <span>
+                            {% for tag in post.tags %}
+                            【<a href="#">{{tag.name}}</a>】
+                            {% endfor %}
+                        </span>
+                    </p>
+                    <a href="/post/{{post.id}}" class="viewmore">阅读更多</a>
+                </li>
+                {% endfor %}
+            </ul>
+            <!--pagelist-->
+            <div class="pagelist">
+                <a title="Total record">&nbsp;<b>{{total}}</b> </a>&nbsp;&nbsp;&nbsp;
+                {{paginator|str2html}}
+            </div>
+            <!--pagelist end-->
+        </div>
+
+        <!--bloglist end-->
+    </div>
+</article>
+{% endblock %}

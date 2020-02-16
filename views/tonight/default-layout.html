@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    {% block headtitle %}
+    <title>{{title}} LatteCake</title>
+    {% endblock %}
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    {% block metadescription %}
+    <meta name="description" content="LatteCake个人博客,拿铁味的蛋糕,是一名码农,擅长各种技术.{{title}}">
+    {% endblock %}
+    <meta name="keywords"
+          content="博客,技术,个人博客,个人技术博客,Golang,Linux,ReactJS,Docker,Kubernetes,k8s,拿铁蛋糕,拿铁味的摩卡,lattecake,{{title}}">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon-precomposed" href="https://lattecake.com/images/apple-touch-icon.png">
+    <meta name="msapplication-TileImage" content="/images/favicon.ico">
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+    <meta name="msapplication-TileColor" content="#0e90d2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+
+    <link href="/css/base.css" rel="stylesheet">
+    <link href="/css/m.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+    <script src="/js/modernizr.js"></script>
+    <![endif]-->
+    {% block stylesheet %}
+    {% endblock %}
+</head>
+<body>
+<!--top begin-->
+<header id="header">
+    <div class="navbox">
+        <h2 id="mnavh"><span class="navicon"></span></h2>
+        <div class="logo"><a href="/">ShaCong Blog</a></div>
+        <nav>
+            <ul id="starlist">
+                <li><a href="/">Home</a></li>
+                <li><a href="/post">Posts</a></li>
+                <!--<li class="menu"><a href="list2.html">分类</a>
+                    <ul class="sub">
+                        <li><a href="/6">技术</a></li>
+                    </ul>
+                    <span></span></li>-->
+                <li><a href="/reward">Reward</a></li>
+                <!--<li><a href="/timeline">TimeLine</a></li>-->
+                <li><a href="/about">About</a></li>
+            </ul>
+        </nav>
+        <div class="searchico"></div>
+    </div>
+</header>
+
+<div class="searchbox">
+    <div class="search">
+        <form action="/search" method="get" name="searchform" id="searchform">
+            <input name="keyword" id="keyboard" class="input_text" value="请输入关键字词" style="color: rgb(153, 153, 153);"
+                   onfocus="if(value=='请输入关键字词'){this.style.color='#000';value=''}"
+                   onblur="if(value==''){this.style.color='#999';value='请输入关键字词'}" type="text">
+            <input name="tag" value="" type="hidden">
+            <input name="category" value="0" type="hidden">
+            <input class="input_submit" value="搜索" type="submit">
+        </form>
+    </div>
+    <div class="searchclose"></div>
+</div>
+<!--top end-->
+
+{% block body %}
+哈也木有...
+{% endblock %}
+
+<footer>
+    <div class="box">
+        <div class="wxbox">
+            <ul>
+                <li>
+                    <img src="https://lattecake.oss-cn-beijing.aliyuncs.com/static%2Fimages%2Fweixin%2Fqrcode_for_gh_354bc8e8b814_1280.jpg"><span>微信公众号</span>
+                </li>
+            </ul>
+        </div>
+        <div class="endnav">
+            <p>GitHub: https://github.com/icowan</p>
+            <p>多赚点钱，赚的钱多好，很多事自然就变了。</p>
+            <p>How does the world look through your eyes?</p>
+            <p>人生最要紧的就是要保持微笑。生命如此美妙，有太多的事，都值得微笑以对...</p>
+            <p>Copyright © <a href="https://www.lattecake.com">www.lattecake.com</a> All Rights Reserved. 备案号：<a
+                        href="http://www.miitbeian.gov.cn/" target="_blank">京ICP备19030925号</a></p>
+        </div>
+    </div>
+    <a href="#">
+        <div class="top"></div>
+    </a></footer>
+
+<script src="/js/jquery-1.8.3.min.js" type="application/javascript"></script>
+<script src="/js/comm.js"></script>
+
+{% block script %}
+{% endblock %}
+<script>
+    var _hmt = _hmt || [];
+    (function () {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?325ecd282d3804cd811c4072e0b3ed2a";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+</body>
+</html>

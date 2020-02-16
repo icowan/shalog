@@ -1,0 +1,134 @@
+{% extends "default-layout.html" %}
+
+{% block body %}
+<article>
+    <!--lbox begin-->
+    <div class="lbox">
+        <div class="whitebg lanmu"><img src="/images/lm01.jpg">
+            <h1>博文日记</h1>
+            <p>博文日记，记录、分享一些自己写的优质内容，记录生活，记录成长。</p>
+        </div>
+        <div class="whitebg bloglist">
+            <h2 class="htitle">
+                <span class="hnav">
+                    <a href="#">技术</a>
+                    <a href="#">生活</a>
+                    <a href="#">旅行</a>
+                    <a href="#">摄影</a>
+                    </span>最新博文</h2>
+
+            <ul>
+                <!--多图模式 置顶设计-->
+                <!--<li>
+                    <h3 class="blogtitle"><a href="/" target="_blank"><b>【顶】</b>别让这些闹心的套路，毁了你的网页设计!</a></h3>
+                    <span class="bplist"><a href="/"> <img src="images/b02.jpg" alt=""></a> <a href="/"><img src="images/b03.jpg" alt=""></a> <a href="/"><img src="images/b04.jpg" alt=""> </a><a href="/"><img src="images/b05.jpg" alt=""> </a></span>
+                    <p class="blogtext">如图，要实现上图效果，我采用如下方法：1、首先在数据库模型，增加字段，分别是图片2，图片3。2、增加标签模板，用if，else if 来判断，输出。思路已打开，样式调用就可以多样化啦！... </p>
+                    <p class="bloginfo"><i class="avatar"><img src="images/avatar.jpg"></i><span>杨青青</span><span>2018-10-28</span><span>【<a href="/">原创模板</a>】</span></p>
+                </li>-->
+                <!--单图-->
+                {% for post in list %}
+                <li>
+                    <h3 class="blogtitle">
+                        <a href="/post/{{post.id}}">{{post.title}}</a>
+                    </h3>
+                    <span class="blogpic imgscale">
+                        <i><a href="/post/{{post.id}}">原创</a></i>
+                        <a href="/post/{{post.id}}" title=""><img
+                                    src="{{post.image_url}}?imageView2/1/w/200/h/140/q/75|imageslim" alt=""></a>
+                    </span>
+                    <p class="blogtext">{{post.desc}}</p>
+                    <p class="bloginfo">
+                        <i class="avatar"><img src="/images/avatar.jpg"></i>
+                        <span>{{post.author}}</span><span>{{post.publish_at}}</span>
+                        <span>
+                            {% for tag in post.tags %}
+                            <a href="/search?tag={{tag.name}}">{{tag.name}}</a>
+                            {% endfor %}
+                        </span>
+                    </p>
+                    <a href="/post/{{post.id}}" class="viewmore">阅读更多</a>
+                </li>
+                {% endfor %}
+            </ul>
+            <!--pagelist-->
+            <div class="pagelist">
+                <a title="Total record">&nbsp;<b>{{total}}</b> </a>&nbsp;&nbsp;&nbsp;
+                {{paginator|str2html}}
+            </div>
+            <!--pagelist end-->
+        </div>
+
+        <!--bloglist end-->
+    </div>
+    <div class="rbox">
+        <div class="whitebg paihang">
+            <h2 class="htitle">点击排行</h2>
+            <section class="topnews imgscale">
+                {% for popular in populars|slice:":1" %}
+                <a href="/post/{{popular.id|stringformat:"%0.f"}}">
+                    <img src="{{popular.image_url}}?imageView2/1/w/240/h/170/q/75|imageslim">
+                    <span>{{popular.title}}</span>
+                </a>
+                {% endfor %}
+            </section>
+            <ul>
+                {% for popular in populars|slice:"1:" %}
+                <li><i></i><a href="/post/{{popular.id|stringformat:"%0.f"}}">{{popular.title}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="whitebg tuijian">
+            <h2 class="htitle">本栏推荐</h2>
+            <section class="topnews imgscale">
+                {% for popular in populars|slice:":1" %}
+                <a href="/post/{{popular.id|stringformat:"%0.f"}}">
+                    <img src="{{popular.image_url}}?imageView2/1/w/240/h/170/q/75|imageslim">
+                    <span>{{popular.title}}</span>
+                </a>
+                {% endfor %}
+            </section>
+            <ul>
+                {% for popular in populars|slice:"1:" %}
+                <li><a href="/post/{{popular.id|stringformat:"%0.f"}}"><i><img src="{{popular.image_url}}?imageView2/1/w/80/h/80/q/75|imageslim"></i>
+                        <p>{{popular.title}}!</p>
+                    </a></li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- 广告位 -->
+        <!--
+        <div class="ad whitebg imgscale">
+            <ul>
+                <a href="/"><img src="images/ad02.jpg"></a>
+            </ul>
+        </div>-->
+
+        <div class="whitebg cloud">
+            <h2 class="htitle">标签</h2>
+            <ul>
+                {% for tag in tags %}
+                <a href="/search?tag={{tag.name}}">{{tag.name}}</a>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- 广告位 -->
+        <div class="ad whitebg imgscale">
+            <ul>
+                <a href="https://u.jd.com/8NHIFo"><img src="http://source.qiniu.cnd.nsini.com/ad-image/336x280.png"></a>
+            </ul>
+        </div>
+
+        <div class="whitebg tongji">
+            <h2 class="htitle">站点信息</h2>
+            <ul>
+                <li><b>文章统计</b>：{{total}}</li>
+                <li><b>微信公众号</b></li>
+                <img src="https://lattecake.oss-cn-beijing.aliyuncs.com/static%2Fimages%2Fweixin%2Fqrcode_for_gh_354bc8e8b814_1280.jpg"
+                     class="tongji_gzh">
+            </ul>
+        </div>
+    </div>
+</article>
+{% endblock %}

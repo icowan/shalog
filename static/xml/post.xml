@@ -1,0 +1,449 @@
+<?xml version="1.0"?>
+<methodCall>
+    <methodName>metaWeblog.newPost</methodName>
+    <params>
+        <param>
+            <value>
+                <string>1</string>
+            </value>
+        </param>
+        <param>
+            <value>
+                <string>dudulu</string>
+            </value>
+        </param>
+        <param>
+            <value>
+                <string>nsini@lattecake!com</string>
+            </value>
+        </param>
+        <param>
+            <value>
+                <struct>
+                    <member>
+                        <name>post_status</name>
+                        <value>
+                            <string>publish</string>
+                        </value>
+                    </member>
+                    <member>
+                        <name>post_type</name>
+                        <value>
+                            <string>post</string>
+                        </value>
+                    </member>
+                    <member>
+                        <name>categories</name>
+                        <value>
+                            <array>
+                                <data>
+                                    <value>
+                                        <string>技术</string>
+                                    </value>
+                                </data>
+                            </array>
+                        </value>
+                    </member>
+                    <member>
+                        <name>title</name>
+                        <value>
+                            <string>Kubernetes 容器云实践方案</string>
+                        </value>
+                    </member>
+                    <member>
+                        <name>dateCreated</name>
+                        <value>
+                            <dateTime.iso8601>20181117T07:14:52Z</dateTime.iso8601>
+                        </value>
+                    </member>
+                    <member>
+                        <name>wp_slug</name>
+                        <value>
+                            <string>Kubernetes-rong-qi-yun-shi-jian-fang-an</string>
+                        </value>
+                    </member>
+                    <member>
+                        <name>description</name>
+                        <value>
+                            <string>
+
+                                随着社会的进步与技术的发展，人们对资源的高效利用有了更为迫切的需求。近年来，互联网、移动互联网的高速发展与成熟，大应用的微服务化也引起了大企业的热情关注，而基于Kubernetes+Docker的容器云方案也随之进入了大众的视野。开普勒云是一个基于Kubernetes+Docker的微服务治理解决方案，想了解开普勒云的整体架构吗？
+
+                                ## Introduce
+
+                                先简单自我介绍
+
+                                **王聪** 宜人贷/技术部/技术创新/高级研发工程师
+
+                                * 2013年入职宜人贷
+                                * 2018年担任容器云项目的项目经理，负责CloudNative的建设、设计、平台研发等工作
+
+                                ![](http://source.lattecake.com/images/2018/11/64/fd/fb/20181118-26b4f0b29a53b991ff968235fd064e6e.jpeg)
+
+                                ## Index
+
+                                先看一眼目录，我分享的主要内容
+
+                                - **Microservices**
+                                - **Docker &#38; Kubernetes**
+                                - **Service Mesh**
+                                - **Kubernetes &#38; Istio**
+                                - **Kplcloud Platform**
+
+                                ## Microservices
+
+                                &#62; 解决大应用微服务化后的问题
+
+                                现在各大企业都在谈论微服务，在微服务的大趋势之下技术权里逢人必谈微服务，及微服务化后的各种解决方案。
+
+                                ![](http://source.lattecake.com/images/2018/11/b0/a3/4e/20181118-8ca8a3263bc4eb91462c8184a3eb0f5c.jpeg)
+
+                                ### 当我们在讨论微服务的时候我们在讨论什么？
+
+                                &#62; 使用微服务架构有很多充分的理由，但天下没有免费的午餐。微服务虽有诸多优势，但也增加了复杂性。团队应该积极应对这种复杂性，但前提是应用能够受益于微服务。
+
+                                #### 解决如何微问题的问题
+
+                                * 微服务要如何拆分
+                                * 业务API规则
+                                * 数据一致性保证
+                                * 后期可扩展性考虑
+
+                                当然这不是这篇要讲的问题，我不讲微服务具体要如何拆分，每个企业每个应用的情况都不太一样，适合自己的方案就是最好的拆分方案。我们主要来解决微服务化后所带来的一些问题。
+
+                                #### 解决微服务化后带来的问题
+
+                                * 如何对资源快速分配
+                                * 如何快速度部署
+                                * 怎么做基本监控
+                                * 服务注册与发现
+                                * 负载均衡如何做
+                                * 环境一致性
+
+                                以上都是大应用微服务化所需要解决的基础问题，那么再层次的一些问题要怎么解决呢？比如:
+
+                                * 流量管理
+                                * 服务降级
+                                * 认证、授权
+
+                                当然面对上面这些问题我们广大的猿友们肯定是有解决方案的。
+
+                                ### Service governance
+
+                                #### Java 体系
+
+                                假设我们是Java体系的应用，那解决起来就很方便了，比如我们可以考虑使用SpringCloud全家桶系列。也可以拆分使用:
+
+                                * Eureka
+                                * Hystrix
+                                * Zuul
+                                * Spring-cloud
+                                * Spring-boot
+                                * ZipKin
+
+                                Java体系下能很方便的做以我们微服务化后的基础部分，但依然不能非常舒服的解决环境一致性并且如果有其他语系的服务将很难融入进去。
+
+                                我们看看基础编程语言一般有什么组合方式来解决基础问题。
+
+                                #### 其他体系
+
+                                * Consul
+                                * Kong
+                                * Go-kit
+                                * Jaeger/Zipkin
+
+                                假设我们是Golang语言，这里再捧一下Golang语言。go语言简直就是天生为微服务而生的语言，实在不要太方便了。高效的开发速度及相当不错的性能，简单精悍。
+
+                                跑题了，我们使用上面这些工具也可以组成一套还不错的微服务架构
+
+                                1. Consul: 当作服务发现及配置中心来使
+                                2. Kong: 作为服务网关
+                                3. Jaeger: 作为链路追踪来使
+                                4. Go-kit: 开发组件
+
+                                但是这种方案依然也有问题，对服务的侵入性太强了，每个服务都需要嵌入大量代码还是很头疼的。
+
+                                ## Docker &#38; Kubernetes
+
+                                基于Docker+k8s搭建平台的实践方案
+
+                                ![](http://source.lattecake.com/images/2018/11/bc/2d/90/20181118-8b7afbb377f3053197783aa12debcf63.jpeg)
+
+                                ![kubernetes](http://source.lattecake.com/images/2018/11/86/0d/cb/20181118-6aaeb9912ac5b6acc990ec440df862db.jpeg)
+
+                                ### Docker
+
+                                Docker 是一个非常强大的容器
+
+                                1. 资源利用率的提升
+                                2. 环境一致性、可移植性
+                                3. 快速度扩容伸缩
+                                4. 版本控制
+
+                                当我们使用了Docker之后，我们发现可玩的东西变多了，更加灵活了。不仅仅是资源利用轨提升、环境一致性得到了保证，我们的版本控制也变得更加方便了。
+
+                                以前我们使用Jenkins进行构建，当我们需要回滚时，又需要重新走了次jenkins Build过程，这是非常麻烦的。如果是Java应用那么它的构建时间将会变得非常长。
+
+                                那么我们使用了Docker之后，这一切都变得简单了许多，我们需要把某个版本的镜像拉下来启动就完事了(如果本地有缓存直接启动某个版本就行了)，这个提升是非常高效的。
+
+                                ![](http://source.lattecake.com/images/2018/11/a5/47/0d/20181118-1650345e620ada450a49634b471a590e.jpeg)
+
+                                既然都使用了Docker容器作为服务的基础，那肯定我们需要进容器进行编排，如果没有编排那将是非常可怕的。那么在这个时间上，对于Docker容器的编排，我们有了多种选择**Docker
+                                Swarm**、**Apache Mesos**、**Kubernetes**，在这些编排工具上，我们选择了服务编排王者**Kubernetes**.
+
+                                ### Why choose Kubernetes
+
+                                &#62; 我们来对这三个容器编排工具进行一个对比。
+
+                                #### Apache Mesos
+
+                                Mesos的目的就是建立一个高效可扩展的系统，并且这个系统能够支持很多各种各样的框架，不管是现在的还是未来的框架，它都能支持。这也是现今一个比较大的问题：类似Hadoop和MPI这些框架都是独立开的，这导致想要在框架之间做一些细粒度的分享是不可能的。
+
+                                但它的基础语言不是Golang，不在我们的技术栈里，我们对它的维护成本将会增高，所以我们首先不考虑它了。
+
+                                #### Docker Swarm
+
+                                Docker Swarm是一个由Docker开发的调度框架。由Docker自身开发的好处之一就是标准Docker API的使用。Swarm的架构由两部分组成
+
+                                ![](http://source.lattecake.com/images/2018/11/08/b4/6d/20181118-69c3c0e3b0b5ddef61cec940b47087f0.jpeg)
+
+                                它具体的使用，这里不再具体进行介绍了
+
+                                #### Kubernetes
+
+                                Kubernetes是一个Docker容器的编排系统，它使用label和pod的概念来将容器换分为逻辑单元。Pods是同地协作（co-located）容器的集合，这些容器被共同部署和调度，形成了一个服务，这是Kubernetes和其他两个框架的主要区别。相比于基于相似度的容器调度方式（就像Swarm和Mesos），这个方法简化了对集群的管理.
+
+                                不仅如此，它还提供了非常丰富的API，方便我们进它进行操作，及玩出更多花样。
+
+                                Kubernetes 的具体使用这里也不再过多的介绍了，网在上大把资料可以参考。
+
+                                ### Kubernetes in kubernetes
+
+                                kubernetes（k8s）是自动化容器操作的开源平台，这些操作包括部署，调度和节点集群间扩展。
+
+                                * 自动化容器的部署和复制
+                                * 随时扩展或收缩容器规模
+                                * 将容器组织成组，并且提供容器间的负载均衡
+                                * 很容易地升级应用程序容器的新版本
+                                * 提供容器弹性，如果容器失效就替换它，等等...
+
+                                ### Kubernetes is not enough either
+
+
+                                到这里我们看我们解决了哪些问题:
+
+                                * Docker: 环境一致性、快速度部署
+                                * Kubernetes: 服务注册与发现、负载均衡、对资源快速分配
+
+                                当然还有监控，这个我们下面再说。我们先来看看我们要实现一些更高层次的问题要怎么办呢？
+
+                                在不对服务进行侵入性的代码修改的情况下服务认证、链路追踪、日志管理、断路器、流量管理、错误注入等等问题要解决呢？
+
+                                ![](http://source.lattecake.com/images/2018/11/96/6b/3e/20181118-52ced50c786be69e36cd2af26b596997.jpeg)
+
+                                当然这两年非常流行的一种解决方案 **Service Mesh**
+
+                                ## Service Mesh
+
+                                **处理服务间通信的基础设施层，用于在云原生应用复杂的服务拓扑中实现可靠的请求传递**
+
+                                - 用来处理服务间通讯的专用基础设施层，通过复杂的拓扑结构让请求传递的过程变得更可靠
+                                - 作为一组轻量级高性能网络代理，和程序部署在一起，应用程序不需要知道它的存在。
+
+                                &#62; 在云原生应用中可靠地传递请求可能非常复杂。 通过一系列强大技术来管理这种复杂性: 链路熔断、延迟感知、负载均衡，服务发现，服务续约及下线与剔除。
+
+                                ![](http://source.lattecake.com/images/2018/11/52/0f/fd/20181118-7d8745e2371cd70af069e89c0f6524cc.jpeg)
+
+                                市面的下ServiceMesh框架有很多，然后我们选择了站在风口的Istio
+
+                                ### Istio
+
+                                连接、管理和保护微服务的开放平台。
+
+                                * **平台支持:** Kubernetes, Mesos, Cloud Foundry
+                                * **可观察性:**Metrics, logs, traces, dependency visualisation
+                                * **Service Identity &#38; Security:** 为服务、服务到服务的身份验证提供可验证的标识
+                                * **Traffic 管理:** 动态控制服务之间的通信、入口/出口路由、故障注入
+                                * **Policy 执行:** 前提检查，服务之间的配额管理
+
+                                #### 我们为什么选择Istio？
+
+                                因为有大厂支持呀。
+
+                                虽然它才到1.0版本，我们是从 0.6
+                                版本开始尝试体验，测试环境跑，然后0.7.1版本出了，我们升级到0.7.1版本跑，后来0.8.0LTS出了，我们开始正式使用0.8.0版本，并且我们做了一套升级方案。
+
+                                目前最新版已经到了1.0.2, 但我们并不准备升级，我想等到它升级到1.2之后，再开始正式大规模应用。0.8.0LTS至少现在还看小规模还是可以的。
+
+                                ### Istio 架构
+
+                                我们先来看一下Istio的架构图。
+
+                                ![](http://source.lattecake.com/images/2018/11/d2/ed/8e/20181118-e18e5c5e87b5ea6f8f65e5eaeddd2ae9.jpeg)
+
+                                其中Istio控制面板主要分为三大块，Pilot、Mixer、Istio-Auth
+
+                                * **Pilot:** 主要作为服务发现和路由规则，并且管理着所有Envoy，它对资源的消耗是非常大的
+                                * **Mixer:** 主要负责策略请求和配额管理，还有Tracing，所有的请求都会上报到Mixer
+                                * **Istio-Auth:** 升级流量、身份验证等等功能，目前我们暂没有启用此功能，对这需求并不是特别大，因为集群本身就是对外部隔离的
+
+                                每个Pod都会被注入一个Sidecar，你容器里的流量通过iptables全部转到Envoy进行处理。
+
+                                ## Kubernetes &#38; Istio
+
+                                Istio可以独立部署，但显然它与Kuberntes结合是更好的选择。
+
+                                基于Kubernetes的小规模架构
+
+                                ### Kubernetes Cluster
+
+                                我们看看在资源紧缺的情况下，我们的k8s集群是怎么样的，
+
+                                **首先提Master集群**
+
+                                * Master Cluster:
+                                *
+                                ETCD、Kube-apiserver、kubelet、Docker、kube-proxy、kube-scheduler、kube-controller-manager、Calico、
+                                keepalived、 IPVS
+
+                                **Node节点**
+
+                                * Node:
+                                * Kubelet、 kube-proxy 、Docker、Calico、IPVS
+
+                                ![](http://source.lattecake.com/images/2018/11/e7/b6/76/20181118-627370ab386567e374fa4119b6ae7fac.jpeg)
+
+                                当然我们还配置了两个边缘节点
+
+                                ### Edge Node
+
+                                * 边缘节点
+                                * 流量入口
+
+                                ![](http://source.lattecake.com/images/2018/11/70/60/1c/20181118-0d785121b741cabd188770e060d70725.jpeg)
+
+                                ### 外部服务请求流程
+
+                                ![](http://source.lattecake.com/images/2018/11/6f/83/47/20181118-87c8cf17381473c6431064528356fbc9.jpeg)
+
+                                ### Logging
+
+                                ![](http://source.lattecake.com/images/2018/11/d7/6b/25/20181118-1d99dbc08ba95cf02da22ca26b1d71b2.jpeg)
+
+                                ### Prometheus + Kubernetes
+
+                                * 基于时间序列的监控系统
+                                * 与kubernetes无缝集成基础设施和应用等级
+                                * 具有强大功能的键值数据模型
+                                * 大厂支持
+
+                                ![](http://source.lattecake.com/images/2018/11/0c/2d/f3/20181118-c4580ac9b579324df199ea4e2d00c556.jpeg)
+
+                                ### Grafana
+
+                                ![](http://source.lattecake.com/images/2018/11/46/d5/ec/20181118-d4b0aae2bd7bc539e7f69b8ed5446dcf.jpeg)
+
+
+                                ### Alarm
+
+                                ![](http://source.lattecake.com/images/2018/11/c5/57/89/20181118-ef397172ed2c99f580ac1e3d57cc53cb.jpeg)
+
+
+                                ### 整体架构
+
+                                ![](http://source.lattecake.com/images/2018/11/91/0d/b9/20181118-2bb2b2a96aad98a3b8762e330d791afc.jpeg)
+
+
+                                ### 有了Kubernetes那怎么部署应用呢？
+
+                                * 研发打包成镜像、传仓库、管理版本
+                                * 学习Docker
+                                * 学习配置仓库、手动打包上传麻烦
+                                * 学习k8s相关知识
+
+                                * 假设，我们用Jenkins来负责打包、传镜像、更新版本
+                                * 运维工作增加了不少，每个应用都需要进行配置，服务需要做变更都得找运维
+                                * Jenkins 维护也麻烦
+
+                                ![](http://source.lattecake.com/images/2018/11/aa/05/18/20181118-d3806011ba2a822311c31b7b057aa458.jpeg)
+
+                                &#62; 没有一种傻瓜式的，不需要学习太多的技术就可以方便使用的解决方案？
+
+                                ## Kplcloud platform
+
+                                ![](http://source.lattecake.com/images/2018/11/29/09/e6/20181118-3a6558f56e9e635ae83b7db709a29ca6.jpeg)
+
+                                轻量PaaS平台 一站式解决方案
+
+                                ### 开普勒云平台
+
+                                &#62; 开普勒云平台是一个轻量级的PaaS平台
+
+                                * 为微服务化的项目提供一个可控的管理平台
+                                * 实现每个服务独立部署、维护、扩展
+                                * 简化流程，不再需要繁琐的申请流程，最大限度的自动化处理
+                                * 实现微服务的快速发布、独立监控、配置
+                                * 实现对微服务项目的零侵入式的服务发现、服务网关、链路追踪等功能
+                                * 提供配置中心，统一管理配置
+
+                                &#62; 研发、产品、测试、运维甚至是老板都可以自己发布应用
+
+                                ![](http://source.lattecake.com/images/2018/11/80/46/6f/20181118-7897c673dd7cf44560d9d53746a80b5b.jpeg)
+
+                                ![](http://source.lattecake.com/images/2018/11/b9/35/48/20181118-6be4675329a18dd24a71eb8135fb9f66.jpeg)
+
+                                ### 在开普勒平台部署服务
+
+                                - Dockerfile
+                                - 应用尽量不做太多的变更
+                                - 尽量降低研发学习成本
+
+                                - 为什么不自动生成Dockerfile呢？
+
+                                ![](http://source.lattecake.com/images/2018/11/19/24/71/20181118-03629d08437c1c4f7f9c87b624219bcf.jpeg)
+
+                                ![](http://source.lattecake.com/images/2018/11/1b/7c/90/20181118-a7c22185abae0d7d9bdfc9ba7c31bcd2.jpeg)
+
+
+                                ### 工具整合
+
+                                * 开普勒云平台整合了 gitlab，Jenkins，repo，k8s，istio，promtheus，email，WeChat 等API
+                                * 实现对服务的整个生命周期的管理
+                                * 提供服务管理、创建、发布、版本、监控、报警、日志已及一些周边附加功能，消息中心、配置中心、还能登陆到容器，服务下线等等
+                                * 可对服务进行各种操作，比如： 一健调整服务模式、服务类型、一键扩容伸缩，回滚服务API管理以及存储的管理等等
+
+
+                                ![](http://source.lattecake.com/images/2018/11/bc/11/4f/20181118-3b6cc2adbcb1f74643cad580112bcbea.jpeg)
+
+
+                                ### 从创建一个服务开始
+
+                                ![](http://source.lattecake.com/images/2018/11/2b/e5/68/20181118-989140cd80368c9f63188dc8e532b34b.jpeg)
+
+                                ![](http://source.lattecake.com/images/2018/11/45/ae/45/20181118-a2b06d073222556c44d689b3ae9459ad.jpeg)
+
+                                ![](http://source.lattecake.com/images/2018/11/a5/b4/01/20181118-b2259ac78d9f1db60d882bd7b43a5965.jpeg)
+
+                                #### 服务详情
+
+                                ![](http://source.lattecake.com/images/2018/11/ab/4f/29/20181118-93e070c9e5aa974828b4d1af4fbab05a.jpeg)
+
+                            </string>
+                        </value>
+                    </member>
+                    <member>
+                        <name>mt_keywords</name>
+                        <value>
+                            <string>kubernetes,Docker,k8s,容器,云平台</string>
+                        </value>
+                    </member>
+                </struct>
+            </value>
+        </param>
+        <param>
+            <value>
+                <boolean>1</boolean>
+            </value>
+        </param>
+    </params>
+</methodCall>

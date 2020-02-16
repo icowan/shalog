@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<methodCall>
+    <methodName>metaWeblog.editPost</methodName>
+    <params>
+        <param>
+            <value>
+                <string>2</string>
+            </value>
+        </param>
+        <param>
+            <value>
+                <string>root</string>
+            </value>
+        </param>
+        <param>
+            <value>
+                <string>admin</string>
+            </value>
+        </param>
+        <param>
+            <value>
+                <struct>
+                    <member>
+                        <name>post_status</name>
+                        <value>
+                            <string>publish</string>
+                        </value>
+                    </member>
+                    <member>
+                        <name>post_type</name>
+                        <value>
+                            <string>post</string>
+                        </value>
+                    </member>
+                    <member>
+                        <name>categories</name>
+                        <value>
+                            <array>
+                                <data>
+                                    <value>
+                                        <string>技术</string>
+                                    </value>
+                                </data>
+                            </array>
+                        </value>
+                    </member>
+                    <member>
+                        <name>title</name>
+                        <value>
+                            <string>让容器也支持调整时间</string>
+                        </value>
+                    </member>
+                    <member>
+                        <name>dateCreated</name>
+                        <value>
+                            <dateTime.iso8601>20190910T01:58:56Z</dateTime.iso8601>
+                        </value>
+                    </member>
+                    <member>
+                        <name>wp_slug</name>
+                        <value>
+                            <string></string>
+                        </value>
+                    </member>
+                    <member>
+                        <name>description</name>
+                        <value>
+                            <string>
+
+                                使用容器部署应用通常会遇到调整容器时间的问题，但由于docker使用的是宿主机的时间无法进行修改。特别像是金融行业的测试人员对修改容器时间的需求还是非常大的。有什么方案能实现这一需求呢？
+
+                                Docker容器使用的宿主机的内核，所以Docker容器所获取的时间也是宿主机的时间（不算时区），所以这里我们需要编译一个组件让容器使用自己的时间进行支持。
+
+                                ## Faketime
+
+                                Git地址: https://github.com/wolfcw/libfaketime.git
+                                把faketime克隆下来并编译到宿主机上：
+
+                                编译完成后我们在/usrlocal/lib/faketime/ 就能看到所编译好的库：
+
+                                接下来要做的就简单很多了，我们只需要把个faketime挂载到容器里就好了。为了保证Dockerfile与生产的Dockerfile一致（生产不会修改时间），所以我们不对Dockerfile进行任务调整。我们对k8s的的Deployment进行修改参考:
+
+                            </string>
+                        </value>
+                    </member>
+                    <member>
+                        <name>mt_keywords</name>
+                        <value>
+                            <string>存储,Golang</string>
+                        </value>
+                    </member>
+                </struct>
+            </value>
+        </param>
+        <param>
+            <value>
+                <boolean>1</boolean>
+            </value>
+        </param>
+    </params>
+</methodCall>

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<methodCall>
+    <methodName>metaWeblog.getPost</methodName>
+    <params>
+        <param>
+            <value>
+                <string>20118</string>
+            </value>
+        </param>
+        <param>
+            <value>
+                <string>root</string>
+            </value>
+        </param>
+        <param>
+            <value>
+                <string>admin</string>
+            </value>
+        </param>
+    </params>
+</methodCall>

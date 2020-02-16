@@ -1,0 +1,229 @@
+{% extends "default-layout.html" %}
+
+{% block stylesheet %}
+<link href="https://cdn.bootcss.com/highlight.js/9.15.10/styles/default.min.css" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.5.0/gitalk.min.css"/>
+<link rel="stylesheet" href="/css/share.min.css"/>
+<link rel="stylesheet" href="/css/markdown.css"/>
+<meta name="site" content="https://lattecake.com/post/{{id|stringformat:"%0.f"}}"/>
+{% endblock %}
+
+{% block headtitle %}
+<title>{{title}}{% for tag in tags %}|{{tag.name}}{% endfor %} - LatteCake</title>
+{% endblock %}
+
+{% block metadescription %}
+<meta name="description" content="{{description}}{% for tag in tags %}|{{tag.name}}{% endfor %}">
+{% endblock %}
+
+{% block body %}
+<article>
+    <!--lbox begin-->
+    <div class="lbox">
+        <div class="content_box whitebg">
+            <h2 class="htitle"><span class="con_nav"><a href="/">Home</a> / <a href="/post">Posts</a></span>Post
+            </h2>
+            <h1 class="con_tilte">{{title}}</h1>
+            <p class="bloginfo">
+                <i class="avatar"><img
+                            src="/images/avatar.jpg"></i><span>{{author}}</span><span>{{publish_at}}</span>
+                <span>
+                    {% for tag in tags %}
+                        [<a href="/search?tag={{tag.name}}">{{tag.name}}</a>]
+                        {% endfor %}
+                </span><span>{{read_num}}人已阅</span></p>
+            <p class="con_info"><b>简介</b>
+                {{description}}
+            </p>
+            <div class="con_text">
+
+                <div class="markdown-body" id="write">
+                    {{content|markdown}}
+                </div>
+
+                <p>
+                    <span class="diggit" id="awesome" style="cursor: pointer;"
+                          attr-id="{{id|stringformat:"%0.f"}}">很赞哦！ (<span
+                                id="awesome-num">{{awesome|stringformat:"%0.f"}}</span>)</span>
+                <div class="social-share" data-initialized="true">
+                    <a href="#" class="social-share-icon icon-weibo"></a>
+                    <a href="#" class="social-share-icon icon-qq"></a>
+                    <a href="#" class="social-share-icon icon-wechat"></a>
+                    <a href="#" class="social-share-icon icon-qzone"></a>
+                    <a href="#" class="social-share-icon icon-facebook"></a>
+                    <a href="#" class="social-share-icon icon-twitter"></a>
+                    <a href="#" class="social-share-icon icon-douban"></a>
+                    <a href="#" class="social-share-icon icon-linkedin"></a>
+                </div>
+                </p>
+                <div class="nextinfo">
+                    {% if prev && prev.id > 0 %}
+                    <p>上一篇：<a href="/post/{{prev.id|stringformat:"%0.f"}}">{{prev.title}}</a></p>
+                    {% endif %}
+                    {% if next && next.id > 0 %}
+                    <p>下一篇：<a href="/post/{{next.id|stringformat:"%0.f"}}">{{next.title}}</a></p>
+                    {% endif %}
+                </div>
+                <div>
+                    <a href="https://cloud.tencent.com/act/cps/redirect?redirect=1052&cps_key=d7fa941b22714852fa704cc3e74e85a2&from=console" target="_blank">
+                        <img src="http://source.qiniu.cnd.nsini.com/ad-image/1040.100.jpg">
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!--<div class="whitebg">
+            <h2 class="htitle">相关文章</h2>
+            <ul class="otherlink">
+                <li><a href="/download/div/2018-04-22/815.html" title="html5个人博客模板《黑色格调》">html5个人博客模板《黑色格调》</a></li>
+                <li><a href="/download/div/2018-04-18/814.html" title="html5个人博客模板主题《清雅》">html5个人博客模板主题《清雅》</a></li>
+                <li><a href="/download/div/2018-03-18/807.html" title="html5个人博客模板《绅士》">html5个人博客模板《绅士》</a></li>
+                <li><a href="/download/div/2018-02-22/798.html" title="html5时尚个人博客模板-技术门户型">html5时尚个人博客模板-技术门户型</a></li>
+                <li><a href="/download/div/2017-09-08/789.html" title="html5个人博客模板主题《心蓝时间轴》">html5个人博客模板主题《心蓝时间轴》</a>
+                </li>
+                <li><a href="/download/div/2017-07-16/785.html" title="古典个人博客模板《江南墨卷》">古典个人博客模板《江南墨卷》</a></li>
+                <li><a href="/download/div/2017-07-13/783.html" title="古典风格-个人博客模板">古典风格-个人博客模板</a></li>
+                <li><a href="/download/div/2015-06-28/748.html" title="个人博客《草根寻梦》—手机版模板">个人博客《草根寻梦》—手机版模板</a></li>
+                <li><a href="/download/div/2015-04-10/746.html" title="【活动作品】柠檬绿兔小白个人博客模板">【活动作品】柠檬绿兔小白个人博客模板</a></li>
+                <li><a href="/jstt/bj/2015-01-09/740.html" title="【匆匆那些年】总结个人博客经历的这四年…">【匆匆那些年】总结个人博客经历的这四年…</a></li>
+            </ul>
+        </div>-->
+
+        <div class="whitebg gbook">
+            <h2 class="htitle">文章评论</h2>
+            <div id="gitalk-container"></div>
+        </div>
+    </div>
+    <!--lbox end-->
+    <div class="rbox">
+        <div class="whitebg paihang">
+            <h2 class="htitle">点击排行</h2>
+            <section class="topnews imgscale">
+                {% for popular in populars|slice:":1" %}
+                <a href="/post/{{popular.id|stringformat:"%0.f"}}">
+                    <img src="{{popular.image_url}}?imageView2/1/w/240/h/170/q/75|imageslim">
+                    <span>{{popular.title}}</span>
+                </a>
+                {% endfor %}
+            </section>
+            <ul>
+                {% for popular in populars|slice:"1:" %}
+                <li><i></i><a href="/post/{{popular.id|stringformat:"%0.f"}}">{{popular.title}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="whitebg tuijian">
+            <h2 class="htitle">本栏推荐</h2>
+            <section class="topnews imgscale">
+                {% for popular in populars|slice:":1" %}
+                <a href="/post/{{popular.id|stringformat:"%0.f"}}">
+                    <img src="{{popular.image_url}}?imageView2/1/w/240/h/170/q/75|imageslim">
+                    <span>{{popular.title}}</span>
+                </a>
+                {% endfor %}
+            </section>
+            <ul>
+                {% for popular in populars|slice:"1:" %}
+                <li><a href="/post/{{popular.id|stringformat:"%0.f"}}"><i><img
+                                    src="{{popular.image_url}}?imageView2/1/w/80/h/80/q/75|imageslim"></i>
+                        <p>{{popular.title}}!</p>
+                    </a></li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- 广告 -->
+        <div class="ad whitebg imgscale">
+            <ul>
+                <a href="https://u.jd.com/35o3bx" target="_blank" title="京东阅读加油站"><img src="http://source.qiniu.cnd.nsini.com/ad-image/PC-360x300.jpg"></a>
+            </ul>
+        </div>
+        <div class="whitebg cloud">
+            <h2 class="htitle">标签</h2>
+            <ul>
+                {% for tag in tags %}
+                <a href="/search?tag={{tag.name}}">{{tag.name}}</a>
+                {% endfor %}
+            </ul>
+        </div>
+        <!--<div class="whitebg wenzi">
+            <h2 class="htitle">猜你喜欢</h2>
+            <ul>
+                <li><a href="/">十条设计原则教你学会如何设计网页布局!</a></li>
+                <li><a href="/">用js+css3来写一个手机栏目导航</a></li>
+                <li><a href="/">6条网页设计配色原则,让你秒变配色高手</a></li>
+                <li><a href="/">三步实现滚动条触动css动画效果</a></li>
+                <li><a href="/">个人博客，属于我的小世界！</a></li>
+                <li><a href="/">安静地做一个爱设计的女子</a></li>
+                <li><a href="/">个人网站做好了，百度不收录怎么办？来，看看他们怎么做的。</a></li>
+                <li><a href="/">做个人博客如何用帝国cms美化留言增加头像选择</a></li>
+            </ul>
+        </div>-->
+        <!-- 广告 -->
+        <!--<div class="ad whitebg imgscale">
+            <ul>
+                <a href="/"><img src="/images/ad02.jpg"></a>
+            </ul>
+        </div>-->
+        <div class="whitebg tongji">
+            <h2 class="htitle">站点信息</h2>
+            <ul>
+                <li style="text-align: center"><b>微信公众号</b></li>
+                <img src="https://lattecake.oss-cn-beijing.aliyuncs.com/static%2Fimages%2Fweixin%2Fqrcode_for_gh_354bc8e8b814_1280.jpg"
+                     class="tongji_gzh">
+            </ul>
+        </div>
+    </div>
+</article>
+{% endblock %}
+
+{% block script %}
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/gitalk/1.5.0/gitalk.min.js"></script>
+<script src="/js/social-share.min.js"></script>
+<script>
+    function highlightCode() {
+        var pres = document.querySelectorAll(".markdown-body pre>code");
+        for (var i = 0; i < pres.length; i++) {
+            hljs.highlightBlock(pres[i]);
+        }
+    }
+
+    highlightCode();
+
+    $('#awesome').on('click', function () {
+        let that = $(this);
+        $.ajax({
+            type: "PUT",
+            url: "/post/" + that.attr("attr-id"),
+        }).done(function () {
+            $("#awesome-num").text(parseInt($("#awesome-num").text()) + 1);
+        });
+    });
+
+    const gitalk = new Gitalk({
+        clientID: 'fe67dcd9d1cffeda471d',
+        clientSecret: '0ee68557965b065531d93fb75baf77636851b194',
+        repo: 'blog-gitalk',
+        owner: 'icowan',
+        admin: ['icowan'],
+        id: "post.{{id|stringformat:"%0.f"}}",      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+    });
+
+    gitalk.render('gitalk-container');
+
+    let config = {
+        title: "{{title}}{% for tag in tags %}|{{tag.name}}{% endfor %}",
+        description: '{{description}}',
+        url: window.location.href,
+        origin: '@ysz1121',
+        sites: ['qzone', 'qq', 'weibo', 'wechat', 'douban', 'linkedin', 'facebook', 'twitter'],
+        image: '{{banner_image}}?imageView2/1/w/1280/h/720/q/75|imageslim',
+        wechatQrcodeTitle: "微信扫一扫：分享", // 微信二维码提示文字
+        wechatQrcodeHelper: '<p>微信里点“发现”，扫一下</p><p>二维码便可将本文分享至朋友圈。</p>',
+    };
+
+    $(".social-share").share(config);
+
+</script>
+{% endblock %}

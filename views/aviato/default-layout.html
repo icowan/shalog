@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>
+<html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>
+<html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>
+<html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js"> <!--<![endif]-->
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="description" content="Aviato E-Commerce Template">
+
+    <meta name="author" content="solacowa@gmail.com">
+
+    <title>nsini | {{title}}</title>
+
+    <!-- Mobile Specific Meta-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/static/images/favicon.png"/>
+
+    <!-- Themefisher Icon font -->
+    <link rel="stylesheet" href="/static/plugins/themefisher-font/style.css">
+    <!-- bootstrap.min css -->
+    <link rel="stylesheet" href="/static/plugins/bootstrap/css/bootstrap.min.css">
+
+    <!-- Revolution Slider -->
+    <link rel="stylesheet" type="text/css"
+          href="/static/plugins/revolution-slider/revolution/fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css">
+    <link rel="stylesheet" type="text/css"
+          href="/static/plugins/revolution-slider/revolution/fonts/font-awesome/css/font-awesome.css">
+
+    <!-- REVOLUTION STYLE SHEETS -->
+    <link rel="stylesheet" type="text/css" href="/static/plugins/revolution-slider/revolution/css/settings.css">
+    <link rel="stylesheet" type="text/css" href="/static/plugins/revolution-slider/revolution/css/layers.css">
+    <link rel="stylesheet" type="text/css" href="/static/plugins/revolution-slider/revolution/css/navigation.css">
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/markdown.css">
+
+</head>
+
+<body id="body">
+
+{% block headerBar %}
+{% include "header-bar.html" %}
+{% endblock %}
+
+{% block menu %}
+{% include "menu.html" %}
+{% endblock %}
+
+{% block crumb %}
+{% endblock %}
+
+{% block body %}
+hello world!
+{% endblock %}
+
+
+{% block footer %}
+<footer class="footer section text-center">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="footer-menu">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    <li>
+                        <a href="/post/">Post</a>
+                    </li>
+                    <li>
+                        <a href="/board/">Board</a>
+                    </li>
+                    <li>
+                        <a href="/about">About</a>
+                    </li>
+                </ul>
+                <p class="copyright-text">©nsini 2019 All right reserved. By dudulu.me</p>
+            </div>
+        </div>
+    </div>
+</footer>
+{% endblock %}
+
+<!-- Main jQuery -->
+<script src="/static/plugins/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap 3.1 -->
+<script src="/static/plugins/bootstrap/js/bootstrap.min.js"></script>
+{% block mainJs %}
+<!-- Main Js File -->
+
+
+{% endblock %}
+
+<script src="/static/js/script.js"></script>
+
+</body>
+</html>
