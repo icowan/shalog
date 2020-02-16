@@ -1,0 +1,31 @@
+version: '2'
+services:
+  mysql:
+    image: mysql:5.7.14
+    environment:
+      MYSQL_ROOT_PASSWORD: "admin"
+      MYSQL_DATABASE: "blog"
+    command: [
+      '--character-set-server=utf8mb4',
+      '--collation-server=utf8mb4_unicode_ci',
+    ]
+    expose:
+      - "3306"
+    ports:
+      - "3306:3306"
+  kplcloud:
+    image: kplcloud/blog:latest
+    command: /go/bin/blog start -p :8080 -c /etc/blog/app.cfg
+    environment:
+      GOPATH: "/go"
+      ADMIN_PASSWORD: "admin" # 如果是login_type: email 那这是初始化管理员的登陆密码
+    volumes:
+      - app.cfg-sample:/etc/blog/app.cfg
+    depends_on:
+      - mysql
+    restart: always
+    ports:
+      - "8080:8080"
+    build:
+      context: .
+      dockerfile: Dockerfile
