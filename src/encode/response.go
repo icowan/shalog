@@ -10,8 +10,8 @@ package encode
 import (
 	"context"
 	"encoding/json"
-	"github.com/nsini/blog/src/repository"
-	"github.com/nsini/blog/src/templates"
+	"github.com/icowan/blog/src/repository"
+	"github.com/icowan/blog/src/templates"
 	"net/http"
 )
 

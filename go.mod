@@ -1,4 +1,4 @@
-module github.com/nsini/blog
+module github.com/icowan/blog
 
 require (
 	github.com/Unknwon/goconfig v0.0.0-20190425194916-3dba17dd7b9e

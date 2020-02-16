@@ -9,10 +9,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/icowan/blog/src/repository"
+	"github.com/icowan/blog/src/repository/types"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"github.com/nsini/blog/src/repository"
-	"github.com/nsini/blog/src/repository/types"
 	"log"
 	"strconv"
 	"strings"

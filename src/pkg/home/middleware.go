@@ -10,7 +10,7 @@ package home
 import (
 	"context"
 	"github.com/gorilla/mux"
-	"github.com/nsini/blog/src/repository"
+	"github.com/icowan/blog/src/repository"
 	"net/http"
 )
 

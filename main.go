@@ -7,7 +7,7 @@
 
 package main
 
-import "github.com/nsini/blog/cmd/service"
+import "github.com/icowan/blog/cmd/service"
 
 func main() {
 	service.Run()

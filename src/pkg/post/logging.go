@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
-	"github.com/nsini/blog/src/repository/types"
+	"github.com/icowan/blog/src/repository/types"
 	"time"
 )
 

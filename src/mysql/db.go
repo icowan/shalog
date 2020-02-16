@@ -3,9 +3,9 @@ package mysql
 import (
 	"fmt"
 	"github.com/go-kit/kit/log"
+	"github.com/icowan/blog/src/config"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"github.com/nsini/blog/src/config"
 	"time"
 )
 

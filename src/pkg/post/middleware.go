@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/log"
-	"github.com/nsini/blog/src/repository"
+	"github.com/icowan/blog/src/repository"
 	"github.com/pkg/errors"
 	"golang.org/x/time/rate"
 )

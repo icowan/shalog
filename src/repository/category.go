@@ -8,8 +8,8 @@
 package repository
 
 import (
+	"github.com/icowan/blog/src/repository/types"
 	"github.com/jinzhu/gorm"
-	"github.com/nsini/blog/src/repository/types"
 )
 
 type CategoryRepository interface {

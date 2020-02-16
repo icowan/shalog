@@ -2,8 +2,8 @@ package repository
 
 import (
 	"database/sql"
+	"github.com/icowan/blog/src/repository/types"
 	"github.com/jinzhu/gorm"
-	"github.com/nsini/blog/src/repository/types"
 	"time"
 )
 

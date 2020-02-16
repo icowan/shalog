@@ -4,9 +4,9 @@ import (
 	"context"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
-	"github.com/nsini/blog/src/config"
-	"github.com/nsini/blog/src/pkg/post"
-	"github.com/nsini/blog/src/repository"
+	"github.com/icowan/blog/src/config"
+	"github.com/icowan/blog/src/pkg/post"
+	"github.com/icowan/blog/src/repository"
 	"strconv"
 )
 

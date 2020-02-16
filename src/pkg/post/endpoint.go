@@ -3,7 +3,7 @@ package post
 import (
 	"context"
 	"github.com/go-kit/kit/endpoint"
-	"github.com/nsini/blog/src/encode"
+	"github.com/icowan/blog/src/encode"
 )
 
 type popularRequest struct {

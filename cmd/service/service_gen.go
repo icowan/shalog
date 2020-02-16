@@ -11,7 +11,7 @@ import (
 	"errors"
 	"github.com/go-kit/kit/log/level"
 	"github.com/go-sql-driver/mysql"
-	"github.com/nsini/blog/src/repository/types"
+	"github.com/icowan/blog/src/repository/types"
 	"regexp"
 )
 
