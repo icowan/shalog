@@ -531,6 +531,11 @@ func (c *service) GetPost(ctx context.Context, id int64) (rs *getPostResponse, e
 		break
 	}
 
+	var tags []string
+	for _, tag := range post.Tags {
+		tags = append(tags, tag.Name)
+	}
+
 	var members []member
 
 	members = append(members, member{
@@ -561,7 +566,7 @@ func (c *service) GetPost(ctx context.Context, id int64) (rs *getPostResponse, e
 	}, member{
 		Name: "mt_keywords",
 		Value: memberValue{
-			String: "存储,Golang",
+			String: strings.Join(tags, ","),
 		},
 	}, member{
 		Name: "wp_slug",

@@ -18,11 +18,6 @@ import (
 //var errBadRoute = errors.New("bad route")
 var ErrInvalidArgument = errors.New("invalid argument")
 
-type endpoints struct {
-	PostEndpoint        endpoint.Endpoint
-	UploadImageEndpoint endpoint.Endpoint
-}
-
 func MakeHandler(svc Service, logger kitlog.Logger, repository repository.Repository, cf *config.Config) http.Handler {
 	opts := []kithttp.ServerOption{
 		kithttp.ServerErrorLogger(logger),
@@ -30,31 +25,17 @@ func MakeHandler(svc Service, logger kitlog.Logger, repository repository.Reposi
 		kithttp.ServerBefore(kithttp.PopulateRequestContext),
 	}
 
-	eps := endpoints{
-		PostEndpoint:        makePostEndpoint(svc),
-		UploadImageEndpoint: makeUploadImageEndpoint(svc),
-	}
-
 	ems := []endpoint.Middleware{
 		checkAuthMiddleware(logger, repository, cf.GetString("server", "app_key")),
-	}
-
-	ems2 := []endpoint.Middleware{
 		imageCheckAuthMiddleware(logger, repository, cf.GetString("server", "app_key")),
 	}
 
-	mw := map[string][]endpoint.Middleware{
-		"Post":   ems,
-		"Upload": ems2,
+	mws := map[string][]endpoint.Middleware{
+		"Post":   ems[:1],
+		"Upload": ems[1:],
 	}
 
-	for _, m := range mw["Post"] {
-		eps.PostEndpoint = m(eps.PostEndpoint)
-	}
-
-	for _, m := range mw["Upload"] {
-		eps.UploadImageEndpoint = m(eps.UploadImageEndpoint)
-	}
+	eps := NewEndpoint(svc, mws)
 
 	post := kithttp.NewServer(
 		eps.PostEndpoint,
@@ -137,6 +118,7 @@ func decodePostRequest(_ context.Context, r *http.Request) (interface{}, error) 
 	if err = xml.Unmarshal(b, &req); err != nil {
 		return nil, err
 	}
+
 	switch req.MethodName {
 	case NewMediaObject.String():
 		{

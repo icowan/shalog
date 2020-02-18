@@ -50,6 +50,27 @@ type imageResponse struct {
 	Url       string `json:"url"`
 }
 
+type Endpoints struct {
+	PostEndpoint        endpoint.Endpoint
+	UploadImageEndpoint endpoint.Endpoint
+}
+
+func NewEndpoint(svc Service, mdw map[string][]endpoint.Middleware) Endpoints {
+	eps := Endpoints{
+		PostEndpoint:        makePostEndpoint(svc),
+		UploadImageEndpoint: makeUploadImageEndpoint(svc),
+	}
+
+	for _, m := range mdw["Post"] {
+		eps.PostEndpoint = m(eps.PostEndpoint)
+	}
+	for _, m := range mdw["Upload"] {
+		eps.UploadImageEndpoint = m(eps.UploadImageEndpoint)
+	}
+
+	return eps
+}
+
 func makeUploadImageEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(uploadImageRequest)
