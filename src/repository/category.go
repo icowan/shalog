@@ -15,10 +15,31 @@ import (
 type CategoryRepository interface {
 	FirstOrCreate(name string) (cate *types.Category, err error)
 	FindAll() (res []*types.Category, err error)
+	FindByName(name string, pageSize, offset int) (cate types.Category, count int64, err error)
+	Find(id int64) (cate types.Category, err error)
 }
 
 type category struct {
 	db *gorm.DB
+}
+
+func (c *category) Find(id int64) (cate types.Category, err error) {
+	err = c.db.Where("id = ?", id).First(&cate).Error
+	return
+}
+
+func (c *category) FindByName(name string, pageSize, offset int) (cate types.Category, count int64, err error) {
+	var res []types.Post
+	err = c.db.Model(&types.Category{}).Preload("Posts", func(db *gorm.DB) *gorm.DB {
+		return db.Model(&types.Post{}).
+			Where("id in (SELECT post_id FROM post_categories WHERE category_id = ?)", cate.Id).
+			Where("push_time IS NOT NULL").
+			Where("post_status = ?", PostStatusPublish).
+			Order("push_time desc").
+			Count(&count).
+			Offset(offset).Limit(pageSize).Find(&res)
+	}).Where("name = ?", name).First(&cate).Error
+	return
 }
 
 func NewCategoryRepository(db *gorm.DB) CategoryRepository {

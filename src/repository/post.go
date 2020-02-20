@@ -13,7 +13,7 @@ var (
 
 type PostRepository interface {
 	Find(id int64) (res *types.Post, err error)
-	FindBy(action []int, order, by string, pageSize, offset int) ([]*types.Post, int64, error)
+	FindBy(categoryIds []int64, order, by string, pageSize, offset int) ([]types.Post, int64, error)
 	Popular() (posts []*types.Post, err error)
 	SetReadNum(p *types.Post) error
 	Create(p *types.Post) error
@@ -138,21 +138,27 @@ func (c *post) FindOnce(id int64) (res *types.Post, err error) {
 	return &p, nil
 }
 
-func (c *post) FindBy(action []int, order, by string, pageSize, offset int) ([]*types.Post, int64, error) {
-	posts := make([]*types.Post, 0)
-	var count int64
-	if err := c.db.Model(&posts).Preload("User", func(db *gorm.DB) *gorm.DB {
-		return db.Select("id,username")
-	}).Preload("Tags").
-		Where("action in (?)", action).
-		Where("push_time IS NOT NULL").
-		Where("post_status = ?", PostStatusPublish).
-		Order(gorm.Expr(by + " " + order)).
-		Count(&count).
-		Offset(offset).Limit(pageSize).Find(&posts).Error; err != nil {
-		return nil, 0, err
-	}
-	return posts, count, nil
+func (c *post) FindBy(categoryIds []int64, order, by string, pageSize, offset int) (posts []types.Post, count int64, err error) {
+	var categories []types.Category
+	err = c.db.Model(&types.Category{}).Preload("Posts", func(db *gorm.DB) *gorm.DB {
+		var ids []int64
+		for _, v := range categories {
+			ids = append(ids, v.Id)
+		}
+		return db.Model(&types.Post{}).
+			Preload("User", func(db *gorm.DB) *gorm.DB {
+				return db.Select("id,username")
+			}).
+			Preload("Tags").
+			Where("id in (SELECT post_id FROM post_categories WHERE category_id in (?))", ids).
+			Where("push_time IS NOT NULL").
+			Where("post_status = ?", PostStatusPublish).
+			Order(gorm.Expr(by + " " + order)).
+			Count(&count).
+			Offset(offset).Limit(pageSize).Find(&posts)
+	}).Where("id in (?)", categoryIds).Find(&categories).Error
+
+	return
 }
 
 func (c *post) Popular() (posts []*types.Post, err error) {

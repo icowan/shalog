@@ -29,11 +29,11 @@ func (s *instrumentingService) Get(ctx context.Context, id int64) (rs map[string
 	return s.Service.Get(ctx, id)
 }
 
-func (s *instrumentingService) List(ctx context.Context, order, by string, action, pageSize, offset int) (rs []map[string]interface{}, count int64, other map[string]interface{}, err error) {
+func (s *instrumentingService) List(ctx context.Context, order, by, category string, pageSize, offset int) (rs []map[string]interface{}, count int64, other map[string]interface{}, err error) {
 	defer func(begin time.Time) {
 		s.requestCount.With("method", "list").Add(1)
 		s.requestLatency.With("method", "list").Observe(time.Since(begin).Seconds())
 	}(time.Now())
 
-	return s.Service.List(ctx, order, by, action, pageSize, offset)
+	return s.Service.List(ctx, order, by, category, pageSize, offset)
 }

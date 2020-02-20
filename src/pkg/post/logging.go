@@ -57,20 +57,20 @@ func (s *loggingService) Awesome(ctx context.Context, id int64) (err error) {
 	return s.Service.Awesome(ctx, id)
 }
 
-func (s *loggingService) List(ctx context.Context, order, by string, action, pageSize, offset int) (rs []map[string]interface{}, count int64, other map[string]interface{}, err error) {
+func (s *loggingService) List(ctx context.Context, order, by, category string, pageSize, offset int) (rs []map[string]interface{}, count int64, other map[string]interface{}, err error) {
 	defer func(begin time.Time) {
 		_ = s.logger.Log(
 			"method", "List",
 			"order", order,
 			"by", by,
-			"action", action,
+			"category", category,
 			"pageSize", pageSize,
 			"offset", offset,
 			"took", time.Since(begin),
 			"err", err,
 		)
 	}(time.Now())
-	return s.Service.List(ctx, order, by, action, pageSize, offset)
+	return s.Service.List(ctx, order, by, category, pageSize, offset)
 }
 
 func (s *loggingService) Popular(ctx context.Context) (rs []map[string]interface{}, err error) {

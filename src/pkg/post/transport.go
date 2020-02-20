@@ -126,7 +126,7 @@ func decodeListRequest(ctx context.Context, r *http.Request) (interface{}, error
 	order := r.URL.Query().Get("order")
 	by := r.URL.Query().Get("by")
 	offset := r.URL.Query().Get("offset")
-	action, _ := strconv.Atoi(r.URL.Query().Get("action"))
+	category := strings.TrimSpace(r.URL.Query().Get("category"))
 
 	if size == "" {
 		size = "10"
@@ -140,9 +140,6 @@ func decodeListRequest(ctx context.Context, r *http.Request) (interface{}, error
 	if offset == "" {
 		offset = "0"
 	}
-	if action < 1 {
-		action = 1
-	}
 
 	pageSize, _ := strconv.Atoi(size)
 	pageOffset, _ := strconv.Atoi(offset)
@@ -151,7 +148,7 @@ func decodeListRequest(ctx context.Context, r *http.Request) (interface{}, error
 		order:    order,
 		by:       by,
 		offset:   pageOffset,
-		action:   action,
+		category: category,
 	}, nil
 }
 
@@ -197,11 +194,12 @@ func encodeListResponse(ctx context.Context, w http.ResponseWriter, response int
 	other := resp.Data["other"].(map[string]interface{})
 
 	return templates.RenderHtml(ctx, w, map[string]interface{}{
-		"list":      resp.Data["post"],
-		"tags":      other["tags"],
-		"populars":  other["populars"],
-		"total":     strconv.Itoa(int(resp.Count)),
-		"paginator": postPaginator("post", int(resp.Count), resp.Paginator.PageSize, resp.Paginator.Offset, ""),
+		"list":     resp.Data["post"],
+		"tags":     other["tags"],
+		"populars": other["populars"],
+		"total":    strconv.Itoa(int(resp.Count)),
+		"paginator": postPaginator("post", int(resp.Count), resp.Paginator.PageSize, resp.Paginator.Offset,
+			"&category="+other["category"].(string)),
 	})
 }
 

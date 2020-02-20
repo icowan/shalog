@@ -19,7 +19,7 @@ type Service interface {
 	Get(ctx context.Context, id int64) (rs map[string]interface{}, err error)
 
 	// 列表页
-	List(ctx context.Context, order, by string, action, pageSize, offset int) (rs []map[string]interface{}, count int64, other map[string]interface{}, err error)
+	List(ctx context.Context, order, by, category string, pageSize, offset int) (rs []map[string]interface{}, count int64, other map[string]interface{}, err error)
 
 	// 受欢迎的
 	Popular(ctx context.Context) (rs []map[string]interface{}, err error)
@@ -105,25 +105,41 @@ func (c *service) Get(ctx context.Context, id int64) (rs map[string]interface{},
 	}, nil
 }
 
-func (c *service) List(ctx context.Context, order, by string, action, pageSize, offset int) (rs []map[string]interface{},
+func (c *service) List(ctx context.Context, order, by, category string, pageSize, offset int) (rs []map[string]interface{},
 	count int64, other map[string]interface{}, err error) {
 	// 取列表 判断搜索、分类、Tag条件
 	// 取最多阅读
 
-	posts, count, err := c.repository.Post().FindBy([]int{1, 2}, order, by, pageSize, offset)
-	if err != nil {
-		return
+	var posts []types.Post
+	if category != "" {
+		if category, total, err := c.repository.Category().FindByName(category, pageSize, offset); err == nil {
+			for _, v := range category.Posts {
+				posts = append(posts, v)
+			}
+			count = total
+		}
+	} else {
+		var categoryIds []int64
+		if cates, err := c.repository.Category().FindAll(); err == nil {
+			for _, v := range cates {
+				categoryIds = append(categoryIds, v.Id)
+			}
+		}
+		posts, count, err = c.repository.Post().FindBy(categoryIds, order, by, pageSize, offset)
+		if err != nil {
+			_ = level.Warn(c.logger).Log("repository.Post", "FindBy", "err", err.Error())
+			return
+		}
 	}
 
 	var postIds []int64
-
 	for _, post := range posts {
 		postIds = append(postIds, post.ID)
 	}
 
 	images, err := c.repository.Image().FindByPostIds(postIds)
 	if err == nil && images == nil {
-		_ = c.logger.Log("c.image.FindByPostIds", "postIds", "err", err)
+		_ = level.Warn(c.logger).Log("c.image.FindByPostIds", "postIds", "err", err)
 	}
 
 	imageMap := make(map[int64]string, len(images))
@@ -156,6 +172,7 @@ func (c *service) List(ctx context.Context, order, by string, action, pageSize, 
 	other = map[string]interface{}{
 		"tags":     tags,
 		"populars": populars,
+		"category": category,
 	}
 
 	return

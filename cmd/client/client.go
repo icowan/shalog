@@ -8,6 +8,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/icowan/blog/src/repository"
 	"github.com/icowan/blog/src/repository/types"
@@ -19,9 +20,19 @@ import (
 	"time"
 )
 
+var host, port, user, password, dbname string
+
 func main() {
 
-	changeImage()
+	flag.StringVar(&host, "host", "127.0.0.1", "help message for host")
+	flag.StringVar(&port, "port", "3306", "help message for port")
+	flag.StringVar(&user, "user", "blog", "help message for user")
+	flag.StringVar(&password, "password", "admin", "help message for password")
+	flag.StringVar(&dbname, "dbname", "blog", "help message for dbname")
+	flag.Parse()
+
+	syncPostCategories()
+	//changeImage()
 	return
 
 	dburl1 := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=true&loc=Local&timeout=20m&collation=utf8mb4_unicode_ci",
@@ -147,5 +158,37 @@ func changeImage() {
 		v.ImagePath = strings.ReplaceAll(v.RealPath, "/mnt/storage/uploads/images/", "")
 		err = db2.Model(&types.Image{}).Where("id = ?", v.ID).Update(v).Error
 		log.Println(err)
+	}
+}
+
+func syncPostCategories() {
+	dburl := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=true&loc=Local&timeout=20m&collation=utf8mb4_unicode_ci",
+		user, password,
+		host, port, dbname)
+
+	db, err := gorm.Open("mysql", dburl)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var posts []types.Post
+
+	if err = db.Find(&posts).Error; err != nil {
+		log.Fatal(err)
+	}
+
+	repo := repository.NewRepository(db)
+
+	for _, v := range posts {
+		cate, _ := repo.Category().Find(int64(v.Action))
+
+		cates := []types.Category{
+			cate,
+		}
+
+		v.Categories = cates
+		if err = repo.Post().Update(&v); err != nil {
+			fmt.Println(err.Error())
+		}
 	}
 }

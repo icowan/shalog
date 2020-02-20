@@ -29,7 +29,6 @@ func NewService(logger log.Logger, config *config.Config, repository repository.
 }
 
 func (c *service) Index(ctx context.Context) (rs map[string]interface{}, err error) {
-
 	stars, err := c.repository.Post().Stars()
 	if err != nil {
 		_ = level.Error(c.logger).Log("Post", "Stars", "err", err.Error())
@@ -81,6 +80,8 @@ func (c *service) Index(ctx context.Context) (rs map[string]interface{}, err err
 			"id":         strconv.Itoa(int(v.ID)),
 		})
 	}
+
+	// todo 取各分类的文章
 
 	postSvc := post.NewService(c.logger, c.config, c.repository)
 	res, _ := postSvc.Popular(ctx)

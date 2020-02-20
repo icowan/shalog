@@ -19,8 +19,8 @@ type postRequest struct {
 }
 
 type listRequest struct {
-	order, by                string
-	action, pageSize, offset int
+	order, by, category string
+	pageSize, offset    int
 }
 
 type postResponse struct {
@@ -122,7 +122,7 @@ func makeGetEndpoint(s Service) endpoint.Endpoint {
 func makeListEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(listRequest)
-		rs, count, other, err := s.List(ctx, req.order, req.by, req.action, req.pageSize, req.offset)
+		rs, count, other, err := s.List(ctx, req.order, req.by, req.category, req.pageSize, req.offset)
 		return listResponse{
 			Data: map[string]interface{}{
 				"post":  rs,
