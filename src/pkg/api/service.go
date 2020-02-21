@@ -496,7 +496,6 @@ func (c *service) Post(ctx context.Context, req postRequest) (rs newPostResponse
 		IsMarkdown:  true, // todo 想办法怎么验证一下
 		UserID:      userId,
 		Status:      publishStatus,
-		Action:      1,
 		ReadNum:     1,
 		Awesome:     1,
 		PostStatus:  postStatus,

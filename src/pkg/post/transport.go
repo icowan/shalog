@@ -2,6 +2,7 @@ package post
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/go-kit/kit/endpoint"
@@ -9,6 +10,7 @@ import (
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
 	"github.com/icowan/blog/src/encode"
+	"github.com/icowan/blog/src/middleware"
 	"github.com/icowan/blog/src/repository"
 	"github.com/icowan/blog/src/repository/types"
 	"github.com/icowan/blog/src/templates"
@@ -28,20 +30,21 @@ func MakeHandler(ps Service, logger kitlog.Logger, repository repository.Reposit
 	opts := []kithttp.ServerOption{
 		kithttp.ServerErrorLogger(logger),
 		kithttp.ServerErrorEncoder(encode.EncodeError),
+		kithttp.ServerBefore(kithttp.PopulateRequestContext),
 	}
 
 	ems := []endpoint.Middleware{
 		UpdatePostReadNum(logger, repository),
-		newTokenBucketLimitter(rate.NewLimiter(rate.Every(time.Second*1), rateBucketNum)),
+		middleware.TokenBucketLimitter(rate.NewLimiter(rate.Every(time.Second*1), rateBucketNum)), // 限流
+		middleware.LoginMiddleware(logger),                                                        // 是否登录
 	}
 
-	mw := map[string][]endpoint.Middleware{
+	eps := NewEndpoint(ps, map[string][]endpoint.Middleware{
 		"Get":     ems[:1],
-		"Awesome": ems[1:],
-		"Search":  ems[1:],
-	}
-
-	eps := NewEndpoint(ps, mw)
+		"Awesome": ems[1:2],
+		"Search":  ems[1:2],
+		"NewPost": ems[1:],
+	})
 
 	r := mux.NewRouter()
 	r.Handle("/post", kithttp.NewServer(
@@ -74,7 +77,30 @@ func MakeHandler(ps Service, logger kitlog.Logger, repository repository.Reposit
 		encodeSearchResponse,
 		opts...,
 	)).Methods(http.MethodGet)
+
+	r.Handle("/post/new", kithttp.NewServer(
+		eps.NewPostEndpoint,
+		decodeNewPostRequest,
+		encode.EncodeJsonResponse,
+		opts...,
+	)).Methods(http.MethodPost)
 	return r
+}
+
+func decodeNewPostRequest(_ context.Context, r *http.Request) (response interface{}, err error) {
+	req := newPostRequest{
+		CategoryIds: []int64{1},
+		PostStatus:  repository.PostStatusDraft,
+		Markdown:    true,
+	}
+
+	if err = json.NewDecoder(r.Body).Decode(&req); err != nil {
+		return
+	}
+
+	// todo: 一堆验证......
+
+	return req, nil
 }
 
 func decodeSearchRequest(_ context.Context, r *http.Request) (interface{}, error) {

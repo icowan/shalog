@@ -3,7 +3,7 @@ module github.com/icowan/blog
 require (
 	github.com/Unknwon/goconfig v0.0.0-20190425194916-3dba17dd7b9e
 	github.com/VividCortex/gohistogram v1.0.0 // indirect
-	github.com/casbin/casbin v1.9.1 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
 	github.com/flosch/pongo2 v0.0.0-20190505152737-8914e1cf9164
 	github.com/go-kit/kit v0.8.0
@@ -21,7 +21,6 @@ require (
 	github.com/smartystreets/goconvey v0.0.0-20190731233626-505e41936337 // indirect
 	github.com/spf13/cobra v0.0.5
 	github.com/tebeka/strftime v0.1.3 // indirect
-	golang.org/x/net v0.0.0-20190311183353-d8887717615a
 	golang.org/x/time v0.0.0-20181108054448-85acf8d2951c
 )
 

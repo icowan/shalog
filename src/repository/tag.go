@@ -25,10 +25,16 @@ type TagRepository interface {
 	FindPostByName(name string) (meta types.Tag, err error)
 	FindPostIdsByName(name string) (meta types.Tag, err error)
 	Find(id int64) (meta types.Tag, err error)
+	FindByIds(ids []int64) (tags []types.Tag, err error)
 }
 
 type tag struct {
 	db *gorm.DB
+}
+
+func (c *tag) FindByIds(ids []int64) (tags []types.Tag, err error) {
+	err = c.db.Model(&types.Tag{}).Where("id in (?)", ids).Find(&tags).Error
+	return
 }
 
 func (c *tag) FindPostIdsByName(name string) (meta types.Tag, err error) {

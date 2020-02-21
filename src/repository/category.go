@@ -17,10 +17,16 @@ type CategoryRepository interface {
 	FindAll() (res []*types.Category, err error)
 	FindByName(name string, pageSize, offset int) (cate types.Category, count int64, err error)
 	Find(id int64) (cate types.Category, err error)
+	FindByIds(ids []int64) (categories []types.Category, err error)
 }
 
 type category struct {
 	db *gorm.DB
+}
+
+func (c *category) FindByIds(ids []int64) (categories []types.Category, err error) {
+	err = c.db.Model(&types.Category{}).Where("id in (?)", ids).Find(&categories).Error
+	return
 }
 
 func (c *category) Find(id int64) (cate types.Category, err error) {

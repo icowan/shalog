@@ -8,10 +8,21 @@ import (
 type UserRepository interface {
 	Find(username string) (res *types.User, err error)
 	FindAndPwd(username, password string) (res *types.User, err error)
+	FindById(id int64) (res types.User, err error)
+	Update(user *types.User) (err error)
 }
 
 type user struct {
 	db *gorm.DB
+}
+
+func (c *user) Update(user *types.User) (err error) {
+	return c.db.Model(&types.User{}).Where("id = ?", user.ID).Update(user).Error
+}
+
+func (c *user) FindById(id int64) (res types.User, err error) {
+	err = c.db.Select("username, username_canonical, email, email_canonical, created_at, updated_at, last_login ").First(&res, "id = ?", id).Error
+	return
 }
 
 func NewUserRepository(db *gorm.DB) UserRepository {

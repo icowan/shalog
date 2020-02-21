@@ -35,6 +35,10 @@ const (
 	PostStatusDraft   PostStatus = "draft"
 )
 
+func (c PostStatus) String() string {
+	return string(c)
+}
+
 type post struct {
 	db *gorm.DB
 }

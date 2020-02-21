@@ -12,7 +12,7 @@ import (
 )
 
 type User struct {
-	ID                  int       `gorm:"column:id;primary_key" json:"id"`
+	ID                  int64     `gorm:"column:id;primary_key" json:"id"`
 	Username            string    `gorm:"column:username" json:"username"`
 	UsernameCanonical   string    `gorm:"column:username_canonical" json:"username_canonical"`
 	Email               string    `gorm:"column:email" json:"email"`

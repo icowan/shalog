@@ -2,17 +2,22 @@ package post
 
 import (
 	"context"
-	"errors"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	"github.com/icowan/blog/src/config"
+	"github.com/icowan/blog/src/middleware"
 	"github.com/icowan/blog/src/repository"
 	"github.com/icowan/blog/src/repository/types"
+	"github.com/pkg/errors"
 	"strconv"
 	"strings"
+	"time"
 )
 
-var ErrInvalidArgument = errors.New("invalid argument")
+var (
+	ErrInvalidArgument = errors.New("invalid argument")
+	ErrPostCreate      = errors.New("发布失败: ")
+)
 
 type Service interface {
 	// 详情页信息
@@ -29,12 +34,68 @@ type Service interface {
 
 	// 搜索文章
 	Search(ctx context.Context, keyword, tag string, categoryId int64, offset, pageSize int) (posts []*types.Post, total int64, err error)
+
+	// 创建新文章
+	NewPost(ctx context.Context, title, description, content string,
+		postStatus repository.PostStatus, categories, tags []int64, markdown bool) (err error)
 }
 
 type service struct {
 	repository repository.Repository
 	logger     log.Logger
 	config     *config.Config
+}
+
+func (c *service) NewPost(ctx context.Context, title, description, content string,
+	postStatus repository.PostStatus, categoryIds, tagIds []int64, markdown bool) (err error) {
+
+	userId, _ := ctx.Value(middleware.ContextUserId).(int64)
+
+	user, err := c.repository.User().FindById(userId)
+	if err != nil {
+		_ = level.Error(c.logger).Log("repository.User", "FindById", "id", "id", "err", err.Error())
+		return
+	}
+
+	categories, err := c.repository.Category().FindByIds(categoryIds)
+	if err != nil {
+		_ = level.Error(c.logger).Log("repository.Category", "FindByIds", "err", err.Error())
+		return
+	}
+	tags, err := c.repository.Tag().FindByIds(tagIds)
+	if err != nil {
+		_ = level.Error(c.logger).Log("repository.Tag", "FindByIds", "err", err.Error())
+		return
+	}
+
+	var pushTime *time.Time
+	if postStatus == repository.PostStatusPublish {
+		t := time.Now()
+		pushTime = &t
+	}
+
+	post := types.Post{
+		Content:     content,
+		Description: description,
+		Slug:        "",       // todo: 在transport转换成拼音
+		IsMarkdown:  markdown, // todo: 考虑传参进来
+		ReadNum:     1,
+		Reviews:     1,
+		Awesome:     1,
+		Title:       title,
+		UserID:      userId,
+		PostStatus:  postStatus.String(),
+		PushTime:    pushTime,
+		User:        user,
+		Tags:        tags,
+		Categories:  categories,
+	}
+
+	if err = c.repository.Post().Create(&post); err != nil {
+		err = errors.Wrap(err, ErrPostCreate.Error())
+	}
+
+	return
 }
 
 func (c *service) Search(ctx context.Context, keyword, tag string, categoryId int64, offset, pageSize int) (posts []*types.Post, total int64, err error) {
@@ -80,10 +141,16 @@ func (c *service) Get(ctx context.Context, id int64) (rs map[string]interface{},
 		headerImage = c.config.GetString("server", "image_domain") + "/" + image.ImagePath
 	}
 
+	var category types.Category
+	for _, v := range detail.Categories {
+		category = v
+		break
+	}
+
 	// prev
-	prev, _ := c.repository.Post().Prev(detail.PushTime, []int64{int64(detail.Action)})
+	prev, _ := c.repository.Post().Prev(detail.PushTime, []int64{category.Id})
 	// next
-	next, _ := c.repository.Post().Next(detail.PushTime, []int64{int64(detail.Action)})
+	next, _ := c.repository.Post().Next(detail.PushTime, []int64{category.Id})
 
 	populars, _ := c.Popular(ctx)
 	return map[string]interface{}{

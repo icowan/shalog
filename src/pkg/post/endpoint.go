@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/go-kit/kit/endpoint"
 	"github.com/icowan/blog/src/encode"
+	"github.com/icowan/blog/src/repository"
 )
 
 type popularRequest struct {
@@ -59,7 +60,20 @@ type Endpoints struct {
 	PopularEndpoint endpoint.Endpoint
 	AwesomeEndpoint endpoint.Endpoint
 	SearchEndpoint  endpoint.Endpoint
+	NewPostEndpoint endpoint.Endpoint
 }
+
+type (
+	newPostRequest struct {
+		Title       string                `json:"title"`
+		Description string                `json:"description"`
+		Content     string                `json:"content"`
+		CategoryIds []int64               `json:"category_ids"`
+		TagIds      []int64               `json:"tag_ids"`
+		PostStatus  repository.PostStatus `json:"post_status"`
+		Markdown    bool                  `json:"markdown"`
+	}
+)
 
 func NewEndpoint(s Service, mdw map[string][]endpoint.Middleware) Endpoints {
 	eps := Endpoints{
@@ -68,6 +82,7 @@ func NewEndpoint(s Service, mdw map[string][]endpoint.Middleware) Endpoints {
 		PopularEndpoint: makePopularEndpoint(s),
 		AwesomeEndpoint: makeAwesomeEndpoint(s),
 		SearchEndpoint:  makeSearchEndpoint(s),
+		NewPostEndpoint: makeNewPostEndpoint(s),
 	}
 
 	for _, m := range mdw["Get"] {
@@ -78,6 +93,9 @@ func NewEndpoint(s Service, mdw map[string][]endpoint.Middleware) Endpoints {
 	}
 	for _, m := range mdw["Search"] {
 		eps.SearchEndpoint = m(eps.SearchEndpoint)
+	}
+	for _, m := range mdw["NewPost"] {
+		eps.NewPostEndpoint = m(eps.NewPostEndpoint)
 	}
 
 	return eps
@@ -144,5 +162,15 @@ func makePopularEndpoint(s Service) endpoint.Endpoint {
 		//req := request.(popularRequest)
 		rs, err := s.Popular(ctx)
 		return popularResponse{rs, err}, err
+	}
+}
+
+func makeNewPostEndpoint(s Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(newPostRequest)
+		err = s.NewPost(ctx, req.Title, req.Description, req.Content, req.PostStatus, req.CategoryIds, req.TagIds)
+		return encode.Response{
+			Error: err,
+		}, err
 	}
 }

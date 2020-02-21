@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
+	"github.com/icowan/blog/src/repository"
 	"github.com/icowan/blog/src/repository/types"
 	"time"
 )
@@ -82,4 +83,20 @@ func (s *loggingService) Popular(ctx context.Context) (rs []map[string]interface
 		)
 	}(time.Now())
 	return s.Service.Popular(ctx)
+}
+
+func (s *loggingService) NewPost(ctx context.Context, title, description, content string, postStatus repository.PostStatus, categoryIds, tagIds []int64) (err error) {
+	defer func(begin time.Time) {
+		_ = s.logger.Log(
+			"method", "NewPost",
+			"title", title,
+			"description", description,
+			"postStatus", postStatus,
+			"categoryIds", categoryIds,
+			"tagIds", tagIds,
+			"took", time.Since(begin),
+			"err", err,
+		)
+	}(time.Now())
+	return s.Service.NewPost(ctx, title, description, content, postStatus, categoryIds, tagIds)
 }

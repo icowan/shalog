@@ -11,6 +11,7 @@ import (
 	"github.com/icowan/blog/src/logging"
 	"github.com/icowan/blog/src/mysql"
 	"github.com/icowan/blog/src/pkg/about"
+	"github.com/icowan/blog/src/pkg/account"
 	"github.com/icowan/blog/src/pkg/api"
 	"github.com/icowan/blog/src/pkg/board"
 	"github.com/icowan/blog/src/pkg/home"
@@ -164,10 +165,15 @@ func start() {
 	// board
 	boardSvc = board.NewService(logger)
 
+	// admin account
+	accountSvc := account.NewService(logger, store, cf)
+	accountSvc = account.NewLoggingServer(logger, accountSvc)
+
 	httpLogger := log.With(logger, "component", "http")
 
 	mux := http.NewServeMux()
 
+	mux.Handle("/account/", account.MakeHTTPHandler(accountSvc, httpLogger, store))
 	mux.Handle("/search", post.MakeHandler(ps, httpLogger, store))
 	mux.Handle("/post", post.MakeHandler(ps, httpLogger, store))
 	mux.Handle("/post/", post.MakeHandler(ps, httpLogger, store))
@@ -216,7 +222,7 @@ func accessControl(h http.Handler, logger log.Logger) http.Handler {
 			return
 		}
 
-		_ = logger.Log("remote-addr", r.RemoteAddr, "uri", r.RequestURI, "method", r.Method, "length", r.ContentLength)
+		_ = level.Info(logger).Log("remote-addr", r.RemoteAddr, "uri", r.RequestURI, "method", r.Method, "length", r.ContentLength)
 
 		h.ServeHTTP(w, r)
 	})
