@@ -3,7 +3,6 @@ package post
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/go-kit/kit/endpoint"
 	kitlog "github.com/go-kit/kit/log"
@@ -14,6 +13,7 @@ import (
 	"github.com/icowan/blog/src/repository"
 	"github.com/icowan/blog/src/repository/types"
 	"github.com/icowan/blog/src/templates"
+	"github.com/pkg/errors"
 	"golang.org/x/time/rate"
 	"math"
 	"net/http"
@@ -30,6 +30,11 @@ func MakeHandler(ps Service, logger kitlog.Logger, repository repository.Reposit
 	opts := []kithttp.ServerOption{
 		kithttp.ServerErrorLogger(logger),
 		kithttp.ServerErrorEncoder(encode.EncodeError),
+	}
+
+	adminOpts := []kithttp.ServerOption{
+		kithttp.ServerErrorLogger(logger),
+		kithttp.ServerErrorEncoder(encode.EncodeJsonError),
 		kithttp.ServerBefore(kithttp.PopulateRequestContext),
 	}
 
@@ -41,9 +46,12 @@ func MakeHandler(ps Service, logger kitlog.Logger, repository repository.Reposit
 
 	eps := NewEndpoint(ps, map[string][]endpoint.Middleware{
 		"Get":     ems[:1],
-		"Awesome": ems[1:2],
-		"Search":  ems[1:2],
-		"NewPost": ems[1:],
+		"Awesome": ems[2:2],
+		"Search":  ems[2:2],
+		"NewPost": ems[2:],
+		"PutPost": ems[2:],
+		"Delete":  ems[2:],
+		"Restore": ems[2:],
 	})
 
 	r := mux.NewRouter()
@@ -65,7 +73,7 @@ func MakeHandler(ps Service, logger kitlog.Logger, repository repository.Reposit
 		encodeDetailResponse,
 		opts...,
 	)).Methods(http.MethodGet)
-	r.Handle("/post/{id:[0-9]+}", kithttp.NewServer(
+	r.Handle("/post/{id:[0-9]+}/awesome", kithttp.NewServer(
 		eps.AwesomeEndpoint,
 		decodeAwesomeRequest,
 		encode.EncodeJsonResponse,
@@ -78,13 +86,58 @@ func MakeHandler(ps Service, logger kitlog.Logger, repository repository.Reposit
 		opts...,
 	)).Methods(http.MethodGet)
 
+	// 后端API
 	r.Handle("/post/new", kithttp.NewServer(
 		eps.NewPostEndpoint,
 		decodeNewPostRequest,
 		encode.EncodeJsonResponse,
-		opts...,
+		adminOpts...,
 	)).Methods(http.MethodPost)
+
+	r.Handle("/post/{id:[0-9]+}", kithttp.NewServer(
+		eps.PutPostEndpoint,
+		decodePutPostRequest,
+		encode.EncodeJsonResponse,
+		adminOpts...,
+	)).Methods(http.MethodPut)
+
+	r.Handle("/post/{id:[0-9]+}", kithttp.NewServer(
+		eps.DeleteEndpoint,
+		decodeDetailRequest,
+		encode.EncodeJsonResponse,
+		adminOpts...,
+	)).Methods(http.MethodDelete)
+
+	r.Handle("/post/{id:[0-9]+}/restore", kithttp.NewServer(
+		eps.RestoreEndpoint,
+		decodeDetailRequest,
+		encode.EncodeJsonResponse,
+		adminOpts...,
+	)).Methods(http.MethodPut)
+
 	return r
+}
+
+func decodePutPostRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	vars := mux.Vars(r)
+
+	id, ok := vars["id"]
+	if !ok {
+		return nil, errBadRoute
+	}
+
+	postId, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	var req newPostRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		return nil, errors.Wrap(err, ErrPostParams.Error())
+	}
+
+	req.Id = postId
+	return req, nil
 }
 
 func decodeNewPostRequest(_ context.Context, r *http.Request) (response interface{}, err error) {

@@ -12,6 +12,8 @@ import (
 
 type Service interface {
 	Index(ctx context.Context) (rs map[string]interface{}, err error)
+	//ApplyLink(ctx context.Context, name, link, icon string) (err error)
+
 }
 
 type service struct {

@@ -85,7 +85,8 @@ func (s *loggingService) Popular(ctx context.Context) (rs []map[string]interface
 	return s.Service.Popular(ctx)
 }
 
-func (s *loggingService) NewPost(ctx context.Context, title, description, content string, postStatus repository.PostStatus, categoryIds, tagIds []int64) (err error) {
+func (s *loggingService) NewPost(ctx context.Context, title, description, content string,
+	postStatus repository.PostStatus, categoryIds, tagIds []int64, markdown bool, imageId int64) (err error) {
 	defer func(begin time.Time) {
 		_ = s.logger.Log(
 			"method", "NewPost",
@@ -94,9 +95,55 @@ func (s *loggingService) NewPost(ctx context.Context, title, description, conten
 			"postStatus", postStatus,
 			"categoryIds", categoryIds,
 			"tagIds", tagIds,
+			"markdown", markdown,
+			"imageId", imageId,
 			"took", time.Since(begin),
 			"err", err,
 		)
 	}(time.Now())
-	return s.Service.NewPost(ctx, title, description, content, postStatus, categoryIds, tagIds)
+	return s.Service.NewPost(ctx, title, description, content, postStatus, categoryIds, tagIds, markdown, imageId)
+}
+
+func (s *loggingService) Put(ctx context.Context, id int64, title, description, content string,
+	postStatus repository.PostStatus, categoryIds, tagIds []int64, markdown bool, imageId int64) (err error) {
+	defer func(begin time.Time) {
+		_ = s.logger.Log(
+			"method", "Put",
+			"id", id,
+			"title", title,
+			"description", description,
+			"postStatus", postStatus,
+			"categoryIds", categoryIds,
+			"tagIds", tagIds,
+			"markdown", markdown,
+			"imageId", imageId,
+			"took", time.Since(begin),
+			"err", err,
+		)
+	}(time.Now())
+	return s.Service.Put(ctx, id, title, description, content, postStatus, categoryIds, tagIds, markdown, imageId)
+}
+
+func (s *loggingService) Delete(ctx context.Context, id int64) (err error) {
+	defer func(begin time.Time) {
+		_ = s.logger.Log(
+			"method", "Delete",
+			"id", id,
+			"took", time.Since(begin),
+			"err", err,
+		)
+	}(time.Now())
+	return s.Service.Delete(ctx, id)
+}
+
+func (s *loggingService) Restore(ctx context.Context, id int64) (err error) {
+	defer func(begin time.Time) {
+		_ = s.logger.Log(
+			"method", "Restore",
+			"id", id,
+			"took", time.Since(begin),
+			"err", err,
+		)
+	}(time.Now())
+	return s.Service.Restore(ctx, id)
 }

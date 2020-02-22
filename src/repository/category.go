@@ -18,10 +18,15 @@ type CategoryRepository interface {
 	FindByName(name string, pageSize, offset int) (cate types.Category, count int64, err error)
 	Find(id int64) (cate types.Category, err error)
 	FindByIds(ids []int64) (categories []types.Category, err error)
+	CleanByPostId(id int64) (err error)
 }
 
 type category struct {
 	db *gorm.DB
+}
+
+func (c *category) CleanByPostId(id int64) (err error) {
+	panic("implement me")
 }
 
 func (c *category) FindByIds(ids []int64) (categories []types.Category, err error) {

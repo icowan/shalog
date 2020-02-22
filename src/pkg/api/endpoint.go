@@ -97,9 +97,9 @@ func makePostEndpoint(s Service) endpoint.Endpoint {
 											Struct: valStruct{
 												Member: []member{
 													{Name: "isAdmin", Value: memberValue{String: "1"}},
-													{Name: "url", Value: memberValue{String: "http://localhost:8080"}},
-													{Name: "blogid", Value: memberValue{String: "1"}},
-													{Name: "blogName", Value: memberValue{String: "nsini"}},
+													{Name: "url", Value: memberValue{String: "http://localhost:8080"}}, // todo: 从config获取
+													{Name: "blogid", Value: memberValue{String: "1"}},                  // todo: 从config获取
+													{Name: "blogName", Value: memberValue{String: "nsini"}},            // todo: 从config获取
 												},
 											},
 										},

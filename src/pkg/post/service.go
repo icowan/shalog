@@ -17,6 +17,9 @@ import (
 var (
 	ErrInvalidArgument = errors.New("invalid argument")
 	ErrPostCreate      = errors.New("发布失败: ")
+	ErrPostFind        = errors.New("查询失败：")
+	ErrPostUpdate      = errors.New("更新失败：")
+	ErrPostParams      = errors.New("参数错误：")
 )
 
 type Service interface {
@@ -37,7 +40,17 @@ type Service interface {
 
 	// 创建新文章
 	NewPost(ctx context.Context, title, description, content string,
-		postStatus repository.PostStatus, categories, tags []int64, markdown bool) (err error)
+		postStatus repository.PostStatus, categoryIds, tagIds []int64, markdown bool, imageId int64) (err error)
+
+	// 编辑内容 ps: 参数意思就不写了,变量名称就是意思...
+	Put(ctx context.Context, id int64, title, description, content string,
+		postStatus repository.PostStatus, categoryIds, tagIds []int64, markdown bool, imageId int64) (err error)
+
+	// 删除文章
+	Delete(ctx context.Context, id int64) (err error)
+
+	// 恢复文章
+	Restore(ctx context.Context, id int64) (err error)
 }
 
 type service struct {
@@ -46,8 +59,116 @@ type service struct {
 	config     *config.Config
 }
 
+func (c *service) Restore(ctx context.Context, id int64) (err error) {
+	post, err := c.repository.Post().FindOnce(id)
+	if err != nil {
+		_ = level.Error(c.logger).Log("repository.Post", "FindOnce", "err", err.Error())
+		return errors.Wrap(err, ErrPostFind.Error())
+	}
+
+	post.DeletedAt = nil
+
+	err = c.repository.Post().Update(post)
+	if err != nil {
+		_ = level.Error(c.logger).Log("repository.Post", "Update", "err", err.Error())
+		err = errors.Wrap(err, ErrPostUpdate.Error())
+	}
+	return
+}
+
+func (c *service) Delete(ctx context.Context, id int64) (err error) {
+	post, err := c.repository.Post().FindOnce(id)
+	if err != nil {
+		_ = level.Error(c.logger).Log("repository.Post", "FindOnce", "err", err.Error())
+		return errors.Wrap(err, ErrPostFind.Error())
+	}
+
+	t := time.Now()
+	post.DeletedAt = &t
+
+	err = c.repository.Post().Update(post)
+	if err != nil {
+		_ = level.Error(c.logger).Log("repository.Post", "Update", "err", err.Error())
+		err = errors.Wrap(err, ErrPostUpdate.Error())
+	}
+
+	return nil
+}
+
+func (c *service) Put(ctx context.Context, id int64, title, description, content string,
+	postStatus repository.PostStatus, categoryIds, tagIds []int64, markdown bool, imageId int64) (err error) {
+
+	// todo: 是否需要验证是否为文章本人编辑呢？
+	// userId, _ := ctx.Value(middleware.ContextUserId).(int64)
+
+	post, err := c.repository.Post().FindOnce(id)
+	if err != nil {
+		_ = level.Error(c.logger).Log("repository.Post", "FindOnce", "err", err.Error())
+		return errors.Wrap(err, ErrPostFind.Error())
+	}
+
+	categories, err := c.repository.Category().FindByIds(categoryIds)
+	if err != nil {
+		_ = level.Error(c.logger).Log("repository.Category", "FindByIds", "err", err.Error())
+		return
+	}
+	tags, err := c.repository.Tag().FindByIds(tagIds)
+	if err != nil {
+		_ = level.Error(c.logger).Log("repository.Tag", "FindByIds", "err", err.Error())
+		return
+	}
+
+	if post.PushTime == nil && postStatus == repository.PostStatusPublish {
+		t := time.Now()
+		post.PushTime = &t
+	} else {
+		post.PushTime = nil
+	}
+
+	// 清除分类关系表数据
+	//_ = c.repository.Category().CleanByPostId(post.ID)
+
+	// 清除tag关系表数据
+	//_ = c.repository.Tag().CleanByPostId(post.ID)
+
+	// 清除images的关系数据
+
+	post.Title = title
+	post.Description = description
+	post.Content = content
+	post.PostStatus = postStatus.String()
+	post.Categories = categories
+	post.Tags = tags
+
+	var imageExists bool
+	for _, v := range post.Images {
+		if v.ID == imageId {
+			imageExists = true
+			break
+		}
+	}
+
+	if !imageExists {
+		if images, e := c.repository.Image().FindByPostIds([]int64{imageId}); e == nil {
+			var imgs []types.Image
+			for _, v := range images {
+				imgs = append(imgs, *v)
+			}
+			post.Images = imgs
+		}
+	}
+
+	err = c.repository.Post().Update(post)
+	if err != nil {
+		_ = level.Error(c.logger).Log("repository.Post", "Update", "err", err.Error())
+		err = errors.Wrap(err, ErrPostUpdate.Error())
+	}
+
+	return
+}
+
 func (c *service) NewPost(ctx context.Context, title, description, content string,
-	postStatus repository.PostStatus, categoryIds, tagIds []int64, markdown bool) (err error) {
+	postStatus repository.PostStatus, categoryIds, tagIds []int64, markdown bool, imageId int64) (err error) {
 
 	userId, _ := ctx.Value(middleware.ContextUserId).(int64)
 
@@ -73,6 +194,8 @@ func (c *service) NewPost(ctx context.Context, title, description, content strin
 		t := time.Now()
 		pushTime = &t
 	}
+
+	// todo: 如果数据不全均为草稿
 
 	post := types.Post{
 		Content:     content,

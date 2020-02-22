@@ -16,6 +16,7 @@ type Repository interface {
 	Comment() CommentRepository
 	Tag() TagRepository
 	Category() CategoryRepository
+	Link() LinkRepository
 }
 
 type store struct {
@@ -26,6 +27,11 @@ type store struct {
 	comment  CommentRepository
 	tag      TagRepository
 	category CategoryRepository
+	link     LinkRepository
+}
+
+func (c *store) Link() LinkRepository {
+	return c.link
 }
 
 func NewRepository(db *gorm.DB) Repository {
@@ -36,6 +42,7 @@ func NewRepository(db *gorm.DB) Repository {
 		comment:  NewCommentRepository(db),
 		tag:      NewTagRepository(db),
 		category: NewCategoryRepository(db),
+		link:     NewLinkRepository(db),
 	}
 }
 

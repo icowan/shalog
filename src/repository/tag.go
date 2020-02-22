@@ -26,10 +26,15 @@ type TagRepository interface {
 	FindPostIdsByName(name string) (meta types.Tag, err error)
 	Find(id int64) (meta types.Tag, err error)
 	FindByIds(ids []int64) (tags []types.Tag, err error)
+	CleanByPostId(id int64) (err error)
 }
 
 type tag struct {
 	db *gorm.DB
+}
+
+func (c *tag) CleanByPostId(id int64) (err error) {
+	panic("implement me")
 }
 
 func (c *tag) FindByIds(ids []int64) (tags []types.Tag, err error) {

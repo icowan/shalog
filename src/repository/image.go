@@ -11,10 +11,16 @@ type ImageRepository interface {
 	AddImage(img *types.Image) error
 	ExistsImageByMd5(val string) bool
 	FindImageByMd5(val string) (img *types.Image, err error)
+	FindById(id int64) (img types.Image, err error)
 }
 
 type image struct {
 	db *gorm.DB
+}
+
+func (c *image) FindById(id int64) (img types.Image, err error) {
+	err = c.db.Model(&types.Image{}).Where("id = ?", id).First(&img).Error
+	return
 }
 
 func NewImageRepository(db *gorm.DB) ImageRepository {

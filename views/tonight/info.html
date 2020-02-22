@@ -65,7 +65,8 @@
                     {% endif %}
                 </div>
                 <div>
-                    <a href="https://cloud.tencent.com/act/cps/redirect?redirect=1052&cps_key=d7fa941b22714852fa704cc3e74e85a2&from=console" target="_blank">
+                    <a href="https://cloud.tencent.com/act/cps/redirect?redirect=1052&cps_key=d7fa941b22714852fa704cc3e74e85a2&from=console"
+                       target="_blank">
                         <img src="http://source.qiniu.cnd.nsini.com/ad-image/1040.100.jpg">
                     </a>
                 </div>
@@ -134,7 +135,8 @@
         <!-- 广告 -->
         <div class="ad whitebg imgscale">
             <ul>
-                <a href="https://u.jd.com/35o3bx" target="_blank" title="京东阅读加油站"><img src="http://source.qiniu.cnd.nsini.com/ad-image/PC-360x300.jpg"></a>
+                <a href="https://u.jd.com/35o3bx" target="_blank" title="京东阅读加油站"><img
+                            src="http://source.qiniu.cnd.nsini.com/ad-image/PC-360x300.jpg"></a>
             </ul>
         </div>
         <div class="whitebg cloud">
@@ -194,7 +196,7 @@
         let that = $(this);
         $.ajax({
             type: "PUT",
-            url: "/post/" + that.attr("attr-id"),
+            url: "/post/" + that.attr("attr-id") + "/awesome",
         }).done(function () {
             $("#awesome-num").text(parseInt($("#awesome-num").text()) + 1);
         });
