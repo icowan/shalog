@@ -16,10 +16,10 @@ import (
 
 var (
 	ErrInvalidArgument = errors.New("invalid argument")
-	ErrPostCreate      = errors.New("发布失败: ")
-	ErrPostFind        = errors.New("查询失败：")
-	ErrPostUpdate      = errors.New("更新失败：")
-	ErrPostParams      = errors.New("参数错误：")
+	ErrPostCreate      = errors.New("发布失败 ")
+	ErrPostFind        = errors.New("查询失败")
+	ErrPostUpdate      = errors.New("更新失败")
+	ErrPostParams      = errors.New("参数错误")
 )
 
 type Service interface {

@@ -13,10 +13,15 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/time/rate"
 	"net/http"
+	"net/url"
+	"strconv"
+	"strings"
 	"time"
 )
 
 const rateBucketNum = 2
+
+var errBadRoute = errors.New("bad route")
 
 func MakeHTTPHandler(s Service, logger kitlog.Logger, repository repository.Repository) http.Handler {
 	opts := []kithttp.ServerOption{
@@ -31,7 +36,10 @@ func MakeHTTPHandler(s Service, logger kitlog.Logger, repository repository.Repo
 	}
 
 	eps := NewEndpoint(s, map[string][]endpoint.Middleware{
-		"Apply": ems[:1],
+		"Apply":  ems[:1],
+		"Post":   ems[1:],
+		"Pass":   ems[1:],
+		"Delete": ems[1:],
 	})
 
 	r := mux.NewRouter()
@@ -43,6 +51,27 @@ func MakeHTTPHandler(s Service, logger kitlog.Logger, repository repository.Repo
 		opts...,
 	)).Methods(http.MethodPost)
 
+	r.Handle("/link/new", kithttp.NewServer(
+		eps.PostEndpoint,
+		decodeApplyRequest,
+		encode.EncodeJsonResponse,
+		opts...,
+	)).Methods(http.MethodPost)
+
+	r.Handle("/link/{id:[0-9]+}", kithttp.NewServer(
+		eps.DeleteEndpoint,
+		decodeDeleteRequest,
+		encode.EncodeJsonResponse,
+		opts...,
+	)).Methods(http.MethodDelete)
+
+	r.Handle("/link/{id:[0-9]+}/pass", kithttp.NewServer(
+		eps.PassEndpoint,
+		decodeDeleteRequest,
+		encode.EncodeJsonResponse,
+		opts...,
+	)).Methods(http.MethodPut)
+
 	return r
 }
 
@@ -52,5 +81,47 @@ func decodeApplyRequest(_ context.Context, r *http.Request) (interface{}, error)
 		return nil, errors.Wrap(err, ErrParams.Error())
 	}
 
+	if len(req.Link) > 255 {
+		return nil, ErrParamLinkLen
+	}
+
+	if len(req.Link) > 64 {
+		return nil, ErrParamNameLen
+	}
+
+	// todo 解析link还有问题
+
+	if _, err := url.ParseRequestURI(req.Link); err != nil {
+		return nil, errors.Wrap(err, ErrParams.Error())
+	}
+	if len(strings.TrimSpace(req.Icon)) > 3 {
+		if _, err := url.ParseRequestURI(req.Icon); err != nil {
+			return nil, errors.Wrap(err, ErrParams.Error())
+		}
+	}
+	req.Name = strings.TrimSpace(req.Name)
+	req.Link = url.QueryEscape(strings.TrimSpace(req.Link))
+	req.Icon = url.QueryEscape(strings.TrimSpace(req.Icon))
+
+	if req.Name == "" || req.Link == "" {
+		return nil, ErrParams
+	}
+
+	return req, nil
+}
+
+func decodeDeleteRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req linkRequest
+
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+	if !ok {
+		return nil, errBadRoute
+	}
+	linkId, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, errors.Wrap(err, errBadRoute.Error())
+	}
+	req.Id = linkId
 	return req, nil
 }

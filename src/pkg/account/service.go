@@ -16,11 +16,11 @@ import (
 )
 
 var (
-	ErrBodyParams    = errors.New("参数错误!")
-	ErrParamsNotNull = errors.New("用户名或密码不能为空!")
-	ErrUserOrPwd     = errors.New("用户名或密码错误!")
-	ErrContextId     = errors.New("用户不存在！")
-	ErrUserUpdate    = errors.New("用户更新错误！")
+	ErrBodyParams    = errors.New("参数错误")
+	ErrParamsNotNull = errors.New("用户名或密码不能为空")
+	ErrUserOrPwd     = errors.New("用户名或密码错误")
+	ErrContextId     = errors.New("用户不存在")
+	ErrUserUpdate    = errors.New("用户更新错误")
 )
 
 type Service interface {

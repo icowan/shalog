@@ -13,8 +13,8 @@ import (
 	"github.com/icowan/blog/src/pkg/about"
 	"github.com/icowan/blog/src/pkg/account"
 	"github.com/icowan/blog/src/pkg/api"
-	"github.com/icowan/blog/src/pkg/board"
 	"github.com/icowan/blog/src/pkg/home"
+	"github.com/icowan/blog/src/pkg/link"
 	"github.com/icowan/blog/src/pkg/post"
 	"github.com/icowan/blog/src/pkg/reward"
 	"github.com/icowan/blog/src/repository"
@@ -130,7 +130,8 @@ func start() {
 	var aboutMe about.Service
 	var homeSvc home.Service
 	var apiSvc api.Service
-	var boardSvc board.Service
+	//var boardSvc board.Service
+
 	// post
 	ps = post.NewService(logger, cf, store)
 	ps = post.NewLoggingService(logger, ps)
@@ -163,7 +164,11 @@ func start() {
 	aboutMe = about.NewLoggingService(logger, aboutMe)
 
 	// board
-	boardSvc = board.NewService(logger)
+	//boardSvc = board.NewService(logger)
+
+	// link
+	linkSvc := link.NewService(logger, store)
+	linkSvc = link.NewLoggingServer(logger, linkSvc)
 
 	// admin account
 	accountSvc := account.NewService(logger, store, cf)
@@ -178,9 +183,11 @@ func start() {
 	mux.Handle("/post", post.MakeHandler(ps, httpLogger, store))
 	mux.Handle("/post/", post.MakeHandler(ps, httpLogger, store))
 	mux.Handle("/about", about.MakeHandler(aboutMe, httpLogger))
-	mux.Handle("/api/", api.MakeHandler(apiSvc, httpLogger, store, cf))
-	mux.Handle("/board", board.MakeHandler(boardSvc, httpLogger))
 	mux.Handle("/reward", reward.MakeHandler(httpLogger))
+	mux.Handle("/link/", link.MakeHTTPHandler(linkSvc, httpLogger, store))
+
+	mux.Handle("/api/", api.MakeHandler(apiSvc, httpLogger, store, cf))
+	//mux.Handle("/board", board.MakeHandler(boardSvc, httpLogger))
 	mux.Handle("/", home.MakeHandler(homeSvc, httpLogger))
 
 	http.Handle("/metrics", promhttp.Handler())

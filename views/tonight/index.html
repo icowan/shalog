@@ -254,6 +254,9 @@
                     <a href="https://wj.qq.com/s2/5433994/7251/" target="_blank">申请链接</a>
                 </span>友情链接</h2>
             <ul>
+                {% for link in links %}
+                <li><a href="{{link.link}}?source=lattecake.com" target="_blank" title="{{link.name}}">{{link.name}}</a></li>
+                {% endfor %}
                 <li><a href="https://tellu.top?source=lattecake.com" target="_blank">渺小的尘埃</a></li>
                 <li><a href="https://iphpt.com?source=lattecake.com" target="_blank">叶落山城秋</a></li>
                 <li><a href="https://qdtalk.com?source=lattecake.com" target="_blank">陌上寒</a></li>
