@@ -41,14 +41,13 @@ var (
 
 	rootCmd = &cobra.Command{
 		Use:               "server",
-		Short:             "开普勒平台服务端",
+		Short:             "",
 		SilenceErrors:     true,
 		DisableAutoGenTag: true,
-		Long: `# 开普勒平台服务端
-您可以通过改命令来启动您的服务
+		Long: `# 博客系统
 可用的配置类型：
 [start]
-有关开普勒平台的相关概述，请参阅 https://github.com/nsini/kplcloud
+有关本系统的相关概述，请参阅 https://github.com/icowan/blog
 `,
 	}
 
@@ -81,7 +80,6 @@ func init() {
 }
 
 func Run() {
-
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(-1)
 	}

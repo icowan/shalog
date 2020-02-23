@@ -17,6 +17,7 @@ type Repository interface {
 	Tag() TagRepository
 	Category() CategoryRepository
 	Link() LinkRepository
+	Setting() SettingRepository
 }
 
 type store struct {
@@ -28,6 +29,7 @@ type store struct {
 	tag      TagRepository
 	category CategoryRepository
 	link     LinkRepository
+	setting  SettingRepository
 }
 
 func (c *store) Link() LinkRepository {
@@ -43,6 +45,7 @@ func NewRepository(db *gorm.DB) Repository {
 		tag:      NewTagRepository(db),
 		category: NewCategoryRepository(db),
 		link:     NewLinkRepository(db),
+		setting:  NewSettingRepository(db),
 	}
 }
 
@@ -68,4 +71,8 @@ func (c *store) Image() ImageRepository {
 
 func (c *store) Comment() CommentRepository {
 	return c.comment
+}
+
+func (c *store) Setting() SettingRepository {
+	return c.setting
 }

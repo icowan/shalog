@@ -195,12 +195,16 @@ func (c *service) NewPost(ctx context.Context, title, description, content strin
 		pushTime = &t
 	}
 
+	var slug string
+	// todo: 没有Gcc 好像不太好使，windows需要自行安装, mac,linux下好像自带
+	//slug = strings.Join(pinyin.LazyConvert(title, nil), "-")
+
 	// todo: 如果数据不全均为草稿
 
 	post := types.Post{
 		Content:     content,
 		Description: description,
-		Slug:        "",       // todo: 在transport转换成拼音
+		Slug:        slug,     // todo: 在transport转换成拼音
 		IsMarkdown:  markdown, // todo: 考虑传参进来
 		ReadNum:     1,
 		Reviews:     1,
