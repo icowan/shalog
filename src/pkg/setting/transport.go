@@ -59,6 +59,13 @@ func MakeHTTPHandler(s Service, logger log.Logger) http.Handler {
 		opts...,
 	)).Methods(http.MethodGet)
 
+	r.Handle("/setting/{key}", kithttp.NewServer(
+		eps.PutEndpoint,
+		decodePostRequest,
+		encode.EncodeJsonResponse,
+		opts...,
+	)).Methods(http.MethodPut)
+
 	return r
 }
 

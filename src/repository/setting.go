@@ -29,6 +29,8 @@ const (
 	SettingSiteUserEmail              SettingKey = "site-user-email"               // 站点用户邮箱
 	SettingSiteUserQQ                 SettingKey = "site-user-qq"                  // 站点用户QQ
 	SettingSiteUserWechatImage        SettingKey = "site-user-wecaht-image"        // 站点用户微信二维码
+	SettingSiteGitalkSetting          SettingKey = "site-gtialk-setting"           // gitalk的配置 // todo: 是否需要开启的功能呢？
+	SettingSiteShareSetting           SettingKey = "site-share-setting"            // 分享给件的配置
 	SettingWechatOfficialAccountName  SettingKey = "wechat-official-account-name"  // 微信公众号名称
 	SettingWechatOfficialAccountDesc  SettingKey = "wechat-official-account-desc"  // 微信公众号描述
 	SettingWechatOfficialAccountImage SettingKey = "wechat-official-account-image" // 微信公众号名称 todo: cdn地址或本地相对路径
@@ -70,7 +72,7 @@ func (s *setting) Delete(key SettingKey) (err error) {
 }
 
 func (s *setting) Update(setting *types.Setting) (err error) {
-	return s.db.Model(setting).Where("key = ?", setting.Key).Delete(setting).Error
+	return s.db.Model(setting).Where("`key` = ?", setting.Key).Update(setting).Error
 }
 
 func (s *setting) List() (res []*types.Setting, err error) {
