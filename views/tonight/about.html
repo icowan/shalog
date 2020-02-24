@@ -3,19 +3,15 @@
 {% block body %}
 <article>
     <div class="whitebg about">
-        <div class="ab_box"> <i class="avatar_pic"><img src="images/avatar.jpg"></i>
-            <h3>ShaCong | icowan | 嘟噜聪</h3>
-            <p>不跑马拉松的摄影师不是好程序员 。</p>
-            <p>一名漂在北京的在码农，主要使用语言Go,Python,Lua,PHP,Java,C++,React。</p>
-            <p>主要开源项目: <a href="https://github.com/kplcloud/kplcloud" target="_blank"><b>开普勒云平台</b></a></p>
+        <div class="ab_box"> <i class="avatar_pic"><img src="{{site_about_avatar}}"></i>
+            <h3>{{site_about_name}}</h3>
+            <p>
+                {{site_about_desc|markdown}}
+            </p>
         </div>
         <h2 class="gd_title">About</h2>
         <p class="ab_dubai">
-            生于南方，2012年毕业一路北上成为一名城续猿，如今已从业了9年了。从2013年开始喜欢跑马拉松，已跑过了6个城市累计1600km里程。
-            喜欢摄影，2013年入坑佳能100D后2015年升级Canon EOS 5D Mark III，已游国内30多座城市。
-            目前主要做研发工作，以Golang语言为主，曾经用过很多其他编程语言: PHP,Python,Java等等，比较适合做服务端。
-            如今依旧在一线城市死撑，未来为怎么，我无法预测试。只能拼命努力着，希望不会被这座城市、这个社会所抛弃。
-            <p><b>人生最要紧的就是要保持微笑。生命如此美妙，有太多的事，都值得微笑以对...</b></p>
+            {{site_about_content|markdown}}
         </p>
         <span class="ly_button"><a href="#" target="_blank">留言</a></span>
 

@@ -11,6 +11,7 @@ type SettingKey string
 const (
 	SettingSiteDomain                 SettingKey = "site-domain"                   // 主站地址
 	SettingSiteName                   SettingKey = "site-name"                     // 主站名称
+	SettingSiteDomainBeian            SettingKey = "site-domain-beian"             // 主站备案号
 	SettingSiteDescription            SettingKey = "site-description"              // 在head里的DESCRIPTION信息
 	SettingSiteKeywords               SettingKey = "site-keywords"                 // 在head里的keywords信息
 	SettingSiteIcon                   SettingKey = "site-icon"                     // 站点的ICON地址 todo: cdn地址或本地相对路径
@@ -18,6 +19,16 @@ const (
 	SettingGlobalFoobarCode           SettingKey = "site-global-foobar-code"       // 全局foobar代码 可以设置成百度统计啥的
 	SettingGlobalHeaderCode           SettingKey = "site-global-header-code"       // 全局header代码 可以设置成百度统计啥的
 	SettingGlobalDomainImage          SettingKey = "site-global-domain-image"      // 图片cdn地址
+	SettingSiteAboutName              SettingKey = "site-about-name"               // 站点用户名
+	SettingSiteAboutDesc              SettingKey = "site-about-desc"               // 站点用户介绍
+	SettingSiteAboutContent           SettingKey = "site-about-content"            // 站点用户介绍
+	SettingSiteAboutAvatar            SettingKey = "site-about-avatar"             // 站点用户头像
+	SettingSiteUserGithub             SettingKey = "site-user-github"              // 站点用户github
+	SettingSiteUserOccupation         SettingKey = "site-user-occupation"          // 站点用户职业
+	SettingSiteUserCity               SettingKey = "site-user-city"                // 站点用户城市
+	SettingSiteUserEmail              SettingKey = "site-user-email"               // 站点用户邮箱
+	SettingSiteUserQQ                 SettingKey = "site-user-qq"                  // 站点用户QQ
+	SettingSiteUserWechatImage        SettingKey = "site-user-wecaht-image"        // 站点用户微信二维码
 	SettingWechatOfficialAccountName  SettingKey = "wechat-official-account-name"  // 微信公众号名称
 	SettingWechatOfficialAccountDesc  SettingKey = "wechat-official-account-desc"  // 微信公众号描述
 	SettingWechatOfficialAccountImage SettingKey = "wechat-official-account-image" // 微信公众号名称 todo: cdn地址或本地相对路径
@@ -40,7 +51,7 @@ type setting struct {
 }
 
 func (s *setting) Find(key SettingKey) (res types.Setting, err error) {
-	err = s.db.Where("key = ?", key).First(&res).Error
+	err = s.db.Where("`key` = ?", key).First(&res).Error
 	return
 }
 

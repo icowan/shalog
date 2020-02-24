@@ -4,20 +4,19 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     {% block headtitle %}
-    <title>{{title}} LatteCake</title>
+    <title>{{title}} {{site_name}}</title>
     {% endblock %}
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     {% block metadescription %}
-    <meta name="description" content="LatteCake个人博客,拿铁味的蛋糕,是一名码农,擅长各种技术.{{title}}">
+    <meta name="description" content="{{site_description}} {{title}}">
     {% endblock %}
-    <meta name="keywords"
-          content="博客,技术,个人博客,个人技术博客,Golang,Linux,ReactJS,Docker,Kubernetes,k8s,拿铁蛋糕,拿铁味的摩卡,lattecake,{{title}}">
+    <meta name="keywords" content="{{site_keywords}} {{title}}">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="apple-touch-icon-precomposed" href="https://lattecake.com/images/apple-touch-icon.png">
     <meta name="msapplication-TileImage" content="/images/favicon.ico">
-    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="{{site_icon}}" type="image/x-icon">
     <meta name="msapplication-TileColor" content="#0e90d2">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -80,16 +79,17 @@
         <div class="wxbox">
             <ul>
                 <li>
-                    <img src="https://lattecake.oss-cn-beijing.aliyuncs.com/static%2Fimages%2Fweixin%2Fqrcode_for_gh_354bc8e8b814_1280.jpg"><span>微信公众号</span>
+                    <img src="{{wechat_official_account_image}}"><span>微信公众号</span>
                 </li>
             </ul>
         </div>
         <div class="endnav">
-            <p>GitHub: https://github.com/icowan</p>
-            <p>多赚点钱，赚的钱多好，很多事自然就变了。</p>
-            <p>How does the world look through your eyes?</p>
-            <p>人生最要紧的就是要保持微笑。生命如此美妙，有太多的事，都值得微笑以对...</p>
-            <p>Copyright © <a href="https://www.lattecake.com">www.lattecake.com</a> All Rights Reserved. 备案号：京ICP备19030925号</p>
+            {% if site_user_github && site_user_github != "" %}<p>GitHub: {{site_user_github}}{% endif %}</p>
+            <p>{{wechat_official_account_desc}}</p>
+            <!--<p>How does the world look through your eyes?</p>
+            <p>人生最要紧的就是要保持微笑。生命如此美妙，有太多的事，都值得微笑以对...</p>-->
+            <p>Copyright © <a href="{{site_domain}}">{{site_domain}}</a> All Rights Reserved.
+                {% if site_domain_beian && site_domain_beian != "" %} 备案号：{{site_domain_beian}} {% endif %}</p>
         </div>
     </div>
     <a href="#">

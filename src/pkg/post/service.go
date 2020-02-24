@@ -8,6 +8,7 @@ import (
 	"github.com/icowan/blog/src/middleware"
 	"github.com/icowan/blog/src/repository"
 	"github.com/icowan/blog/src/repository/types"
+	"github.com/mozillazg/go-pinyin"
 	"github.com/pkg/errors"
 	"strconv"
 	"strings"
@@ -197,7 +198,7 @@ func (c *service) NewPost(ctx context.Context, title, description, content strin
 
 	var slug string
 	// todo: 没有Gcc 好像不太好使，windows需要自行安装, mac,linux下好像自带
-	//slug = strings.Join(pinyin.LazyConvert(title, nil), "-")
+	slug = strings.Join(pinyin.LazyConvert(title, nil), "-")
 
 	// todo: 如果数据不全均为草稿
 

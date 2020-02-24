@@ -26,10 +26,11 @@ var errBadRoute = errors.New("bad route")
 
 const rateBucketNum = 6
 
-func MakeHandler(ps Service, logger kitlog.Logger, repository repository.Repository) http.Handler {
+func MakeHandler(ps Service, logger kitlog.Logger, repository repository.Repository, settings map[string]string) http.Handler {
 	opts := []kithttp.ServerOption{
 		kithttp.ServerErrorLogger(logger),
 		kithttp.ServerErrorEncoder(encode.EncodeError),
+		kithttp.ServerBefore(middleware.SettingsRequest(settings)),
 	}
 
 	adminOpts := []kithttp.ServerOption{

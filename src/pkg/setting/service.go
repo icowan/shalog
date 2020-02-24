@@ -10,7 +10,8 @@ import (
 )
 
 var (
-	ErrSettingNotfound = errors.New("配置的关键字错误")
+	ErrSettingNotfound  = errors.New("配置的关键字错误")
+	ErrSettingReqParams = errors.New("参数错误")
 )
 
 type Service interface {
@@ -24,7 +25,7 @@ type Service interface {
 	Delete(ctx context.Context, key repository.SettingKey) (err error)
 
 	// 更新配置
-	Update(ctx context.Context, key repository.SettingKey, val, description string) (err error)
+	Put(ctx context.Context, key repository.SettingKey, val, description string) (err error)
 
 	// 上传图片
 	UploadImage(ctx context.Context, key repository.SettingKey, imgUrl string, file *imageFile) (urlAddr string, err error)
@@ -51,7 +52,7 @@ func (s *service) Delete(ctx context.Context, key repository.SettingKey) (err er
 	return s.repository.Setting().Delete(key)
 }
 
-func (s *service) Update(ctx context.Context, key repository.SettingKey, val, description string) (err error) {
+func (s *service) Put(ctx context.Context, key repository.SettingKey, val, description string) (err error) {
 	setting, err := s.repository.Setting().Find(key)
 	if err != nil {
 		err = errors.Wrap(err, ErrSettingNotfound.Error())

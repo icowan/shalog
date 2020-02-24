@@ -155,18 +155,19 @@
     <div class="rbox">
         <div class="card">
             <h2>我的名片</h2>
-            <p>网名：ShaCong | icowan | 嘟噜聪</p>
-            <p>职业：后端高级研发工程师、Docker、k8s</p>
-            <p>现居：北京市</p>
-            <p>Email：solacowa@gmail.com</p>
+            <p>网名：{{site_about_name}}</p>
+            <p>职业：{{site_user_occupation}}</p>
+            <p>现居：{{site_user_city}}</p>
+            <p>Email：{{site_user_email}}</p>
             <ul class="linkmore">
-                <li><a href="https://www.lattecake.com" class="iconfont icon-zhuye" title="网站地址"></a></li>
-                <li><a href="mailto:solacowa@gmail.com" target="_blank" class="iconfont icon-youxiang" title="我的邮箱"></a>
+                <li><a href="{{site_user_domain}}" class="iconfont icon-zhuye" title="网站地址"></a></li>
+                <li><a href="mailto:{{site_user_email}}" target="_blank" class="iconfont icon-youxiang"
+                       title="我的邮箱"></a>
                 </li>
-                <li><a href="http://wpa.qq.com/msgrd?v=3&uin=461283417&site=qq&menu=yes" target="_blank"
+                <li><a href="http://wpa.qq.com/msgrd?v=3&uin={{site_user_qq}}&site=qq&menu=yes" target="_blank"
                        class="iconfont icon---" title="QQ联系我"></a></li>
                 <li id="weixin"><a href="#" target="_blank" class="iconfont icon-weixin" title="关注我的微信"></a><i><img
-                                src="https://lattecake.oss-cn-beijing.aliyuncs.com/static%2Fimages%2Fweixin%2Fqrcode_for_gh_354bc8e8b814_1280.jpg"></i>
+                                src="{{site_user_wecaht_image}}"></i>
                 </li>
             </ul>
         </div>
@@ -242,24 +243,23 @@
             <ul>
                 <li><b>文章统计</b>：{{total|stringformat:"%0.f"}}</li>
                 <li><b>微信公众号</b>：扫描二维码，关注我</li>
-                <img src="https://lattecake.oss-cn-beijing.aliyuncs.com/static%2Fimages%2Fweixin%2Fqrcode_for_gh_354bc8e8b814_1280.jpg"
+                <img src="{{wechat_official_account_image}}"
                      class="tongji_gzh">
-                <li>多赚点钱，赚的钱多了，很多事自然就变了。</li>
+                <li>{{wechat_official_account_desc}}</li>
             </ul>
         </div>
 
         <div class="links whitebg">
             <h2 class="htitle">
+                <!-- todo: 申请友链 -->
                 <span class="sqlink">
                     <a href="https://wj.qq.com/s2/5433994/7251/" target="_blank">申请链接</a>
                 </span>友情链接</h2>
             <ul>
                 {% for link in links %}
-                <li><a href="{{link.link}}?source=lattecake.com" target="_blank" title="{{link.name}}">{{link.name}}</a></li>
+                <li><a href="{{link.link}}?source=lattecake.com" target="_blank" title="{{link.name}}">{{link.name}}</a>
+                </li>
                 {% endfor %}
-                <li><a href="https://tellu.top?source=lattecake.com" target="_blank">渺小的尘埃</a></li>
-                <li><a href="https://iphpt.com?source=lattecake.com" target="_blank">叶落山城秋</a></li>
-                <li><a href="https://qdtalk.com?source=lattecake.com" target="_blank">陌上寒</a></li>
             </ul>
         </div>
     </div>

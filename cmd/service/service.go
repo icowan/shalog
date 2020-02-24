@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
@@ -17,6 +18,7 @@ import (
 	"github.com/icowan/blog/src/pkg/link"
 	"github.com/icowan/blog/src/pkg/post"
 	"github.com/icowan/blog/src/pkg/reward"
+	"github.com/icowan/blog/src/pkg/setting"
 	"github.com/icowan/blog/src/repository"
 	"github.com/jinzhu/gorm"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
@@ -128,7 +130,6 @@ func start() {
 	var aboutMe about.Service
 	var homeSvc home.Service
 	var apiSvc api.Service
-	//var boardSvc board.Service
 
 	// post
 	ps = post.NewService(logger, cf, store)
@@ -172,21 +173,38 @@ func start() {
 	accountSvc := account.NewService(logger, store, cf)
 	accountSvc = account.NewLoggingServer(logger, accountSvc)
 
+	// setting
+	settingSvc := setting.NewService(logger, store, cf)
+
+	settings, err := settingSvc.List(context.Background())
+	if err != nil {
+		level.Error(logger).Log("SettingSvc", "List", "err", err.Error())
+		return
+	}
+
+	sets := map[string]string{}
+
+	for _, v := range settings {
+		sets[v.Key] = v.Value
+	}
+
 	httpLogger := log.With(logger, "component", "http")
 
 	mux := http.NewServeMux()
 
 	mux.Handle("/account/", account.MakeHTTPHandler(accountSvc, httpLogger, store))
-	mux.Handle("/search", post.MakeHandler(ps, httpLogger, store))
-	mux.Handle("/post", post.MakeHandler(ps, httpLogger, store))
-	mux.Handle("/post/", post.MakeHandler(ps, httpLogger, store))
-	mux.Handle("/about", about.MakeHandler(aboutMe, httpLogger))
+	mux.Handle("/search", post.MakeHandler(ps, httpLogger, store, sets))
+	mux.Handle("/post", post.MakeHandler(ps, httpLogger, store, sets))
+	mux.Handle("/post/", post.MakeHandler(ps, httpLogger, store, sets))
+	mux.Handle("/about", about.MakeHandler(aboutMe, httpLogger, sets))
 	mux.Handle("/reward", reward.MakeHandler(httpLogger))
 	mux.Handle("/link/", link.MakeHTTPHandler(linkSvc, httpLogger, store))
+	mux.Handle("/setting", setting.MakeHTTPHandler(settingSvc, httpLogger))
+	mux.Handle("/setting/", setting.MakeHTTPHandler(settingSvc, httpLogger))
 
 	mux.Handle("/api/", api.MakeHandler(apiSvc, httpLogger, store, cf))
 	//mux.Handle("/board", board.MakeHandler(boardSvc, httpLogger))
-	mux.Handle("/", home.MakeHandler(homeSvc, httpLogger))
+	mux.Handle("/", home.MakeHandler(homeSvc, httpLogger, sets))
 
 	http.Handle("/metrics", promhttp.Handler())
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("./views/tonight/images/"))))

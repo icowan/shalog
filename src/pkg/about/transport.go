@@ -5,16 +5,18 @@ import (
 	kitlog "github.com/go-kit/kit/log"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
+	"github.com/icowan/blog/src/middleware"
 	"github.com/icowan/blog/src/repository"
 	"github.com/icowan/blog/src/templates"
 	"net/http"
 )
 
-func MakeHandler(svc Service, logger kitlog.Logger) http.Handler {
+func MakeHandler(svc Service, logger kitlog.Logger, settings map[string]string) http.Handler {
 	//ctx := context.Background()
 	opts := []kithttp.ServerOption{
 		kithttp.ServerErrorLogger(logger),
 		kithttp.ServerErrorEncoder(encodeError),
+		kithttp.ServerBefore(middleware.SettingsRequest(settings)),
 	}
 
 	about := kithttp.NewServer(
