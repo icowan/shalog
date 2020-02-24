@@ -30,13 +30,15 @@
     <![endif]-->
     {% block stylesheet %}
     {% endblock %}
+
+    {{site_global_header_code|markdown}}
 </head>
 <body>
 <!--top begin-->
 <header id="header">
     <div class="navbox">
         <h2 id="mnavh"><span class="navicon"></span></h2>
-        <div class="logo"><a href="/">ShaCong Blog</a></div>
+        <div class="logo"><a href="/">{{site_name}}</a></div>
         <nav>
             <ul id="starlist">
                 <li><a href="/">Home</a></li>
@@ -101,15 +103,8 @@
 
 {% block script %}
 {% endblock %}
-<script>
-    var _hmt = _hmt || [];
-    (function () {
-        var hm = document.createElement("script");
-        hm.src = "https://hm.baidu.com/hm.js?325ecd282d3804cd811c4072e0b3ed2a";
-        var s = document.getElementsByTagName("script")[0];
-        s.parentNode.insertBefore(hm, s);
-    })();
-</script>
+
+{{site_global_foober_code|markdown}}
 
 </body>
 </html>

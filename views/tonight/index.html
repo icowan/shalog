@@ -257,7 +257,7 @@
                 </span>友情链接</h2>
             <ul>
                 {% for link in links %}
-                <li><a href="{{link.link}}?source=lattecake.com" target="_blank" title="{{link.name}}">{{link.name}}</a>
+                <li><a href="{{link.link}}?source={{site_domain}}" target="_blank" title="{{link.name}}">{{link.name}}</a>
                 </li>
                 {% endfor %}
             </ul>
