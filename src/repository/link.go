@@ -13,6 +13,7 @@ type LinkRepository interface {
 	FindByState(state int) (links []types.Link, err error)
 	Find(id int64) (link types.Link, err error)
 	Update(link *types.Link) (err error)
+	FindAll() (links []*types.Link, err error)
 }
 
 type LinkState int
@@ -28,6 +29,11 @@ func (l LinkState) Int() int {
 
 type link struct {
 	db *gorm.DB
+}
+
+func (l *link) FindAll() (links []*types.Link, err error) {
+	err = l.db.Find(&links).Error
+	return
 }
 
 func (l *link) Update(link *types.Link) (err error) {
@@ -62,7 +68,7 @@ func (l *link) Delete(id int64) (err error) {
 }
 
 func (l *link) List() (links []*types.Link, err error) {
-	err = l.db.Find(&links).Error
+	err = l.db.Where("state = 1").Find(&links).Error
 	return
 }
 

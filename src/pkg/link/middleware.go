@@ -72,6 +72,17 @@ func (l *loggingServer) List(ctx context.Context) (links []*types.Link, err erro
 	return l.Service.List(ctx)
 }
 
+func (l *loggingServer) All(ctx context.Context) (links []*types.Link, err error) {
+	defer func(begin time.Time) {
+		_ = l.logger.Log(
+			"method", "All",
+			"took", time.Since(begin),
+			"err", err,
+		)
+	}(time.Now())
+	return l.Service.All(ctx)
+}
+
 func (l *loggingServer) Pass(ctx context.Context, id int64) (err error) {
 	defer func(begin time.Time) {
 		_ = l.logger.Log(

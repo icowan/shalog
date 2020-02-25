@@ -75,6 +75,9 @@ func Render(data map[string]interface{}, body io.Writer, tplName string) error {
 func RenderHtml(ctx context.Context, w http.ResponseWriter, response map[string]interface{}) error {
 	name := ctx.Value("method").(string)
 	if settings, ok := ctx.Value("settings").(map[string]string); ok {
+		if response == nil {
+			response = make(map[string]interface{})
+		}
 		for k, v := range settings {
 			response[strings.ReplaceAll(k, "-", "_")] = v
 		}

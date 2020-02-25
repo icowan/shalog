@@ -25,6 +25,7 @@ type Endpoints struct {
 	DeleteEndpoint endpoint.Endpoint
 	ListEndpoint   endpoint.Endpoint
 	PassEndpoint   endpoint.Endpoint
+	AllEndpoint    endpoint.Endpoint
 }
 
 func NewEndpoint(s Service, mdw map[string][]endpoint.Middleware) Endpoints {
@@ -34,12 +35,16 @@ func NewEndpoint(s Service, mdw map[string][]endpoint.Middleware) Endpoints {
 		DeleteEndpoint: makeDeleteEndpoint(s),
 		ListEndpoint:   makeListEndpoint(s),
 		PassEndpoint:   makePassEndpoint(s),
+		AllEndpoint:    makeAllEndpoint(s),
 	}
 
 	for _, m := range mdw["Apply"] {
 		eps.ApplyEndpoint = m(eps.ApplyEndpoint)
 	}
 
+	for _, m := range mdw["All"] {
+		eps.AllEndpoint = m(eps.AllEndpoint)
+	}
 	for _, m := range mdw["Post"] {
 		eps.PostEndpoint = m(eps.PostEndpoint)
 	}
@@ -54,6 +59,16 @@ func NewEndpoint(s Service, mdw map[string][]endpoint.Middleware) Endpoints {
 	}
 
 	return eps
+}
+
+func makeAllEndpoint(s Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		links, err := s.All(ctx)
+		return encode.Response{
+			Data:  links,
+			Error: err,
+		}, err
+	}
 }
 
 func makePassEndpoint(s Service) endpoint.Endpoint {

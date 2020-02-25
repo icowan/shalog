@@ -12,6 +12,7 @@ import (
 	"github.com/icowan/blog/src/repository"
 	"github.com/pkg/errors"
 	"golang.org/x/time/rate"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -37,9 +38,11 @@ func MakeHTTPHandler(s Service, logger kitlog.Logger, repository repository.Repo
 
 	eps := NewEndpoint(s, map[string][]endpoint.Middleware{
 		"Apply":  ems[:1],
+		"List":   ems[:1],
 		"Post":   ems[1:],
 		"Pass":   ems[1:],
 		"Delete": ems[1:],
+		"All":    ems[1:],
 	})
 
 	r := mux.NewRouter()
@@ -50,6 +53,23 @@ func MakeHTTPHandler(s Service, logger kitlog.Logger, repository repository.Repo
 		encode.EncodeJsonResponse,
 		opts...,
 	)).Methods(http.MethodPost)
+	r.Handle("/link/list", kithttp.NewServer(
+		eps.ListEndpoint,
+		func(ctx context.Context, r *http.Request) (request interface{}, err error) {
+			return nil, nil
+		},
+		encode.EncodeJsonResponse,
+		opts...,
+	)).Methods(http.MethodGet)
+
+	r.Handle("/link/all", kithttp.NewServer(
+		eps.AllEndpoint,
+		func(ctx context.Context, r *http.Request) (request interface{}, err error) {
+			return nil, nil
+		},
+		encode.EncodeJsonResponse,
+		opts...,
+	)).Methods(http.MethodGet)
 
 	r.Handle("/link/new", kithttp.NewServer(
 		eps.PostEndpoint,
@@ -76,12 +96,16 @@ func MakeHTTPHandler(s Service, logger kitlog.Logger, repository repository.Repo
 }
 
 func decodeApplyRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	b, _ := ioutil.ReadAll(r.Body)
 	var req applyRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	//if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	//	return nil, errors.Wrap(err, ErrParams.Error())
+	//}
+	if err := json.Unmarshal(b, &req); err != nil {
 		return nil, errors.Wrap(err, ErrParams.Error())
 	}
 
-	if len(req.Link) > 255 {
+	if len(req.Link) > 1000 {
 		return nil, ErrParamLinkLen
 	}
 

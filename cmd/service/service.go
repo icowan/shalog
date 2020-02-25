@@ -17,7 +17,6 @@ import (
 	"github.com/icowan/blog/src/pkg/home"
 	"github.com/icowan/blog/src/pkg/link"
 	"github.com/icowan/blog/src/pkg/post"
-	"github.com/icowan/blog/src/pkg/reward"
 	"github.com/icowan/blog/src/pkg/setting"
 	"github.com/icowan/blog/src/repository"
 	"github.com/jinzhu/gorm"
@@ -162,9 +161,6 @@ func start() {
 	aboutMe = about.NewService(logger)
 	aboutMe = about.NewLoggingService(logger, aboutMe)
 
-	// board
-	//boardSvc = board.NewService(logger)
-
 	// link
 	linkSvc := link.NewService(logger, store)
 	linkSvc = link.NewLoggingServer(logger, linkSvc)
@@ -175,10 +171,11 @@ func start() {
 
 	// setting
 	settingSvc := setting.NewService(logger, store, cf)
+	settingSvc = setting.NewLoggingServer(logger, settingSvc)
 
 	settings, err := settingSvc.List(context.Background())
 	if err != nil {
-		level.Error(logger).Log("SettingSvc", "List", "err", err.Error())
+		_ = level.Error(logger).Log("SettingSvc", "List", "err", err.Error())
 		return
 	}
 
@@ -197,7 +194,6 @@ func start() {
 	mux.Handle("/post", post.MakeHandler(ps, httpLogger, store, sets))
 	mux.Handle("/post/", post.MakeHandler(ps, httpLogger, store, sets))
 	mux.Handle("/about", about.MakeHandler(aboutMe, httpLogger, sets))
-	mux.Handle("/reward", reward.MakeHandler(httpLogger))
 	mux.Handle("/link/", link.MakeHTTPHandler(linkSvc, httpLogger, store))
 	mux.Handle("/setting", setting.MakeHTTPHandler(settingSvc, httpLogger))
 	mux.Handle("/setting/", setting.MakeHTTPHandler(settingSvc, httpLogger))

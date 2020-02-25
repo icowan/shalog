@@ -31,6 +31,9 @@ type Service interface {
 	// 列表
 	List(ctx context.Context) (links []*types.Link, err error)
 
+	// 所有的
+	All(ctx context.Context) (links []*types.Link, err error)
+
 	// 通过
 	Pass(ctx context.Context, id int64) (err error)
 }
@@ -38,6 +41,10 @@ type Service interface {
 type service struct {
 	repository repository.Repository
 	logger     log.Logger
+}
+
+func (s *service) All(ctx context.Context) (links []*types.Link, err error) {
+	return s.repository.Link().FindAll()
 }
 
 func (s *service) Pass(ctx context.Context, id int64) (err error) {

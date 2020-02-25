@@ -5,11 +5,8 @@ import (
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	"github.com/icowan/blog/src/config"
-	"github.com/icowan/blog/src/pkg/link"
 	"github.com/icowan/blog/src/pkg/post"
 	"github.com/icowan/blog/src/repository"
-	"github.com/icowan/blog/src/repository/types"
-	"net/url"
 	"strconv"
 )
 
@@ -94,26 +91,27 @@ func (c *service) Index(ctx context.Context) (rs map[string]interface{}, err err
 	total, _ := c.repository.Post().Count()
 
 	// todo links 可以考虑使用缓存，或异步获取
-	linksRes, err := link.NewService(c.logger, c.repository).List(ctx)
-	if err != nil {
-		_ = level.Error(c.logger).Log("link.NewService", "List", "err", err.Error())
-	}
-
-	var links []*types.Link
-	for _, v := range linksRes {
-		if repository.LinkState(v.State) != repository.LinkStatePass {
-			continue
+	/*
+		linksRes, err := link.NewService(c.logger, c.repository).List(ctx)
+		if err != nil {
+			_ = level.Error(c.logger).Log("link.NewService", "List", "err", err.Error())
 		}
-		l, _ := url.QueryUnescape(v.Link)
-		v.Link = l
-		links = append(links, v)
-	}
+
+		var links []*types.Link
+		for _, v := range linksRes {
+			if repository.LinkState(v.State) != repository.LinkStatePass {
+				continue
+			}
+			l, _ := url.QueryUnescape(v.Link)
+			v.Link = l
+			links = append(links, v)
+		}*/
 
 	return map[string]interface{}{
 		"stars":    starsData,
 		"list":     posts,
 		"populars": res,
 		"total":    total,
-		"links":    links,
+		//"links":    links,
 	}, nil
 }

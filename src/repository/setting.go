@@ -68,7 +68,7 @@ func (s *setting) Add(key SettingKey, value, desc string) (err error) {
 }
 
 func (s *setting) Delete(key SettingKey) (err error) {
-	return s.db.Where("key = ?", key).Delete(&types.Setting{}).Error
+	return s.db.Where("`key` = ?", key).Delete(&types.Setting{}).Error
 }
 
 func (s *setting) Update(setting *types.Setting) (err error) {

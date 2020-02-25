@@ -1,5 +1,9 @@
 {% extends "default-layout.html" %}
 
+{% block stylesheet %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+{% endblock %}
+
 {% block body %}
 <article>
     <!--lbox begin-->
@@ -253,15 +257,104 @@
             <h2 class="htitle">
                 <!-- todo: 申请友链 -->
                 <span class="sqlink">
-                    <a href="https://wj.qq.com/s2/5433994/7251/" target="_blank">申请链接</a>
+                    <a href="javascript:;" id="apply-link">申请链接</a>
                 </span>友情链接</h2>
-            <ul>
+            <ul id="index-links">
                 {% for link in links %}
-                <li><a href="{{link.link}}?source={{site_domain}}" target="_blank" title="{{link.name}}">{{link.name}}</a>
+                <li><a href="{{link.link}}?source={{site_domain}}" target="_blank"
+                       title="{{link.name}}">{{link.name}}</a>
                 </li>
                 {% endfor %}
             </ul>
         </div>
+
+        <div id="apply-link-dialog" style="display: none;" title="申请友链">
+            <div id="apply-link-data" class="ui-widget">
+                名称：<input name="name" class="text ui-widget-content ui-corner-all" type="text"><br/>
+                链接：<input name="link" class="text ui-widget-content ui-corner-all" type="text"><br/>
+                icon：<input name="icon" class="text ui-widget-content ui-corner-all" type="text"><br/>
+                <!--<button id="apply-link-button" class="ui-button ui-widget ui-corner-all">提交</button>-->
+            </div>
+        </div>
+
+        <div id="dialog-message" style="display: none" title="">
+
+        </div>
     </div>
 </article>
+{% endblock %}
+
+{% block script %}
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<script>
+    // todo: 获取 友链
+    $.get("/link/list", function (res) {
+        if (res && res.success) {
+            let li = "";
+            for (let i in res.data) {
+                let icon = "";
+                if (res.data[i].icon) {
+                    icon = '<i class="avatar" style="width: 24px; height: 24px;"><img src="' + decodeURIComponent(res.data[i].icon) + '"/></i>';
+                }
+                li += '<li>' + icon + '<a href="' + decodeURIComponent(res.data[i].link) + '?source={{site_domain}}" target="_blank"\n' +
+                    '                       title="' + res.data[i].name + '">' + res.data[i].name + '</a>\n' +
+                    '                </li>'
+            }
+
+            $('#index-links').html(li);
+        }
+    });
+
+    $('#apply-link').click(function (e) {
+        e.stopPropagation();
+        $("#apply-link-dialog").dialog({
+            resizable: false,
+            height: "auto",
+            modal: true,
+            buttons: {
+                "提交": function (e) {
+                    e.stopPropagation();
+                    let data = {};
+                    $("#apply-link-data input").each(function (k, v) {
+                        // data["\"" + $(v).attr("name") + "\""] = $(v).val();
+                        data[$(v).attr("name")] = $(v).val();
+                    });
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/link/apply",
+                        contentType: "application/json",
+                        data: JSON.stringify(data),
+                        dataType: "JSON",
+                        success: function (res) {
+                            let title, content = "";
+                            if (res && res.success) {
+                                title = "申请成功！";
+                                content = "管理员审核之后会显示，请您耐心等待！";
+                            } else {
+                                title = "提交失败！";
+                                content = res.error;
+                            }
+                            $("#dialog-message").attr("title", title);
+                            $("#dialog-message").text(content);
+                            $("#dialog-message").dialog({
+                                modal: true,
+                                buttons: {
+                                    Ok: function () {
+                                        $(this).dialog("close");
+                                    }
+                                }
+                            });
+                        }
+                    });
+
+                    $(this).dialog("close");
+                },
+                Cancel: function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}
