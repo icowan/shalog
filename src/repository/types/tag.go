@@ -9,9 +9,9 @@ package types
 
 type Tag struct {
 	Id          int64  `gorm:"column:id;primary_key" json:"id"`
-	Name        string `gorm:"column:name;unique_index" json:"name"`
+	Name        string `gorm:"column:name;unique_index;size:255" json:"name"`
 	Slug        string `gorm:"column:slug" json:"slug"`
-	Description string `gorm:"column:description" json:"description"`
+	Description string `gorm:"column:description;size:500" json:"description"`
 	Count       int64  `gorm:"column:count;default(1)" json:"count"`
 	Order       int    `gorm:"column:order;default(0)" json:"order"`
 	Parent      int64  `gorm:"column:parent;default(0)" json:"parent"`

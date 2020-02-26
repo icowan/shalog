@@ -90,28 +90,38 @@ func (c *service) Index(ctx context.Context) (rs map[string]interface{}, err err
 
 	total, _ := c.repository.Post().Count()
 
-	// todo links 可以考虑使用缓存，或异步获取
-	/*
-		linksRes, err := link.NewService(c.logger, c.repository).List(ctx)
-		if err != nil {
-			_ = level.Error(c.logger).Log("link.NewService", "List", "err", err.Error())
-		}
+	// todo: 可以考虑从CACHE里取
+	categories, _ := c.repository.Category().FindAll()
 
-		var links []*types.Link
-		for _, v := range linksRes {
-			if repository.LinkState(v.State) != repository.LinkStatePass {
-				continue
+	// todo: 取各个分类下的头几篇文章
+	for k, v := range categories {
+		posts, _ := c.repository.Post().FindByCategoryId(v.Id, 8)
+		categories[k].Posts = posts
+	}
+
+	categoryPosts := make(map[int64][]map[string]string)
+
+	for _, v := range categories {
+		for _, vv := range v.Posts {
+			var imgUrl string
+			if len(vv.Images) > 0 {
+				imgUrl = c.config.GetString("server", "image_domain") + "/" + vv.Images[0].ImagePath
 			}
-			l, _ := url.QueryUnescape(v.Link)
-			v.Link = l
-			links = append(links, v)
-		}*/
+			categoryPosts[v.Id] = append(categoryPosts[v.Id], map[string]string{
+				"title":     vv.Title,
+				"image_url": imgUrl,
+				"desc":      vv.Description,
+				"id":        strconv.Itoa(int(vv.ID)),
+			})
+		}
+	}
 
 	return map[string]interface{}{
-		"stars":    starsData,
-		"list":     posts,
-		"populars": res,
-		"total":    total,
-		//"links":    links,
+		"stars":         starsData,
+		"list":          posts,
+		"populars":      res,
+		"total":         total,
+		"categories":    categories,
+		"categoryPosts": categoryPosts,
 	}, nil
 }

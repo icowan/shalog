@@ -19,10 +19,33 @@ type CategoryRepository interface {
 	Find(id int64) (cate types.Category, err error)
 	FindByIds(ids []int64) (categories []types.Category, err error)
 	CleanByPostId(id int64) (err error)
+
+	// 废弃
+	FindCategoryPosts(limit int) (categories []types.Category, err error)
 }
 
 type category struct {
 	db *gorm.DB
+}
+
+func (c *category) FindCategoryPosts(limit int) (categories []types.Category, err error) {
+	err = c.db.Model(&types.Category{}).
+		Preload("Posts", func(db *gorm.DB) *gorm.DB {
+			var categoryIds []int64
+			for _, v := range categories {
+				categoryIds = append(categoryIds, v.Id)
+			}
+			return db.Model(&types.Post{}).
+				Where("id in (SELECT post_id FROM post_categories WHERE category_id in (?))", categoryIds).
+				Where("push_time IS NOT NULL").
+				Where("post_status = ?", PostStatusPublish).
+				Preload("Images").
+				Order("push_time desc").
+				Limit(limit)
+		}).
+		Find(&categories).Error
+
+	return
 }
 
 func (c *category) CleanByPostId(id int64) (err error) {

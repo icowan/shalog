@@ -3,10 +3,10 @@ package types
 import "time"
 
 type Setting struct {
-	Key   string `gorm:"column:key;index;unique" json:"key"`
-	Value string `gorm:"column:value;null" json:"value"`
+	Key   string `gorm:"column:key;index;unique;size:255" json:"key"`
+	Value string `gorm:"column:value;null;size:20000" json:"value"`
 	//Title       string    `gorm:"column:title;null" json:"title"`
-	Description string    `gorm:"column:description;null" json:"description"`
+	Description string    `gorm:"column:description;null;size:500" json:"description"`
 	CreatedAt   time.Time `gorm:"column:created_at" json:"created_at"`
 	UpdatedAt   time.Time `gorm:"column:updated_at" json:"updated_at"`
 }

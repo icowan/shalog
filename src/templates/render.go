@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/flosch/pongo2"
+	"github.com/icowan/blog/src/repository"
 	"github.com/russross/blackfriday"
 	"io"
 	"net/http"
@@ -74,6 +75,7 @@ func Render(data map[string]interface{}, body io.Writer, tplName string) error {
 
 func RenderHtml(ctx context.Context, w http.ResponseWriter, response map[string]interface{}) error {
 	name := ctx.Value("method").(string)
+	var viewPath string
 	if settings, ok := ctx.Value("settings").(map[string]string); ok {
 		if response == nil {
 			response = make(map[string]interface{})
@@ -81,10 +83,11 @@ func RenderHtml(ctx context.Context, w http.ResponseWriter, response map[string]
 		for k, v := range settings {
 			response[strings.ReplaceAll(k, "-", "_")] = v
 		}
+		viewPath = settings[repository.SettingViewTemplate.String()]
 	}
 
 	buf := new(bytes.Buffer)
-	if err := Render(response, buf, "views/tonight/"+name); err != nil {
+	if err := Render(response, buf, viewPath+name); err != nil {
 		return err
 	}
 

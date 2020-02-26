@@ -18,15 +18,13 @@ func MakeHandler(svc Service, logger kitlog.Logger, settings map[string]string) 
 		kithttp.ServerBefore(middleware.SettingsRequest(settings)),
 	}
 
-	index := kithttp.NewServer(
+	r := mux.NewRouter()
+	r.Handle("/", kithttp.NewServer(
 		makeIndexEndpoint(svc),
 		decodeIndexRequest,
 		encodeIndexResponse,
 		opts...,
-	)
-
-	r := mux.NewRouter()
-	r.Handle("/", index).Methods("GET")
+	)).Methods(http.MethodGet)
 
 	r.NotFoundHandler = r.NewRoute().HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		encodeError(context.Background(), repository.PostNotFound, writer)
@@ -35,7 +33,7 @@ func MakeHandler(svc Service, logger kitlog.Logger, settings map[string]string) 
 	return r
 }
 
-func decodeIndexRequest(_ context.Context, r *http.Request) (interface{}, error) {
+func decodeIndexRequest(ctx context.Context, r *http.Request) (interface{}, error) {
 	return nil, nil
 }
 

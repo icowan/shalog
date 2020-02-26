@@ -232,7 +232,7 @@ func decodeListRequest(ctx context.Context, r *http.Request) (interface{}, error
 	}, nil
 }
 
-func decodeDetailRequest(_ context.Context, r *http.Request) (interface{}, error) {
+func decodeDetailRequest(ctx context.Context, r *http.Request) (interface{}, error) {
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
 	if !ok {
@@ -274,10 +274,11 @@ func encodeListResponse(ctx context.Context, w http.ResponseWriter, response int
 	other := resp.Data["other"].(map[string]interface{})
 
 	return templates.RenderHtml(ctx, w, map[string]interface{}{
-		"list":     resp.Data["post"],
-		"tags":     other["tags"],
-		"populars": other["populars"],
-		"total":    strconv.Itoa(int(resp.Count)),
+		"list":       resp.Data["post"],
+		"tags":       other["tags"],
+		"populars":   other["populars"],
+		"categories": other["categories"],
+		"total":      strconv.Itoa(int(resp.Count)),
 		"paginator": postPaginator("post", int(resp.Count), resp.Paginator.PageSize, resp.Paginator.Offset,
 			"&category="+other["category"].(string)),
 	})

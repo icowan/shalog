@@ -26,6 +26,7 @@ type PostRepository interface {
 	FindOnce(id int64) (res *types.Post, err error)
 	Search(keyword string, categoryId int64, offset, pageSize int) (res []*types.Post, count int64, err error)
 	FindByIds(ids []int64, categoryId int64, offset, pageSize int) (res []*types.Post, count int64, err error)
+	FindByCategoryId(categoryId int64, limit int) (posts []types.Post, err error)
 }
 
 type PostStatus string
@@ -140,6 +141,18 @@ func (c *post) FindOnce(id int64) (res *types.Post, err error) {
 		return nil, PostNotFound
 	}
 	return &p, nil
+}
+
+func (c *post) FindByCategoryId(categoryId int64, limit int) (posts []types.Post, err error) {
+	err = c.db.Model(&types.Post{}).
+		Where("id in (SELECT post_id FROM post_categories WHERE category_id = ?)", categoryId).
+		Where("push_time IS NOT NULL").
+		Where("post_status = ?", PostStatusPublish).
+		Preload("Images").
+		Order("push_time desc").
+		Limit(limit).
+		Find(&posts).Error
+	return
 }
 
 func (c *post) FindBy(categoryIds []int64, order, by string, pageSize, offset int) (posts []types.Post, count int64, err error) {
