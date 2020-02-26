@@ -95,7 +95,7 @@ func (c *service) Index(ctx context.Context) (rs map[string]interface{}, err err
 
 	// todo: 取各个分类下的头几篇文章
 	for k, v := range categories {
-		posts, _ := c.repository.Post().FindByCategoryId(v.Id, 8)
+		posts, _ := c.repository.Post().FindByCategoryId(v.Id, 7)
 		categories[k].Posts = posts
 	}
 

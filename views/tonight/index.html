@@ -73,7 +73,7 @@
                     <ul class="newslist">
                         {% set n = 0 %}
                         {% for p in v %}
-                        {% if n > 2%}
+                        {% if n >= 2%}
                         <li>
                             <i></i><a href="/post/{{p.id}}">{{p.title}}</a>
                             <p>{{p.desc}}</p>
