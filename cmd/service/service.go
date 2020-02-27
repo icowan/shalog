@@ -32,13 +32,13 @@ import (
 const (
 	DefaultHttpPort   = ":8080"
 	DefaultConfigPath = "./app.cfg"
-	DefaultStaticPath = "./static/"
+	//DefaultStaticPath = "./static/"
 )
 
 var (
 	httpAddr   = envString("HTTP_ADDR", DefaultHttpPort)
 	configPath = envString("CONFIG_PATH", DefaultConfigPath)
-	staticPath = envString("STATIC_PATH", DefaultStaticPath)
+	//staticPath = envString("STATIC_PATH", DefaultStaticPath)
 
 	rootCmd = &cobra.Command{
 		Use:               "server",
@@ -74,7 +74,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVarP(&httpAddr, "http.port", "p", DefaultHttpPort, "服务启动的端口: :8080")
 	rootCmd.PersistentFlags().StringVarP(&configPath, "config.path", "c", DefaultConfigPath, "配置文件路径: ./app.yaml")
-	startCmd.PersistentFlags().StringVarP(&staticPath, "static.path", "s", DefaultStaticPath, "静态文件目录: ./static/")
+	//startCmd.PersistentFlags().StringVarP(&staticPath, "static.path", "s", DefaultStaticPath, "静态文件目录: ./static/")
 
 	cmd.AddFlags(rootCmd)
 	rootCmd.AddCommand(startCmd)
@@ -202,11 +202,13 @@ func start() {
 	//mux.Handle("/board", board.MakeHandler(boardSvc, httpLogger))
 	mux.Handle("/", home.MakeHandler(homeSvc, httpLogger, sets))
 
+	viewsPath := sets[repository.SettingViewTemplate.String()]
+
 	http.Handle("/metrics", promhttp.Handler())
-	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("./views/tonight/images/"))))
-	http.Handle("/fonts/", http.StripPrefix("/fonts/", http.FileServer(http.Dir("./views/tonight/fonts/"))))
-	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("./views/tonight/css/"))))
-	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("./views/tonight/js/"))))
+	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir(viewsPath+"/images/"))))
+	http.Handle("/fonts/", http.StripPrefix("/fonts/", http.FileServer(http.Dir(viewsPath+"/fonts/"))))
+	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir(viewsPath+"/css/"))))
+	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir(viewsPath+"/js/"))))
 	http.Handle("/", accessControl(mux, logger))
 
 	errs := make(chan error, 2)

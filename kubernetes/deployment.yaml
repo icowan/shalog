@@ -1,0 +1,86 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: blog
+  labels:
+    app: blog
+    language: Golang
+    version: latest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blog
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: blog
+        name: blog
+        version: latest
+    spec:
+      containers:
+        - image: dudulu/blog:latest
+          name: blog
+          ports:
+            - name: http-8080
+              containerPort: 8080
+          command:
+            - /go/bin/blog
+          args:
+            - start
+            - -p
+            - :8080
+            - -c
+            - /etc/blog/app.cfg
+          resources:
+            requests:
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          env:
+            - name: DB_DRIVE
+              value: redis
+            - name: REDIS_DRIVE
+              value: single
+            - name: REDIS_HOSTS
+              value: redis:6379
+            - name: REDIS_PASSWORD
+              value: hello-world
+            - name: REDIS_DB
+              value: 1
+            - name: SHORT_URI
+              value: http://r.nsini.com
+            - name: LOG_PATH
+              value: /var/log/
+            - name: LOG_LEVEL
+              value: debug
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: INSTANCE_IP
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.podIP
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 30

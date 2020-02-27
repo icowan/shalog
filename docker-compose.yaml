@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   mysql:
     image: mysql:5.7.14
@@ -14,7 +14,7 @@ services:
     ports:
       - "3306:3306"
   kplcloud:
-    image: kplcloud/blog:latest
+    image: dudulu/blog:latest
     command: /go/bin/blog start -p :8080 -c /etc/blog/app.cfg
     environment:
       GOPATH: "/go"
