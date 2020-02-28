@@ -209,7 +209,14 @@ func start() {
 	http.Handle("/fonts/", http.StripPrefix("/fonts/", http.FileServer(http.Dir(viewsPath+"/fonts/"))))
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir(viewsPath+"/css/"))))
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir(viewsPath+"/js/"))))
-	http.Handle("/", accessControl(mux, logger))
+
+	handlers := make(map[string]string, 3)
+	if cf.GetBool("cors", "allow") {
+		handlers["Access-Control-Allow-Origin"] = cf.GetString("cors", "origin")
+		handlers["Access-Control-Allow-Methods"] = cf.GetString("cors", "methods")
+		handlers["Access-Control-Allow-Headers"] = cf.GetString("cors", "headers")
+	}
+	http.Handle("/", accessControl(mux, logger, handlers))
 
 	errs := make(chan error, 2)
 	go func() {
@@ -233,11 +240,13 @@ func envString(env, fallback string) string {
 	return e
 }
 
-func accessControl(h http.Handler, logger log.Logger) http.Handler {
+func accessControl(h http.Handler, logger log.Logger, headers map[string]string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type")
+		for key, val := range headers {
+			w.Header().Set(key, val)
+		}
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Connection", "keep-alive")
 
 		if r.Method == "OPTIONS" {
 			return

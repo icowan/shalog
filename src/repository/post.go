@@ -27,6 +27,7 @@ type PostRepository interface {
 	Search(keyword string, categoryId int64, offset, pageSize int) (res []*types.Post, count int64, err error)
 	FindByIds(ids []int64, categoryId int64, offset, pageSize int) (res []*types.Post, count int64, err error)
 	FindByCategoryId(categoryId int64, limit int) (posts []types.Post, err error)
+	FindAll(userId int64, order, by string, offset, pageSize int) (posts []*types.Post, count int64, err error)
 }
 
 type PostStatus string
@@ -42,6 +43,19 @@ func (c PostStatus) String() string {
 
 type post struct {
 	db *gorm.DB
+}
+
+func (c *post) FindAll(userId int64, order, by string, offset, pageSize int) (posts []*types.Post, count int64, err error) {
+	db := c.db.Model(&types.Post{})
+	if userId > 0 {
+		db = db.Where("user_id = ?", userId)
+	}
+	err = db.Order(gorm.Expr(by + " " + order)).
+		Count(&count).
+		Offset(offset).
+		Limit(pageSize).
+		Find(&posts).Error
+	return
 }
 
 func (c *post) FindByIds(ids []int64, categoryId int64, offset, pageSize int) (res []*types.Post, count int64, err error) {

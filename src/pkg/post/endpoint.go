@@ -36,15 +36,16 @@ type listResponse struct {
 func (r listResponse) error() error { return r.Err }
 
 type Endpoints struct {
-	GetEndpoint     endpoint.Endpoint
-	ListEndpoint    endpoint.Endpoint
-	PopularEndpoint endpoint.Endpoint
-	AwesomeEndpoint endpoint.Endpoint
-	SearchEndpoint  endpoint.Endpoint
-	NewPostEndpoint endpoint.Endpoint
-	PutPostEndpoint endpoint.Endpoint
-	DeleteEndpoint  endpoint.Endpoint
-	RestoreEndpoint endpoint.Endpoint
+	GetEndpoint       endpoint.Endpoint
+	ListEndpoint      endpoint.Endpoint
+	PopularEndpoint   endpoint.Endpoint
+	AwesomeEndpoint   endpoint.Endpoint
+	SearchEndpoint    endpoint.Endpoint
+	NewPostEndpoint   endpoint.Endpoint
+	PutPostEndpoint   endpoint.Endpoint
+	DeleteEndpoint    endpoint.Endpoint
+	RestoreEndpoint   endpoint.Endpoint
+	AdminListEndpoint endpoint.Endpoint
 }
 
 type (
@@ -72,22 +73,23 @@ type (
 		Id int64
 	}
 	listRequest struct {
-		order, by, category string
-		pageSize, offset    int
+		order, by, category, tag string
+		pageSize, offset         int
 	}
 )
 
 func NewEndpoint(s Service, mdw map[string][]endpoint.Middleware) Endpoints {
 	eps := Endpoints{
-		GetEndpoint:     makeGetEndpoint(s),
-		ListEndpoint:    makeListEndpoint(s),
-		PopularEndpoint: makePopularEndpoint(s),
-		AwesomeEndpoint: makeAwesomeEndpoint(s),
-		SearchEndpoint:  makeSearchEndpoint(s),
-		NewPostEndpoint: makeNewPostEndpoint(s),
-		PutPostEndpoint: makePutPostEndpoint(s),
-		DeleteEndpoint:  makeDeleteEndpoint(s),
-		RestoreEndpoint: makeRestoreEndpoint(s),
+		GetEndpoint:       makeGetEndpoint(s),
+		ListEndpoint:      makeListEndpoint(s),
+		PopularEndpoint:   makePopularEndpoint(s),
+		AwesomeEndpoint:   makeAwesomeEndpoint(s),
+		SearchEndpoint:    makeSearchEndpoint(s),
+		NewPostEndpoint:   makeNewPostEndpoint(s),
+		PutPostEndpoint:   makePutPostEndpoint(s),
+		DeleteEndpoint:    makeDeleteEndpoint(s),
+		RestoreEndpoint:   makeRestoreEndpoint(s),
+		AdminListEndpoint: makeAdminListEndpoint(s),
 	}
 
 	for _, m := range mdw["Get"] {
@@ -115,6 +117,21 @@ func NewEndpoint(s Service, mdw map[string][]endpoint.Middleware) Endpoints {
 	}
 
 	return eps
+}
+
+func makeAdminListEndpoint(s Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(listRequest)
+		posts, count, err := s.AdminList(ctx, req.order, req.by, req.category, req.tag, req.pageSize, req.offset)
+		return encode.Response{
+			Error: err,
+			Data: map[string]interface{}{
+				"list":     posts,
+				"count":    count,
+				"offset":   req.offset,
+				"pageSize": req.pageSize,
+			}}, err
+	}
 }
 
 func makeDeleteEndpoint(s Service) endpoint.Endpoint {
@@ -184,6 +201,8 @@ func makeListEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(listRequest)
 		rs, count, other, err := s.List(ctx, req.order, req.by, req.category, req.pageSize, req.offset)
+		populars, _ := s.Popular(ctx)
+		other["populars"] = populars
 		return listResponse{
 			Data: map[string]interface{}{
 				"post":  rs,

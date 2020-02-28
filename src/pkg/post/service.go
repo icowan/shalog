@@ -52,12 +52,20 @@ type Service interface {
 
 	// 恢复文章
 	Restore(ctx context.Context, id int64) (err error)
+
+	// 后端列表
+	AdminList(ctx context.Context, order, by, category, tag string, pageSize, offset int) (posts []*types.Post, total int64, err error)
 }
 
 type service struct {
 	repository repository.Repository
 	logger     log.Logger
 	config     *config.Config
+}
+
+func (c *service) AdminList(ctx context.Context, order, by, category, tag string, pageSize, offset int) (posts []*types.Post, total int64, err error) {
+	userId, _ := ctx.Value(middleware.ContextUserId).(int64)
+	return c.repository.Post().FindAll(userId, order, by, offset, pageSize)
 }
 
 func (c *service) Restore(ctx context.Context, id int64) (err error) {
@@ -365,11 +373,8 @@ func (c *service) List(ctx context.Context, order, by, category string, pageSize
 
 	// todo 考虑从cache里拿
 	categories, _ := c.repository.Category().FindAll()
-
-	populars, _ := c.Popular(ctx)
 	other = map[string]interface{}{
 		"tags":       tags,
-		"populars":   populars,
 		"category":   category,
 		"categories": categories,
 	}

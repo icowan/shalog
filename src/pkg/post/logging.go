@@ -18,6 +18,23 @@ func NewLoggingService(logger log.Logger, s Service) Service {
 	return &loggingService{level.Info(logger), s}
 }
 
+func (s *loggingService) AdminList(ctx context.Context, order, by, category, tag string, pageSize, offset int) (posts []*types.Post, total int64, err error) {
+	defer func(begin time.Time) {
+		_ = s.logger.Log(
+			"method", "AdminList",
+			"order", order,
+			"by", by,
+			"category", category,
+			"tag", tag,
+			"pageSize", pageSize,
+			"offset", offset,
+			"took", time.Since(begin),
+			"err", err,
+		)
+	}(time.Now())
+	return s.Service.AdminList(ctx, order, by, category, tag, pageSize, offset)
+}
+
 func (s *loggingService) Search(ctx context.Context, keyword, tag string, categoryId int64, offset, pageSize int) (posts []*types.Post, total int64, err error) {
 	defer func(begin time.Time) {
 		_ = s.logger.Log(

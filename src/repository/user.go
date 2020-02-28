@@ -21,7 +21,7 @@ func (c *user) Update(user *types.User) (err error) {
 }
 
 func (c *user) FindById(id int64) (res types.User, err error) {
-	err = c.db.Select("username, username_canonical, email, email_canonical, created_at, updated_at, last_login ").First(&res, "id = ?", id).Error
+	err = c.db.Select("id, username, username_canonical, email, email_canonical, created_at, updated_at, last_login ").First(&res, "id = ?", id).Error
 	return
 }
 

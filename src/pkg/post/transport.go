@@ -88,27 +88,30 @@ func MakeHandler(ps Service, logger kitlog.Logger, repository repository.Reposit
 	)).Methods(http.MethodGet)
 
 	// 后端API
+	r.Handle("/post/list", kithttp.NewServer(
+		eps.AdminListEndpoint,
+		decodeListRequest,
+		encode.EncodeJsonResponse,
+		adminOpts...,
+	)).Methods(http.MethodGet)
 	r.Handle("/post/new", kithttp.NewServer(
 		eps.NewPostEndpoint,
 		decodeNewPostRequest,
 		encode.EncodeJsonResponse,
 		adminOpts...,
 	)).Methods(http.MethodPost)
-
 	r.Handle("/post/{id:[0-9]+}", kithttp.NewServer(
 		eps.PutPostEndpoint,
 		decodePutPostRequest,
 		encode.EncodeJsonResponse,
 		adminOpts...,
 	)).Methods(http.MethodPut)
-
 	r.Handle("/post/{id:[0-9]+}", kithttp.NewServer(
 		eps.DeleteEndpoint,
 		decodeDetailRequest,
 		encode.EncodeJsonResponse,
 		adminOpts...,
 	)).Methods(http.MethodDelete)
-
 	r.Handle("/post/{id:[0-9]+}/restore", kithttp.NewServer(
 		eps.RestoreEndpoint,
 		decodeDetailRequest,
