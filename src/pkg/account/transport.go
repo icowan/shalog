@@ -9,7 +9,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/icowan/blog/src/encode"
 	"github.com/icowan/blog/src/middleware"
-	"github.com/icowan/blog/src/repository"
 	"github.com/pkg/errors"
 	"golang.org/x/time/rate"
 	"net/http"
@@ -19,7 +18,7 @@ import (
 
 const rateBucketNum = 2
 
-func MakeHTTPHandler(s Service, logger kitlog.Logger, repository repository.Repository) http.Handler {
+func MakeHTTPHandler(s Service, logger kitlog.Logger) http.Handler {
 	opts := []kithttp.ServerOption{
 		kithttp.ServerErrorLogger(logger),
 		kithttp.ServerErrorEncoder(encode.EncodeJsonError),

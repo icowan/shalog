@@ -46,7 +46,7 @@ type post struct {
 }
 
 func (c *post) FindAll(userId int64, order, by string, offset, pageSize int) (posts []*types.Post, count int64, err error) {
-	db := c.db.Model(&types.Post{})
+	db := c.db.Model(&types.Post{}).Preload("Categories")
 	if userId > 0 {
 		db = db.Where("user_id = ?", userId)
 	}

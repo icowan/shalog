@@ -19,6 +19,9 @@ type CategoryRepository interface {
 	Find(id int64) (cate types.Category, err error)
 	FindByIds(ids []int64) (categories []types.Category, err error)
 	CleanByPostId(id int64) (err error)
+	Add(title, description string, parentId int64) (err error)
+	Delete(id int64) (err error)
+	Put(id int64, title, description string, parentId int64) (err error)
 
 	// 废弃
 	FindCategoryPosts(limit int) (categories []types.Category, err error)
@@ -26,6 +29,23 @@ type CategoryRepository interface {
 
 type category struct {
 	db *gorm.DB
+}
+
+func (c *category) Delete(id int64) (err error) {
+	panic("implement me")
+}
+
+func (c *category) Put(id int64, title, description string, parentId int64) (err error) {
+	return c.db.Model(&types.Category{}).Where("id = ?", id).Update(&types.Category{
+		Id:          id,
+		Name:        title,
+		Description: description,
+		ParentId:    parentId,
+	}).Error
+}
+
+func (c *category) Add(title, description string, parentId int64) (err error) {
+	return c.db.Save(&types.Category{Name: title, Description: description, ParentId: parentId}).Error
 }
 
 func (c *category) FindCategoryPosts(limit int) (categories []types.Category, err error) {
