@@ -3,7 +3,7 @@
 {% block stylesheet %}
 <link href="https://cdn.bootcss.com/highlight.js/9.15.10/styles/default.min.css" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.5.0/gitalk.min.css"/>
-<link rel="stylesheet" href="/css/share.min.css"/>
+<link rel="stylesheet" href="https://cdn.bootcss.com/social-share.js/1.0.16/css/share.min.css"/>
 <link rel="stylesheet" href="/css/markdown.css"/>
 <meta name="site" content="https://lattecake.com/post/{{id|stringformat:"%0.f"}}"/>
 {% endblock %}
@@ -181,7 +181,7 @@
 {% block script %}
 <script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
 <script src="https://cdn.bootcss.com/gitalk/1.5.0/gitalk.min.js"></script>
-<script src="/js/social-share.min.js"></script>
+<script src="https://cdn.bootcss.com/social-share.js/1.0.16/js/jquery.share.min.js"></script>
 <script>
     function highlightCode() {
         var pres = document.querySelectorAll(".markdown-body pre>code");

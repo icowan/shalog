@@ -194,12 +194,13 @@ func start() {
 
 	mux := http.NewServeMux()
 
-	mux.Handle("/account/", account.MakeHTTPHandler(accountSvc, httpLogger))
 	mux.Handle("/search", post.MakeHandler(ps, httpLogger, store, sets))
 	mux.Handle("/post", post.MakeHandler(ps, httpLogger, store, sets))
 	mux.Handle("/post/", post.MakeHandler(ps, httpLogger, store, sets))
 	mux.Handle("/about", about.MakeHandler(aboutMe, httpLogger, sets))
 	mux.Handle("/link/", link.MakeHTTPHandler(linkSvc, httpLogger))
+
+	mux.Handle("/account/", account.MakeHTTPHandler(accountSvc, httpLogger))
 	mux.Handle("/setting", setting.MakeHTTPHandler(settingSvc, httpLogger))
 	mux.Handle("/setting/", setting.MakeHTTPHandler(settingSvc, httpLogger))
 	mux.Handle("/category/", category.MakeHTTPHandler(categorySvc, httpLogger))
