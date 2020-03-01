@@ -19,6 +19,7 @@ import (
 	"github.com/icowan/blog/src/pkg/link"
 	"github.com/icowan/blog/src/pkg/post"
 	"github.com/icowan/blog/src/pkg/setting"
+	"github.com/icowan/blog/src/pkg/tag"
 	"github.com/icowan/blog/src/repository"
 	"github.com/jinzhu/gorm"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
@@ -178,6 +179,10 @@ func start() {
 	categorySvc := category.NewService(logger, store)
 	categorySvc = category.NewLoggingServer(logger, categorySvc)
 
+	// tag
+	tagSvc := tag.NewService(logger, store)
+	tagSvc = tag.NewLoggingServer(logger, tagSvc)
+
 	settings, err := settingSvc.List(context.Background())
 	if err != nil {
 		_ = level.Error(logger).Log("SettingSvc", "List", "err", err.Error())
@@ -204,6 +209,7 @@ func start() {
 	mux.Handle("/setting", setting.MakeHTTPHandler(settingSvc, httpLogger))
 	mux.Handle("/setting/", setting.MakeHTTPHandler(settingSvc, httpLogger))
 	mux.Handle("/category/", category.MakeHTTPHandler(categorySvc, httpLogger))
+	mux.Handle("/tag/", tag.MakeHTTPHandler(tagSvc, httpLogger))
 
 	mux.Handle("/api/", api.MakeHandler(apiSvc, httpLogger, store, cf))
 	//mux.Handle("/board", board.MakeHandler(boardSvc, httpLogger))

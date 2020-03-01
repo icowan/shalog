@@ -55,8 +55,10 @@ type (
 		Content     string                `json:"content"`
 		CategoryIds []int64               `json:"category_ids"`
 		TagIds      []int64               `json:"tag_ids"`
+		Tags        []string              `json:"tags"`
+		Categories  []string              `json:"categories"`
 		PostStatus  repository.PostStatus `json:"post_status"`
-		Markdown    bool                  `json:"markdown"`
+		Markdown    bool                  `json:"is_markdown"`
 		ImageId     int64                 `json:"image_id"`
 		Id          int64                 `json:"id"`
 	}
@@ -230,8 +232,14 @@ func makePopularEndpoint(s Service) endpoint.Endpoint {
 func makeNewPostEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(newPostRequest)
-		err = s.NewPost(ctx, req.Title, req.Description, req.Content, req.PostStatus, req.CategoryIds, req.TagIds, req.Markdown, req.ImageId)
+		var res interface{}
+		if req.Id > 0 {
+			//err = s.Put(req.Id, req.Title, req.Description, req.Content, req.PostStatus, req.CategoryIds, req.TagIds, req.Markdown, req.ImageId)
+		} else {
+			err = s.NewPost(ctx, req.Title, req.Description, req.Content, req.PostStatus, req.CategoryIds, req.TagIds, req.Markdown, req.ImageId)
+		}
 		return encode.Response{
+			Data:  res,
 			Error: err,
 		}, err
 	}
