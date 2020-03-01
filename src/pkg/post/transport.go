@@ -29,8 +29,8 @@ const rateBucketNum = 6
 func MakeHandler(ps Service, logger kitlog.Logger, repository repository.Repository, settings map[string]string) http.Handler {
 	opts := []kithttp.ServerOption{
 		kithttp.ServerErrorLogger(logger),
-		kithttp.ServerErrorEncoder(encode.EncodeError),
 		kithttp.ServerBefore(middleware.SettingsRequest(settings)),
+		kithttp.ServerErrorEncoder(encode.EncodeError),
 	}
 
 	adminOpts := []kithttp.ServerOption{

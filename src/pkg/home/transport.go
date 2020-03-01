@@ -5,6 +5,7 @@ import (
 	kitlog "github.com/go-kit/kit/log"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
+	"github.com/icowan/blog/src/encode"
 	"github.com/icowan/blog/src/middleware"
 	"github.com/icowan/blog/src/repository"
 	"github.com/icowan/blog/src/templates"
@@ -14,8 +15,8 @@ import (
 func MakeHandler(svc Service, logger kitlog.Logger, settings map[string]string) http.Handler {
 	opts := []kithttp.ServerOption{
 		kithttp.ServerErrorLogger(logger),
-		kithttp.ServerErrorEncoder(encodeError),
 		kithttp.ServerBefore(middleware.SettingsRequest(settings)),
+		kithttp.ServerErrorEncoder(encode.EncodeError),
 	}
 
 	r := mux.NewRouter()
@@ -27,7 +28,9 @@ func MakeHandler(svc Service, logger kitlog.Logger, settings map[string]string) 
 	)).Methods(http.MethodGet)
 
 	r.NotFoundHandler = r.NewRoute().HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		encodeError(context.Background(), repository.PostNotFound, writer)
+		ctx := context.Background()
+		ctx = context.WithValue(ctx, "settings", settings)
+		encode.EncodeError(ctx, repository.PostNotFound, writer)
 	}).GetHandler()
 
 	return r
@@ -38,8 +41,8 @@ func decodeIndexRequest(ctx context.Context, r *http.Request) (interface{}, erro
 }
 
 func encodeIndexResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
-	if e, ok := response.(errorer); ok && e.error() != nil {
-		encodeError(ctx, e.error(), w)
+	if e, ok := response.(encode.Errorer); ok && e.Error() != nil {
+		encode.EncodeError(ctx, e.Error(), w)
 		return nil
 	}
 
@@ -48,24 +51,4 @@ func encodeIndexResponse(ctx context.Context, w http.ResponseWriter, response in
 	resp := response.(indexResponse)
 
 	return templates.RenderHtml(ctx, w, resp.Data)
-}
-
-type errorer interface {
-	error() error
-}
-
-func encodeError(ctx context.Context, err error, w http.ResponseWriter) {
-	switch err {
-	case repository.PostNotFound:
-		w.WriteHeader(http.StatusNotFound)
-		ctx = context.WithValue(ctx, "method", "404")
-		_ = templates.RenderHtml(ctx, w, map[string]interface{}{
-			"message": err.Error(),
-		})
-		return
-	default:
-		w.WriteHeader(http.StatusInternalServerError)
-	}
-
-	_, _ = w.Write([]byte(err.Error()))
 }

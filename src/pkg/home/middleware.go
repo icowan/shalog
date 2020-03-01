@@ -10,6 +10,7 @@ package home
 import (
 	"context"
 	"github.com/gorilla/mux"
+	"github.com/icowan/blog/src/encode"
 	"github.com/icowan/blog/src/repository"
 	"net/http"
 )
@@ -18,7 +19,7 @@ func page404Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		router := mux.NewRouter()
 		router.NotFoundHandler = router.NewRoute().HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-			encodeError(context.Background(), repository.PostNotFound, writer)
+			encode.EncodeError(context.Background(), repository.PostNotFound, writer)
 		}).GetHandler()
 		next.ServeHTTP(w, r)
 	})
