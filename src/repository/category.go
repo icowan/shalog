@@ -16,6 +16,7 @@ type CategoryRepository interface {
 	FirstOrCreate(name string) (cate *types.Category, err error)
 	FindAll() (res []*types.Category, err error)
 	FindByName(name string, pageSize, offset int) (cate types.Category, count int64, err error)
+	FindByNames(names []string) (categories []types.Category, err error)
 	Find(id int64) (cate types.Category, err error)
 	FindByIds(ids []int64) (categories []types.Category, err error)
 	CleanByPostId(id int64) (err error)
@@ -29,6 +30,11 @@ type CategoryRepository interface {
 
 type category struct {
 	db *gorm.DB
+}
+
+func (c *category) FindByNames(names []string) (categories []types.Category, err error) {
+	err = c.db.Model(&types.Category{}).Where("name in(?)", names).First(&categories).Error
+	return
 }
 
 func (c *category) Delete(id int64) (err error) {

@@ -103,22 +103,22 @@ func (s *loggingService) Popular(ctx context.Context) (rs []map[string]interface
 }
 
 func (s *loggingService) NewPost(ctx context.Context, title, description, content string,
-	postStatus repository.PostStatus, categoryIds, tagIds []int64, markdown bool, imageId int64) (err error) {
+	postStatus repository.PostStatus, categoryNames, tagNames []string, markdown bool, imageId int64) (err error) {
 	defer func(begin time.Time) {
 		_ = s.logger.Log(
 			"method", "NewPost",
 			"title", title,
 			"description", description,
 			"postStatus", postStatus,
-			"categoryIds", categoryIds,
-			"tagIds", tagIds,
+			"categoryNames", categoryNames,
+			"tagNames", tagNames,
 			"markdown", markdown,
 			"imageId", imageId,
 			"took", time.Since(begin),
 			"err", err,
 		)
 	}(time.Now())
-	return s.Service.NewPost(ctx, title, description, content, postStatus, categoryIds, tagIds, markdown, imageId)
+	return s.Service.NewPost(ctx, title, description, content, postStatus, categoryNames, tagNames, markdown, imageId)
 }
 
 func (s *loggingService) Put(ctx context.Context, id int64, title, description, content string,

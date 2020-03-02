@@ -236,7 +236,7 @@ func makeNewPostEndpoint(s Service) endpoint.Endpoint {
 		if req.Id > 0 {
 			//err = s.Put(req.Id, req.Title, req.Description, req.Content, req.PostStatus, req.CategoryIds, req.TagIds, req.Markdown, req.ImageId)
 		} else {
-			err = s.NewPost(ctx, req.Title, req.Description, req.Content, req.PostStatus, req.CategoryIds, req.TagIds, req.Markdown, req.ImageId)
+			err = s.NewPost(ctx, req.Title, req.Description, req.Content, req.PostStatus, req.Categories, req.Tags, req.Markdown, req.ImageId)
 		}
 		return encode.Response{
 			Data:  res,

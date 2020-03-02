@@ -16,11 +16,13 @@ import (
 )
 
 var (
-	ErrInvalidArgument = errors.New("invalid argument")
-	ErrPostCreate      = errors.New("发布失败 ")
-	ErrPostFind        = errors.New("查询失败")
-	ErrPostUpdate      = errors.New("更新失败")
-	ErrPostParams      = errors.New("参数错误")
+	ErrInvalidArgument     = errors.New("invalid argument")
+	ErrPostCreate          = errors.New("发布失败 ")
+	ErrPostFind            = errors.New("查询失败")
+	ErrPostUpdate          = errors.New("更新失败")
+	ErrPostParams          = errors.New("参数错误")
+	ErrPostParamTitle      = errors.New("标题不能为空")
+	ErrPostParamCategories = errors.New("请选择至少一个分类")
 )
 
 type Service interface {
@@ -41,7 +43,7 @@ type Service interface {
 
 	// 创建新文章
 	NewPost(ctx context.Context, title, description, content string,
-		postStatus repository.PostStatus, categoryIds, tagIds []int64, markdown bool, imageId int64) (err error)
+		postStatus repository.PostStatus, categoryIds, tagIds []string, markdown bool, imageId int64) (err error)
 
 	// 编辑内容 ps: 参数意思就不写了,变量名称就是意思...
 	Put(ctx context.Context, id int64, title, description, content string,
@@ -177,7 +179,7 @@ func (c *service) Put(ctx context.Context, id int64, title, description, content
 }
 
 func (c *service) NewPost(ctx context.Context, title, description, content string,
-	postStatus repository.PostStatus, categoryIds, tagIds []int64, markdown bool, imageId int64) (err error) {
+	postStatus repository.PostStatus, categoryNames, tagNames []string, markdown bool, imageId int64) (err error) {
 
 	userId, _ := ctx.Value(middleware.ContextUserId).(int64)
 
@@ -187,15 +189,18 @@ func (c *service) NewPost(ctx context.Context, title, description, content strin
 		return
 	}
 
-	categories, err := c.repository.Category().FindByIds(categoryIds)
+	categories, err := c.repository.Category().FindByNames(categoryNames)
 	if err != nil {
 		_ = level.Error(c.logger).Log("repository.Category", "FindByIds", "err", err.Error())
 		return
 	}
-	tags, err := c.repository.Tag().FindByIds(tagIds)
-	if err != nil {
-		_ = level.Error(c.logger).Log("repository.Tag", "FindByIds", "err", err.Error())
-		return
+	var tags []types.Tag
+	if len(tagNames) > 0 {
+		tags, err = c.repository.Tag().FindByNames(tagNames)
+		if err != nil {
+			_ = level.Error(c.logger).Log("repository.Tag", "FindByIds", "err", err.Error())
+			return
+		}
 	}
 
 	var pushTime *time.Time
