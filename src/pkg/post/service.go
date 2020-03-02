@@ -43,7 +43,7 @@ type Service interface {
 
 	// 创建新文章
 	NewPost(ctx context.Context, title, description, content string,
-		postStatus repository.PostStatus, categoryIds, tagIds []string, markdown bool, imageId int64) (err error)
+		postStatus repository.PostStatus, categoryIds, tagIds []string, markdown bool, imageId int64) (id int64, err error)
 
 	// 编辑内容 ps: 参数意思就不写了,变量名称就是意思...
 	Put(ctx context.Context, id int64, title, description, content string,
@@ -179,7 +179,7 @@ func (c *service) Put(ctx context.Context, id int64, title, description, content
 }
 
 func (c *service) NewPost(ctx context.Context, title, description, content string,
-	postStatus repository.PostStatus, categoryNames, tagNames []string, markdown bool, imageId int64) (err error) {
+	postStatus repository.PostStatus, categoryNames, tagNames []string, markdown bool, imageId int64) (id int64, err error) {
 
 	userId, _ := ctx.Value(middleware.ContextUserId).(int64)
 
@@ -236,7 +236,7 @@ func (c *service) NewPost(ctx context.Context, title, description, content strin
 		err = errors.Wrap(err, ErrPostCreate.Error())
 	}
 
-	return
+	return post.ID, nil
 }
 
 func (c *service) Search(ctx context.Context, keyword, tag string, categoryId int64, offset, pageSize int) (posts []*types.Post, total int64, err error) {
