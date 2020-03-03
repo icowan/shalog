@@ -27,7 +27,7 @@ type PostRepository interface {
 	Search(keyword string, categoryId int64, offset, pageSize int) (res []*types.Post, count int64, err error)
 	FindByIds(ids []int64, categoryId int64, offset, pageSize int) (res []*types.Post, count int64, err error)
 	FindByCategoryId(categoryId int64, limit int) (posts []types.Post, err error)
-	FindAll(userId int64, order, by string, offset, pageSize int) (posts []*types.Post, count int64, err error)
+	FindAll(userId int64, order, by string, offset, pageSize int, keyword string) (posts []*types.Post, count int64, err error)
 }
 
 type PostStatus string
@@ -45,10 +45,15 @@ type post struct {
 	db *gorm.DB
 }
 
-func (c *post) FindAll(userId int64, order, by string, offset, pageSize int) (posts []*types.Post, count int64, err error) {
-	db := c.db.Model(&types.Post{}).Preload("Categories")
+func (c *post) FindAll(userId int64, order, by string, offset, pageSize int, keyword string) (posts []*types.Post, count int64, err error) {
+	db := c.db.Model(&types.Post{}).Preload("Categories").Preload("Images", func(db *gorm.DB) *gorm.DB {
+		return db.Select("image_name,image_path,post_id")
+	})
 	if userId > 0 {
 		db = db.Where("user_id = ?", userId)
+	}
+	if keyword != "" {
+		db = db.Where("title like ? OR content like ?", `%`+keyword+`%`, `%`+keyword+`%`)
 	}
 	err = db.Order(gorm.Expr(by + " " + order)).
 		Count(&count).

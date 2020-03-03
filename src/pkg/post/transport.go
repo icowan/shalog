@@ -54,6 +54,7 @@ func MakeHandler(ps Service, logger kitlog.Logger, repository repository.Reposit
 		"PutPost": ems[2:],
 		"Delete":  ems[2:],
 		"Restore": ems[2:],
+		"Detail":  ems[2:],
 	})
 
 	r := mux.NewRouter()
@@ -107,6 +108,12 @@ func MakeHandler(ps Service, logger kitlog.Logger, repository repository.Reposit
 		encode.EncodeJsonResponse,
 		adminOpts...,
 	)).Methods(http.MethodPut)
+	r.Handle("/post/{id:[0-9]+}/detail", kithttp.NewServer(
+		eps.DetailEndpoint,
+		decodeDetailRequest,
+		encode.EncodeJsonResponse,
+		adminOpts...,
+	)).Methods(http.MethodGet)
 	r.Handle("/post/{id:[0-9]+}", kithttp.NewServer(
 		eps.DeleteEndpoint,
 		decodeDetailRequest,
@@ -239,6 +246,7 @@ func decodeListRequest(ctx context.Context, r *http.Request) (interface{}, error
 	by := r.URL.Query().Get("by")
 	offset := r.URL.Query().Get("offset")
 	category := strings.TrimSpace(r.URL.Query().Get("category"))
+	keyword := strings.TrimSpace(r.URL.Query().Get("keyword"))
 
 	if size == "" {
 		size = "10"
@@ -261,6 +269,7 @@ func decodeListRequest(ctx context.Context, r *http.Request) (interface{}, error
 		by:       by,
 		offset:   pageOffset,
 		category: category,
+		keyword:  keyword,
 	}, nil
 }
 

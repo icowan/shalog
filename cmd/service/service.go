@@ -35,6 +35,7 @@ const (
 	DefaultHttpPort   = ":8080"
 	DefaultConfigPath = "./app.cfg"
 	//DefaultStaticPath = "./static/"
+	AdminViewPath = "./dist/"
 )
 
 var (
@@ -222,6 +223,7 @@ func start() {
 	http.Handle("/fonts/", http.StripPrefix("/fonts/", http.FileServer(http.Dir(viewsPath+"/fonts/"))))
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir(viewsPath+"/css/"))))
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir(viewsPath+"/js/"))))
+	http.Handle("/admin/", http.StripPrefix("/admin/", http.FileServer(http.Dir(AdminViewPath))))
 
 	handlers := make(map[string]string, 3)
 	if cf.GetBool("cors", "allow") {

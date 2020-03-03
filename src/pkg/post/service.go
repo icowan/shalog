@@ -43,11 +43,11 @@ type Service interface {
 
 	// 创建新文章
 	NewPost(ctx context.Context, title, description, content string,
-		postStatus repository.PostStatus, categoryIds, tagIds []string, markdown bool, imageId int64) (id int64, err error)
+		postStatus repository.PostStatus, categories, tags []string, markdown bool, imageId int64) (id int64, err error)
 
 	// 编辑内容 ps: 参数意思就不写了,变量名称就是意思...
 	Put(ctx context.Context, id int64, title, description, content string,
-		postStatus repository.PostStatus, categoryIds, tagIds []int64, markdown bool, imageId int64) (err error)
+		postStatus repository.PostStatus, categories, tags []string, markdown bool, imageId int64) (err error)
 
 	// 删除文章
 	Delete(ctx context.Context, id int64) (err error)
@@ -56,7 +56,10 @@ type Service interface {
 	Restore(ctx context.Context, id int64) (err error)
 
 	// 后端列表
-	AdminList(ctx context.Context, order, by, category, tag string, pageSize, offset int) (posts []*types.Post, total int64, err error)
+	AdminList(ctx context.Context, order, by, category, tag string, pageSize, offset int, keyword string) (posts []*types.Post, total int64, err error)
+
+	// 后台获取详情
+	Detail(ctx context.Context, id int64) (rs *types.Post, err error)
 }
 
 type service struct {
@@ -65,9 +68,22 @@ type service struct {
 	config     *config.Config
 }
 
-func (c *service) AdminList(ctx context.Context, order, by, category, tag string, pageSize, offset int) (posts []*types.Post, total int64, err error) {
+func (c *service) Detail(ctx context.Context, id int64) (rs *types.Post, err error) {
+	return c.repository.Post().Find(id)
+}
+
+func (c *service) AdminList(ctx context.Context, order, by, category, tag string, pageSize, offset int, keyword string) (posts []*types.Post, total int64, err error) {
 	userId, _ := ctx.Value(middleware.ContextUserId).(int64)
-	return c.repository.Post().FindAll(userId, order, by, offset, pageSize)
+	posts, total, err = c.repository.Post().FindAll(userId, order, by, offset, pageSize, keyword)
+	for k, v := range posts {
+		var imgs []types.Image
+		for _, img := range v.Images {
+			img.ImagePath = imageUrl(img.ImagePath, c.config.GetString("server", "image_domain"))
+			imgs = append(imgs, img)
+		}
+		posts[k].Images = imgs
+	}
+	return
 }
 
 func (c *service) Restore(ctx context.Context, id int64) (err error) {
@@ -107,7 +123,7 @@ func (c *service) Delete(ctx context.Context, id int64) (err error) {
 }
 
 func (c *service) Put(ctx context.Context, id int64, title, description, content string,
-	postStatus repository.PostStatus, categoryIds, tagIds []int64, markdown bool, imageId int64) (err error) {
+	postStatus repository.PostStatus, categories, tags []string, markdown bool, imageId int64) (err error) {
 
 	// todo: 是否需要验证是否为文章本人编辑呢？
 	// userId, _ := ctx.Value(middleware.ContextUserId).(int64)
@@ -118,15 +134,18 @@ func (c *service) Put(ctx context.Context, id int64, title, description, content
 		return errors.Wrap(err, ErrPostFind.Error())
 	}
 
-	categories, err := c.repository.Category().FindByIds(categoryIds)
+	categoryList, err := c.repository.Category().FindByNames(categories)
 	if err != nil {
 		_ = level.Error(c.logger).Log("repository.Category", "FindByIds", "err", err.Error())
 		return
 	}
-	tags, err := c.repository.Tag().FindByIds(tagIds)
-	if err != nil {
-		_ = level.Error(c.logger).Log("repository.Tag", "FindByIds", "err", err.Error())
-		return
+	var tagList []types.Tag
+	for _, v := range tags {
+		if t, err := c.repository.Tag().FirstOrCreate(v); err == nil {
+			tagList = append(tagList, *t)
+		} else {
+			_ = level.Error(c.logger).Log("repository.Tag", "FirstOrCreate", "err", err.Error())
+		}
 	}
 
 	if post.PushTime == nil && postStatus == repository.PostStatusPublish {
@@ -148,8 +167,9 @@ func (c *service) Put(ctx context.Context, id int64, title, description, content
 	post.Description = description
 	post.Content = content
 	post.PostStatus = postStatus.String()
-	post.Categories = categories
-	post.Tags = tags
+	post.Categories = categoryList
+	post.Tags = tagList
+	post.IsMarkdown = markdown
 
 	var imageExists bool
 	for _, v := range post.Images {
@@ -195,11 +215,11 @@ func (c *service) NewPost(ctx context.Context, title, description, content strin
 		return
 	}
 	var tags []types.Tag
-	if len(tagNames) > 0 {
-		tags, err = c.repository.Tag().FindByNames(tagNames)
-		if err != nil {
-			_ = level.Error(c.logger).Log("repository.Tag", "FindByIds", "err", err.Error())
-			return
+	for _, v := range tagNames {
+		if t, err := c.repository.Tag().FirstOrCreate(v); err == nil {
+			tags = append(tags, *t)
+		} else {
+			_ = level.Error(c.logger).Log("repository.Tag", "FirstOrCreate", "err", err.Error())
 		}
 	}
 
@@ -273,6 +293,10 @@ func (c *service) Get(ctx context.Context, id int64) (rs map[string]interface{},
 	}
 
 	if detail == nil {
+		return nil, repository.PostNotFound
+	}
+
+	if detail.PushTime == nil || detail.DeletedAt != nil || repository.PostStatus(detail.PostStatus) != repository.PostStatusPublish {
 		return nil, repository.PostNotFound
 	}
 

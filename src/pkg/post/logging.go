@@ -18,7 +18,7 @@ func NewLoggingService(logger log.Logger, s Service) Service {
 	return &loggingService{level.Info(logger), s}
 }
 
-func (s *loggingService) AdminList(ctx context.Context, order, by, category, tag string, pageSize, offset int) (posts []*types.Post, total int64, err error) {
+func (s *loggingService) AdminList(ctx context.Context, order, by, category, tag string, pageSize, offset int, keyword string) (posts []*types.Post, total int64, err error) {
 	defer func(begin time.Time) {
 		_ = s.logger.Log(
 			"method", "AdminList",
@@ -28,11 +28,12 @@ func (s *loggingService) AdminList(ctx context.Context, order, by, category, tag
 			"tag", tag,
 			"pageSize", pageSize,
 			"offset", offset,
+			"keyword", keyword,
 			"took", time.Since(begin),
 			"err", err,
 		)
 	}(time.Now())
-	return s.Service.AdminList(ctx, order, by, category, tag, pageSize, offset)
+	return s.Service.AdminList(ctx, order, by, category, tag, pageSize, offset, keyword)
 }
 
 func (s *loggingService) Search(ctx context.Context, keyword, tag string, categoryId int64, offset, pageSize int) (posts []*types.Post, total int64, err error) {
@@ -123,7 +124,7 @@ func (s *loggingService) NewPost(ctx context.Context, title, description, conten
 }
 
 func (s *loggingService) Put(ctx context.Context, id int64, title, description, content string,
-	postStatus repository.PostStatus, categoryIds, tagIds []int64, markdown bool, imageId int64) (err error) {
+	postStatus repository.PostStatus, categoryNames, tagNames []string, markdown bool, imageId int64) (err error) {
 	defer func(begin time.Time) {
 		_ = s.logger.Log(
 			"method", "Put",
@@ -131,15 +132,15 @@ func (s *loggingService) Put(ctx context.Context, id int64, title, description, 
 			"title", title,
 			"description", description,
 			"postStatus", postStatus,
-			"categoryIds", categoryIds,
-			"tagIds", tagIds,
+			"categoryNames", categoryNames,
+			"tagNames", tagNames,
 			"markdown", markdown,
 			"imageId", imageId,
 			"took", time.Since(begin),
 			"err", err,
 		)
 	}(time.Now())
-	return s.Service.Put(ctx, id, title, description, content, postStatus, categoryIds, tagIds, markdown, imageId)
+	return s.Service.Put(ctx, id, title, description, content, postStatus, categoryNames, tagNames, markdown, imageId)
 }
 
 func (s *loggingService) Delete(ctx context.Context, id int64) (err error) {
@@ -164,4 +165,16 @@ func (s *loggingService) Restore(ctx context.Context, id int64) (err error) {
 		)
 	}(time.Now())
 	return s.Service.Restore(ctx, id)
+}
+
+func (s *loggingService) Detail(ctx context.Context, id int64) (rs *types.Post, err error) {
+	defer func(begin time.Time) {
+		_ = s.logger.Log(
+			"method", "Detail",
+			"id", id,
+			"took", time.Since(begin),
+			"err", err,
+		)
+	}(time.Now())
+	return s.Service.Detail(ctx, id)
 }

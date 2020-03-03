@@ -46,6 +46,7 @@ type Endpoints struct {
 	DeleteEndpoint    endpoint.Endpoint
 	RestoreEndpoint   endpoint.Endpoint
 	AdminListEndpoint endpoint.Endpoint
+	DetailEndpoint    endpoint.Endpoint
 }
 
 type (
@@ -75,8 +76,8 @@ type (
 		Id int64
 	}
 	listRequest struct {
-		order, by, category, tag string
-		pageSize, offset         int
+		order, by, category, tag, keyword string
+		pageSize, offset                  int
 	}
 )
 
@@ -92,6 +93,7 @@ func NewEndpoint(s Service, mdw map[string][]endpoint.Middleware) Endpoints {
 		DeleteEndpoint:    makeDeleteEndpoint(s),
 		RestoreEndpoint:   makeRestoreEndpoint(s),
 		AdminListEndpoint: makeAdminListEndpoint(s),
+		DetailEndpoint:    makeDetailEndpoint(s),
 	}
 
 	for _, m := range mdw["Get"] {
@@ -117,14 +119,28 @@ func NewEndpoint(s Service, mdw map[string][]endpoint.Middleware) Endpoints {
 	for _, m := range mdw["Restore"] {
 		eps.RestoreEndpoint = m(eps.RestoreEndpoint)
 	}
+	for _, m := range mdw["Detail"] {
+		eps.DetailEndpoint = m(eps.DetailEndpoint)
+	}
 
 	return eps
+}
+
+func makeDetailEndpoint(s Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(postRequest)
+		rs, err := s.Detail(ctx, req.Id)
+		return encode.Response{
+			Data:  rs,
+			Error: err,
+		}, err
+	}
 }
 
 func makeAdminListEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(listRequest)
-		posts, count, err := s.AdminList(ctx, req.order, req.by, req.category, req.tag, req.pageSize, req.offset)
+		posts, count, err := s.AdminList(ctx, req.order, "created_at", req.category, req.tag, req.pageSize, req.offset, req.keyword)
 		return encode.Response{
 			Error: err,
 			Data: map[string]interface{}{
@@ -156,7 +172,7 @@ func makePutPostEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(newPostRequest)
 		err = s.Put(ctx, req.Id, req.Title, req.Description, req.Content, req.PostStatus,
-			req.CategoryIds, req.TagIds, req.Markdown, req.ImageId)
+			req.Categories, req.Tags, req.Markdown, req.ImageId)
 		return encode.Response{
 			Error: err,
 		}, err
@@ -199,6 +215,8 @@ func makeGetEndpoint(s Service) endpoint.Endpoint {
 	}
 }
 
+// TODO: 继续下楼取快递
+
 func makeListEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(listRequest)
@@ -234,7 +252,7 @@ func makeNewPostEndpoint(s Service) endpoint.Endpoint {
 		req := request.(newPostRequest)
 		var res interface{}
 		if req.Id > 0 {
-			err = s.Put(ctx, req.Id, req.Title, req.Description, req.Content, req.PostStatus, req.CategoryIds, req.TagIds, req.Markdown, req.ImageId)
+			err = s.Put(ctx, req.Id, req.Title, req.Description, req.Content, req.PostStatus, req.Categories, req.Tags, req.Markdown, req.ImageId)
 		} else {
 			res, err = s.NewPost(ctx, req.Title, req.Description, req.Content, req.PostStatus, req.Categories, req.Tags, req.Markdown, req.ImageId)
 		}
