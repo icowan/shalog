@@ -12,10 +12,19 @@ type ImageRepository interface {
 	ExistsImageByMd5(val string) bool
 	FindImageByMd5(val string) (img *types.Image, err error)
 	FindById(id int64) (img types.Image, err error)
+	FindAll(pageSize, offset int) (res []types.Image, count int64, err error)
 }
 
 type image struct {
 	db *gorm.DB
+}
+
+func (c *image) FindAll(pageSize, offset int) (res []types.Image, count int64, err error) {
+	err = c.db.Model(&types.Image{}).
+		Select("id,image_name,image_path,post_id,created_at,image_size,image_status,client_original_mame").
+		Count(&count).Offset(offset).Limit(pageSize).
+		Order("id desc").Find(&res).Error
+	return
 }
 
 func (c *image) FindById(id int64) (img types.Image, err error) {

@@ -16,6 +16,7 @@ import (
 	"github.com/icowan/blog/src/pkg/api"
 	"github.com/icowan/blog/src/pkg/category"
 	"github.com/icowan/blog/src/pkg/home"
+	"github.com/icowan/blog/src/pkg/image"
 	"github.com/icowan/blog/src/pkg/link"
 	"github.com/icowan/blog/src/pkg/post"
 	"github.com/icowan/blog/src/pkg/setting"
@@ -184,6 +185,10 @@ func start() {
 	tagSvc := tag.NewService(logger, store)
 	tagSvc = tag.NewLoggingServer(logger, tagSvc)
 
+	// image
+	imageSvc := image.NewService(logger, store, cf)
+	imageSvc = image.NewLoggingServer(logger, imageSvc)
+
 	settings, err := settingSvc.List(context.Background())
 	if err != nil {
 		_ = level.Error(logger).Log("SettingSvc", "List", "err", err.Error())
@@ -211,6 +216,7 @@ func start() {
 	mux.Handle("/setting/", setting.MakeHTTPHandler(settingSvc, httpLogger))
 	mux.Handle("/category/", category.MakeHTTPHandler(categorySvc, httpLogger))
 	mux.Handle("/tag/", tag.MakeHTTPHandler(tagSvc, httpLogger))
+	mux.Handle("/image/", image.MakeHTTPHandler(imageSvc, httpLogger))
 
 	mux.Handle("/api/", api.MakeHandler(apiSvc, httpLogger, store, cf))
 	//mux.Handle("/board", board.MakeHandler(boardSvc, httpLogger))
