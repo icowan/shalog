@@ -216,7 +216,7 @@ func start() {
 	mux.Handle("/setting/", setting.MakeHTTPHandler(settingSvc, httpLogger))
 	mux.Handle("/category/", category.MakeHTTPHandler(categorySvc, httpLogger))
 	mux.Handle("/tag/", tag.MakeHTTPHandler(tagSvc, httpLogger))
-	mux.Handle("/image/", image.MakeHTTPHandler(imageSvc, httpLogger))
+	mux.Handle("/image/", image.MakeHTTPHandler(imageSvc, httpLogger, sets))
 
 	mux.Handle("/api/", api.MakeHandler(apiSvc, httpLogger, store, cf))
 	//mux.Handle("/board", board.MakeHandler(boardSvc, httpLogger))

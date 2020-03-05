@@ -58,7 +58,9 @@ func (s *service) Put(ctx context.Context, key repository.SettingKey, val, descr
 		err = errors.Wrap(err, ErrSettingNotfound.Error())
 		return
 	}
-	setting.Description = description
+	if description != "" {
+		setting.Description = description
+	}
 	setting.Value = val
 	return s.repository.Setting().Update(&setting)
 }

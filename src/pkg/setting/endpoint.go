@@ -5,6 +5,7 @@ import (
 	"github.com/go-kit/kit/endpoint"
 	"github.com/icowan/blog/src/encode"
 	"github.com/icowan/blog/src/repository"
+	"github.com/pkg/errors"
 	"net/textproto"
 )
 
@@ -22,6 +23,7 @@ type Endpoints struct {
 	PutEndpoint         endpoint.Endpoint
 	ListEndpoint        endpoint.Endpoint
 	UploadImageEndpoint endpoint.Endpoint
+	UpdateEndpoint      endpoint.Endpoint
 }
 
 type (
@@ -35,6 +37,8 @@ type (
 		ImageUrl  string                `json:"image_url"`
 		ImageFile *imageFile            `json:"image_file"`
 	}
+
+	settingsRequest map[string]string
 )
 
 func NewEndpoint(s Service, mdw map[string][]endpoint.Middleware) Endpoints {
@@ -45,6 +49,7 @@ func NewEndpoint(s Service, mdw map[string][]endpoint.Middleware) Endpoints {
 		PutEndpoint:         makePutEndpoint(s),
 		ListEndpoint:        makeListEndpoint(s),
 		UploadImageEndpoint: makeUploadImageEndpoint(s),
+		UpdateEndpoint:      makeUpdateEndpoint(s),
 	}
 
 	for _, m := range mdw["Get"] {
@@ -59,6 +64,9 @@ func NewEndpoint(s Service, mdw map[string][]endpoint.Middleware) Endpoints {
 	for _, m := range mdw["Put"] {
 		eps.PutEndpoint = m(eps.PutEndpoint)
 	}
+	for _, m := range mdw["Update"] {
+		eps.UpdateEndpoint = m(eps.UpdateEndpoint)
+	}
 	for _, m := range mdw["List"] {
 		eps.ListEndpoint = m(eps.ListEndpoint)
 	}
@@ -67,6 +75,20 @@ func NewEndpoint(s Service, mdw map[string][]endpoint.Middleware) Endpoints {
 	}
 
 	return eps
+}
+
+func makeUpdateEndpoint(s Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(settingsRequest)
+		for k, v := range req {
+			if e := s.Put(ctx, repository.SettingKey(k), v, ""); e != nil {
+				err = errors.Wrap(err, e.Error())
+			}
+		}
+		return encode.Response{
+			Error: err,
+		}, err
+	}
 }
 
 func makeGetEndpoint(s Service) endpoint.Endpoint {

@@ -34,6 +34,7 @@ func MakeHTTPHandler(s Service, logger log.Logger) http.Handler {
 		"Delete":      ems,
 		"Put":         ems,
 		"UploadImage": ems,
+		"Update":      ems,
 	})
 
 	r := mux.NewRouter()
@@ -58,6 +59,16 @@ func MakeHTTPHandler(s Service, logger log.Logger) http.Handler {
 		encode.EncodeJsonResponse,
 		opts...,
 	)).Methods(http.MethodGet)
+	r.Handle("/setting", kithttp.NewServer(
+		eps.UpdateEndpoint,
+		func(_ context.Context, r *http.Request) (request interface{}, err error) {
+			var req settingsRequest
+			err = json.NewDecoder(r.Body).Decode(&req)
+			return req, err
+		},
+		encode.EncodeJsonResponse,
+		opts...,
+	)).Methods(http.MethodPut)
 
 	r.Handle("/setting/{key}", kithttp.NewServer(
 		eps.PutEndpoint,

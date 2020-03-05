@@ -8,15 +8,17 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/icowan/blog/src/encode"
 	"github.com/icowan/blog/src/middleware"
+	"github.com/pkg/errors"
 	"net/http"
 	"strconv"
 )
 
-func MakeHTTPHandler(s Service, logger kitlog.Logger) http.Handler {
+func MakeHTTPHandler(s Service, logger kitlog.Logger, settings map[string]string) http.Handler {
 	opts := []kithttp.ServerOption{
 		kithttp.ServerErrorLogger(logger),
 		kithttp.ServerErrorEncoder(encode.EncodeJsonError),
 		kithttp.ServerBefore(kithttp.PopulateRequestContext),
+		kithttp.ServerBefore(middleware.SettingsRequest(settings)),
 	}
 
 	ems := []endpoint.Middleware{
@@ -35,6 +37,13 @@ func MakeHTTPHandler(s Service, logger kitlog.Logger) http.Handler {
 		encode.EncodeJsonResponse,
 		opts...,
 	)).Methods(http.MethodGet)
+
+	r.Handle("/image/upload", kithttp.NewServer(
+		eps.UploadEndpoint,
+		decodeUploadRequest,
+		encode.EncodeJsonResponse,
+		opts...,
+	)).Methods("POST")
 
 	return r
 }
@@ -56,4 +65,22 @@ func decodeListRequest(_ context.Context, r *http.Request) (request interface{},
 		offset:   pageOffset,
 		pageSize: pageSize,
 	}, nil
+}
+
+func decodeUploadRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+	reader, err := r.MultipartReader()
+	if err != nil {
+		return nil, errors.Wrap(err, "r.MultipartReader")
+	}
+
+	form, err := reader.ReadForm(32 << 10)
+	if err != nil {
+		return nil, errors.Wrap(err, "reader.ReadForm")
+	}
+
+	if form.File == nil {
+		return nil, errors.New("文件不存在")
+	}
+
+	return uploadRequest{Files: form.File["file"]}, nil
 }
