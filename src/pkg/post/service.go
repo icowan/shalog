@@ -69,7 +69,17 @@ type service struct {
 }
 
 func (c *service) Detail(ctx context.Context, id int64) (rs *types.Post, err error) {
-	return c.repository.Post().Find(id)
+	rs, err = c.repository.Post().Find(id)
+	if err != nil {
+		return
+	}
+
+	for k, v := range rs.Images {
+		v.ImagePath = imageUrl(v.ImagePath, c.config.GetString("server", "image_domain"))
+		rs.Images[k] = v
+	}
+
+	return
 }
 
 func (c *service) AdminList(ctx context.Context, order, by, category, tag string, pageSize, offset int, keyword string) (posts []*types.Post, total int64, err error) {
@@ -180,11 +190,9 @@ func (c *service) Put(ctx context.Context, id int64, title, description, content
 	}
 
 	if !imageExists {
-		if images, e := c.repository.Image().FindByPostIds([]int64{imageId}); e == nil {
+		if img, e := c.repository.Image().FindById(imageId); e == nil {
 			var imgs []types.Image
-			for _, v := range images {
-				imgs = append(imgs, *v)
-			}
+			imgs = append(imgs, img)
 			post.Images = imgs
 		}
 	}
@@ -202,12 +210,6 @@ func (c *service) NewPost(ctx context.Context, title, description, content strin
 	postStatus repository.PostStatus, categoryNames, tagNames []string, markdown bool, imageId int64) (id int64, err error) {
 
 	userId, _ := ctx.Value(middleware.ContextUserId).(int64)
-
-	user, err := c.repository.User().FindById(userId)
-	if err != nil {
-		_ = level.Error(c.logger).Log("repository.User", "FindById", "id", "id", "err", err.Error())
-		return
-	}
 
 	categories, err := c.repository.Category().FindByNames(categoryNames)
 	if err != nil {
@@ -247,7 +249,6 @@ func (c *service) NewPost(ctx context.Context, title, description, content strin
 		UserID:      userId,
 		PostStatus:  postStatus.String(),
 		PushTime:    pushTime,
-		User:        user,
 		Tags:        tags,
 		Categories:  categories,
 	}

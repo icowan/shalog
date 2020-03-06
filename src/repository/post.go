@@ -142,10 +142,14 @@ func (c *post) Find(id int64) (res *types.Post, err error) {
 	var p types.Post
 
 	if err = c.db.Model(&p).
-		Preload("User").
+		Preload("User", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id,username")
+		}).
 		Preload("Categories").
 		Preload("Tags").
-		Preload("Images").
+		Preload("Images", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id, image_name, extension, image_path, post_id")
+		}).
 		Find(&p, "id = ?", id).Error; err != nil {
 		return nil, PostNotFound
 	}

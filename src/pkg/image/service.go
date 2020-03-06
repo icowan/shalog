@@ -52,6 +52,20 @@ func (s *service) UploadMedia(ctx context.Context, f *multipart.FileHeader) (res
 	md5h.Write(b)
 	fileSha := fmt.Sprintf("%x", md5h.Sum([]byte("")))
 
+	if dbImg, err := s.repository.Image().FindImageByMd5(fileSha); err == nil && dbImg != nil {
+		_ = level.Error(s.logger).Log("c.image", "ExistsImageByMd5", "err", "file is exists.")
+		return &imageResponse{
+			Id:        dbImg.ID,
+			Filename:  dbImg.ClientOriginalMame,
+			Storename: dbImg.ImageName,
+			Size:      dbImg.ImageSize,
+			Path:      dbImg.ImagePath,
+			Hash:      dbImg.Md5,
+			Timestamp: dbImg.CreatedAt.Unix(),
+			Url:       domainUrl + "/" + dbImg.ImagePath + s.config.GetString("server", "image_suffix"),
+		}, nil
+	}
+
 	fileName := time.Now().Format("20060102") + "-" + fileSha + extName
 	simPath := time.Now().Format("2006/01/") + fileSha[len(fileSha)-5:len(fileSha)-3] + "/" + fileSha[24:26] + "/" + fileSha[16:17] + fileSha[12:13] + "/"
 	fileFullPath := uploadPath + simPath + fileName
@@ -86,6 +100,7 @@ func (s *service) UploadMedia(ctx context.Context, f *multipart.FileHeader) (res
 	}
 
 	return &imageResponse{
+		Id:        img.ID,
 		Filename:  img.ClientOriginalMame,
 		Storename: img.ImageName,
 		Size:      img.ImageSize,

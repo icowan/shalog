@@ -223,6 +223,7 @@ func start() {
 	mux.Handle("/", home.MakeHandler(homeSvc, httpLogger, sets))
 
 	viewsPath := sets[repository.SettingViewTemplate.String()]
+	storagePath := sets[repository.SettingSiteMediaUploadPath.String()]
 
 	http.Handle("/metrics", promhttp.Handler())
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir(viewsPath+"/images/"))))
@@ -230,6 +231,7 @@ func start() {
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir(viewsPath+"/css/"))))
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir(viewsPath+"/js/"))))
 	http.Handle("/admin/", http.StripPrefix("/admin/", http.FileServer(http.Dir(AdminViewPath))))
+	http.Handle("/storage/", http.StripPrefix("/storage/", http.FileServer(http.Dir(storagePath))))
 
 	handlers := make(map[string]string, 3)
 	if cf.GetBool("cors", "allow") {
