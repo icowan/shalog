@@ -12,6 +12,12 @@ import (
 	"github.com/go-kit/kit/log"
 	"github.com/icowan/blog/src/repository"
 	"github.com/icowan/blog/src/repository/types"
+	"github.com/pkg/errors"
+)
+
+var (
+	ErrCategoryParams    = errors.New("参数错误!")
+	ErrCategoryParamName = errors.New("名称不能为空")
 )
 
 type Service interface {
@@ -27,7 +33,16 @@ type service struct {
 }
 
 func (s *service) List(ctx context.Context) (categories []*types.Category, err error) {
-	return s.repository.Category().FindAll()
+	categories, err = s.repository.Category().FindAll()
+	if err != nil {
+		return
+	}
+
+	for k, v := range categories {
+		categories[k].PostCount = s.repository.Category().CountPosts(v)
+	}
+
+	return
 }
 
 func (s *service) Post(ctx context.Context, title, description string, parentId int64) (err error) {
@@ -35,8 +50,7 @@ func (s *service) Post(ctx context.Context, title, description string, parentId 
 }
 
 func (s *service) Delete(ctx context.Context, id int64) (err error) {
-	panic("implement me")
-	// todo 需要把 category_posts表也清理掉
+	return s.repository.Category().Delete(id)
 }
 
 func (s *service) Put(ctx context.Context, id int64, title, description string, parentId int64) (err error) {

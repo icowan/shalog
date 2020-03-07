@@ -9,6 +9,7 @@ package tag
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/log"
 	kithttp "github.com/go-kit/kit/transport/http"
@@ -16,6 +17,7 @@ import (
 	"github.com/icowan/blog/src/encode"
 	"github.com/icowan/blog/src/middleware"
 	"net/http"
+	"strconv"
 )
 
 func MakeHTTPHandler(s Service, logger log.Logger) http.Handler {
@@ -30,7 +32,9 @@ func MakeHTTPHandler(s Service, logger log.Logger) http.Handler {
 	}
 
 	eps := NewEndpoint(s, map[string][]endpoint.Middleware{
-		"All": ems,
+		"All":  ems,
+		"List": ems,
+		"Post": ems,
 	})
 
 	r := mux.NewRouter()
@@ -43,6 +47,92 @@ func MakeHTTPHandler(s Service, logger log.Logger) http.Handler {
 		encode.EncodeJsonResponse,
 		opts...,
 	)).Methods(http.MethodGet)
+	r.Handle("/tag/list", kithttp.NewServer(
+		eps.ListEndpoint,
+		decodeListRequest,
+		encode.EncodeJsonResponse,
+		opts...,
+	)).Methods(http.MethodGet)
+	r.Handle("/tag/new", kithttp.NewServer(
+		eps.PostEndpoint,
+		decodePostRequest,
+		encode.EncodeJsonResponse,
+		opts...,
+	)).Methods(http.MethodPost)
+	r.Handle("/tag/{id:[0-9]+}", kithttp.NewServer(
+		eps.DeleteEndpoint,
+		decodeDeleteRequest,
+		encode.EncodeJsonResponse,
+		opts...,
+	)).Methods(http.MethodDelete)
+	r.Handle("/tag/{id:[0-9]+}", kithttp.NewServer(
+		eps.PutEndpoint,
+		decodePutRequest,
+		encode.EncodeJsonResponse,
+		opts...,
+	)).Methods(http.MethodPut)
 
 	return r
+}
+
+func decodeDeleteRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+	vars := mux.Vars(r)
+	tid, ok := vars["id"]
+	if !ok {
+		return nil, ErrTagParams
+	}
+
+	id, err := strconv.ParseInt(tid, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	return tagRequest{Id: id}, err
+}
+
+func decodePutRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+	vars := mux.Vars(r)
+	tid, ok := vars["id"]
+	if !ok {
+		return nil, ErrTagParams
+	}
+
+	id, err := strconv.ParseInt(tid, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	var req tagRequest
+	err = json.NewDecoder(r.Body).Decode(&req)
+	req.Id = id
+	return req, err
+}
+
+func decodePostRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+	var req tagRequest
+	err = json.NewDecoder(r.Body).Decode(&req)
+	return req, err
+}
+
+func decodeListRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+	keyword := r.URL.Query().Get("keyword")
+	offset := r.URL.Query().Get("offset")
+	size := r.URL.Query().Get("pageSize")
+
+	if size == "" {
+		size = "10"
+	}
+	if offset == "" {
+		offset = "0"
+	}
+	pageSize, _ := strconv.Atoi(size)
+	pageOffset, _ := strconv.Atoi(offset)
+
+	//pageOffset = (pageOffset - 1) * pageSize
+
+	return tagRequest{
+		offset:   pageOffset,
+		pageSize: pageSize,
+		tagName:  keyword,
+	}, nil
 }

@@ -21,17 +21,47 @@ const (
 
 type TagRepository interface {
 	FirstOrCreate(name string) (meta *types.Tag, err error)
-	List(limit int) (metas []*types.Tag, err error)
+	All(limit int) (metas []*types.Tag, err error)
 	FindPostByName(name string) (meta types.Tag, err error)
 	FindPostIdsByName(name string) (meta types.Tag, err error)
 	Find(id int64) (meta types.Tag, err error)
 	FindByIds(ids []int64) (tags []types.Tag, err error)
 	FindByNames(names []string) (tags []types.Tag, err error)
 	CleanByPostId(id int64) (err error)
+	List(tagName string, limit, offset int) (metas []*types.Tag, count int64, err error)
+	Delete(id int64) (err error)
+	Update(id int64, name string) (err error)
 }
 
 type tag struct {
 	db *gorm.DB
+}
+
+func (c *tag) Update(id int64, name string) (err error) {
+	// todo: 如果名称已经存在需要返回错误信息
+	return c.db.Model(&types.Tag{}).Where("id = ?", id).Update(&types.Tag{
+		Id:   id,
+		Name: name,
+	}).Error
+}
+
+func (c *tag) Delete(id int64) (err error) {
+	if err = c.db.Model(&types.Tag{Id: id}).
+		Where("id = ?", id).
+		Association("Posts").
+		Clear().Error; err == nil {
+		err = c.db.Model(&types.Tag{}).Where("id = ?", id).Delete(&types.Tag{Id: id}).Error
+	}
+	return
+}
+
+func (c *tag) List(tagName string, limit, offset int) (metas []*types.Tag, count int64, err error) {
+	query := c.db.Model(&types.Tag{})
+	if tagName != "" {
+		query = query.Where("name link ?", "%"+tagName+"%")
+	}
+	err = query.Count(&count).Offset(offset).Limit(limit).Order("id desc").Find(&metas).Error
+	return
 }
 
 func (c *tag) FindByNames(names []string) (tags []types.Tag, err error) {
@@ -80,7 +110,7 @@ func (c *tag) Find(id int64) (meta types.Tag, err error) {
 	return
 }
 
-func (c *tag) List(limit int) (metas []*types.Tag, err error) {
+func (c *tag) All(limit int) (metas []*types.Tag, err error) {
 	err = c.db.Model(&types.Tag{}).Order("id desc").Limit(limit).Find(&metas).Error
 	return
 }

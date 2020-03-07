@@ -86,3 +86,18 @@ func (s *loggingServer) Get(ctx context.Context, name string) (tag types.Tag, er
 	}(time.Now())
 	return s.Service.Get(ctx, name)
 }
+
+func (s *loggingServer) List(ctx context.Context, name string, offset, pageSize int) (tags []*types.Tag, count int64, err error) {
+	defer func(begin time.Time) {
+		_ = s.logger.Log(
+			"method", "List",
+			"name", name,
+			"offset", offset,
+			"pageSize", pageSize,
+			"count", count,
+			"took", time.Since(begin),
+			"err", err,
+		)
+	}(time.Now())
+	return s.Service.List(ctx, name, offset, pageSize)
+}

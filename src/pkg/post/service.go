@@ -399,7 +399,7 @@ func (c *service) List(ctx context.Context, order, by, category string, pageSize
 		})
 	}
 
-	tags, _ := c.repository.Tag().List(20)
+	tags, _ := c.repository.Tag().All(20)
 
 	// todo 考虑从cache里拿
 	categories, _ := c.repository.Category().FindAll()

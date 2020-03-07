@@ -23,6 +23,7 @@ type CategoryRepository interface {
 	Add(title, description string, parentId int64) (err error)
 	Delete(id int64) (err error)
 	Put(id int64, title, description string, parentId int64) (err error)
+	CountPosts(info *types.Category) (count int)
 
 	// 废弃
 	FindCategoryPosts(limit int) (categories []types.Category, err error)
@@ -32,13 +33,23 @@ type category struct {
 	db *gorm.DB
 }
 
+func (c *category) CountPosts(info *types.Category) (count int) {
+	return c.db.Model(info).Association("Posts").Count()
+}
+
 func (c *category) FindByNames(names []string) (categories []types.Category, err error) {
 	err = c.db.Model(&types.Category{}).Where("name in(?)", names).First(&categories).Error
 	return
 }
 
 func (c *category) Delete(id int64) (err error) {
-	panic("implement me")
+	if err = c.db.Model(&types.Category{Id: id}).
+		Where("id = ?", id).
+		Association("Posts").
+		Clear().Error; err == nil {
+		err = c.db.Model(&types.Category{}).Where("id = ?", id).Delete(&types.Category{Id: id}).Error
+	}
+	return
 }
 
 func (c *category) Put(id int64, title, description string, parentId int64) (err error) {

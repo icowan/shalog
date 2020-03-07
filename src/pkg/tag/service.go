@@ -12,6 +12,11 @@ import (
 	"github.com/go-kit/kit/log"
 	"github.com/icowan/blog/src/repository"
 	"github.com/icowan/blog/src/repository/types"
+	"github.com/pkg/errors"
+)
+
+var (
+	ErrTagParams = errors.New("参数错误")
 )
 
 type Service interface {
@@ -20,6 +25,7 @@ type Service interface {
 	Put(ctx context.Context, id int64, name string) (err error)
 	Delete(ctx context.Context, id int64) (err error)
 	Get(ctx context.Context, name string) (tags types.Tag, err error)
+	List(ctx context.Context, tagName string, limit, offset int) (tags []*types.Tag, count int64, err error)
 }
 
 type service struct {
@@ -27,8 +33,13 @@ type service struct {
 	repository repository.Repository
 }
 
+func (s *service) List(ctx context.Context, tagName string, limit, offset int) (tags []*types.Tag, count int64, err error) {
+	tags, count, err = s.repository.Tag().List(tagName, limit, offset)
+	return
+}
+
 func (s *service) All(ctx context.Context) (tags []*types.Tag, err error) {
-	return s.repository.Tag().List(50)
+	return s.repository.Tag().All(50)
 }
 
 func (s *service) Post(ctx context.Context, name string) (err error) {
@@ -37,11 +48,11 @@ func (s *service) Post(ctx context.Context, name string) (err error) {
 }
 
 func (s *service) Put(ctx context.Context, id int64, name string) (err error) {
-	return
+	return s.repository.Tag().Update(id, name)
 }
 
 func (s *service) Delete(ctx context.Context, id int64) (err error) {
-	panic("implement me")
+	return s.repository.Tag().Delete(id)
 }
 
 func (s *service) Get(ctx context.Context, name string) (tags types.Tag, err error) {
