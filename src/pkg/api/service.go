@@ -106,7 +106,7 @@ func (c *service) UploadImage(ctx context.Context, image uploadImageRequest) (re
 			Path:      dbImg.ImagePath,
 			Hash:      dbImg.Md5,
 			Timestamp: dbImg.CreatedAt.Unix(),
-			Url:       c.config.GetString("server", "image_domain") + "/" + dbImg.ImagePath + c.config.GetString("server", "image_suffix"),
+			Url:       c.config.GetString(config.SectionServer, repository.SettingGlobalDomainImage.String()) + "/" + dbImg.ImagePath + c.config.GetString(config.SectionServer, repository.SettingSiteContentImageSuffix.String()),
 		}, nil
 	}
 
@@ -116,7 +116,7 @@ func (c *service) UploadImage(ctx context.Context, image uploadImageRequest) (re
 	}
 
 	simPath := time.Now().Format("2006/01/") + fileSha[len(fileSha)-5:len(fileSha)-3] + "/" + fileSha[24:26] + "/" + fileSha[16:17] + fileSha[12:13] + "/"
-	filePath := c.config.GetString(config.SectionServer, "image_path") + "/" + simPath
+	filePath := c.config.GetString(config.SectionServer, repository.SettingSiteMediaUploadPath.String()) + "/" + simPath
 	if !file.PathExist(filePath) {
 		if err = os.MkdirAll(filePath, os.ModePerm); err != nil {
 			_ = level.Error(c.logger).Log("os", "MkdirAll", "err", err.Error())
@@ -165,7 +165,7 @@ func (c *service) UploadImage(ctx context.Context, image uploadImageRequest) (re
 		Path:      saveImage.ImagePath,
 		Hash:      saveImage.Md5,
 		Timestamp: saveImage.CreatedAt.Unix(),
-		Url:       c.config.GetString("server", "image_domain") + "/" + saveImage.ImagePath + c.config.GetString("server", "image_suffix"),
+		Url:       c.config.GetString(config.SectionServer, repository.SettingGlobalDomainImage.String()) + "/" + saveImage.ImagePath + c.config.GetString(config.SectionServer, repository.SettingSiteContentImageSuffix.String()),
 	}, nil
 
 }
@@ -345,7 +345,7 @@ func (c *service) MediaObject(ctx context.Context, req postRequest) (rs *getPost
 	}
 
 	simPath := time.Now().Format("2006/01/") + fileSha[len(fileSha)-5:len(fileSha)-3] + "/" + fileSha[24:26] + "/" + fileSha[16:17] + fileSha[12:13] + "/"
-	filePath := c.config.GetString(config.SectionServer, "image_path") + "/" + simPath
+	filePath := c.config.GetString(config.SectionServer, repository.SettingSiteMediaUploadPath.String()) + "/" + simPath
 	if !file.PathExist(filePath) {
 		if err = os.MkdirAll(filePath, os.ModePerm); err != nil {
 			_ = c.logger.Log("os", "MkdirAll", "err", err.Error())
@@ -400,7 +400,7 @@ func (c *service) MediaObject(ctx context.Context, req postRequest) (rs *getPost
 	}, member{
 		Name: "url",
 		Value: memberValue{
-			String: c.config.GetString("server", "image_domain") + "/" + simPath + fileName + c.config.GetString(config.SectionServer, "image_suffix"),
+			String: c.config.GetString(config.SectionServer, repository.SettingGlobalDomainImage.String()) + "/" + simPath + fileName + c.config.GetString(config.SectionServer, repository.SettingSiteContentImageSuffix.String()),
 		},
 	}, member{
 		Name: "type",

@@ -6,9 +6,8 @@ import (
 )
 
 const (
-	SectionServer = "server"
-	ImageFilePath = "image_file_path"
-	ImageDomain   = "image_domain"
+	SectionServer  = "server"
+	SectionSetting = "setting" // todo: 数据库设置的全部使用这个
 )
 
 type Config struct {

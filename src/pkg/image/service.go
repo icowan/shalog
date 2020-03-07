@@ -62,16 +62,16 @@ func (s *service) UploadMedia(ctx context.Context, f *multipart.FileHeader) (res
 			Path:      dbImg.ImagePath,
 			Hash:      dbImg.Md5,
 			Timestamp: dbImg.CreatedAt.Unix(),
-			Url:       domainUrl + "/" + dbImg.ImagePath + s.config.GetString("server", "image_suffix"),
+			Url:       domainUrl + "/" + dbImg.ImagePath + s.config.GetString(config.SectionServer, repository.SettingSiteContentImageSuffix.String()),
 		}, nil
 	}
 
 	fileName := time.Now().Format("20060102") + "-" + fileSha + extName
 	simPath := time.Now().Format("2006/01/") + fileSha[len(fileSha)-5:len(fileSha)-3] + "/" + fileSha[24:26] + "/" + fileSha[16:17] + fileSha[12:13] + "/"
-	fileFullPath := uploadPath + simPath + fileName
+	fileFullPath := uploadPath + "/" + simPath + fileName
 
-	if !file2.PathExist(uploadPath + simPath) {
-		if err = os.MkdirAll(uploadPath+simPath, os.ModePerm); err != nil {
+	if !file2.PathExist(uploadPath + "/" + simPath) {
+		if err = os.MkdirAll(uploadPath+"/"+simPath, os.ModePerm); err != nil {
 			_ = level.Error(s.logger).Log("os", "MkdirAll", "err", err.Error())
 			return
 		}
@@ -107,7 +107,7 @@ func (s *service) UploadMedia(ctx context.Context, f *multipart.FileHeader) (res
 		Path:      img.ImagePath,
 		Hash:      img.Md5,
 		Timestamp: img.CreatedAt.Unix(),
-		Url:       domainUrl + "/" + img.ImagePath + s.config.GetString("server", "image_suffix"),
+		Url:       domainUrl + "/" + img.ImagePath + s.config.GetString(config.SectionServer, repository.SettingSiteContentImageSuffix.String()),
 	}, nil
 }
 
@@ -119,7 +119,7 @@ func (s *service) List(ctx context.Context, pageSize, offset int) (images []type
 	}
 
 	for k, v := range images {
-		images[k].ImagePath = imageUrl(v.ImagePath, s.config.GetString("server", "image_domain"))
+		images[k].ImagePath = imageUrl(v.ImagePath, s.config.GetString(config.SectionServer, repository.SettingGlobalDomainImage.String()))
 	}
 
 	return

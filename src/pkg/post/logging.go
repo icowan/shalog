@@ -178,3 +178,15 @@ func (s *loggingService) Detail(ctx context.Context, id int64) (rs *types.Post, 
 	}(time.Now())
 	return s.Service.Detail(ctx, id)
 }
+
+func (s *loggingService) Star(ctx context.Context, id int64) (err error) {
+	defer func(begin time.Time) {
+		_ = s.logger.Log(
+			"method", "Star",
+			"id", id,
+			"took", time.Since(begin),
+			"err", err,
+		)
+	}(time.Now())
+	return s.Service.Star(ctx, id)
+}

@@ -37,12 +37,12 @@ func (c *service) Index(ctx context.Context) (rs map[string]interface{}, err err
 		return
 	}
 
+	// TODO: 这里可以进行优化 使用Channel
 	var starsData []map[string]interface{}
-
 	for _, v := range stars {
 		var imgUrl string
 		if len(v.Images) > 0 {
-			imgUrl = c.config.GetString("server", "image_domain") + "/" + v.Images[0].ImagePath
+			imgUrl = c.config.GetString(config.SectionServer, repository.SettingGlobalDomainImage.String()) + "/" + v.Images[0].ImagePath
 		}
 		starsData = append(starsData, map[string]interface{}{
 			"content":    v.Content,
@@ -67,7 +67,7 @@ func (c *service) Index(ctx context.Context) (rs map[string]interface{}, err err
 	for _, v := range list {
 		var imgUrl string
 		if len(v.Images) > 0 {
-			imgUrl = c.config.GetString("server", "image_domain") + "/" + v.Images[0].ImagePath
+			imgUrl = c.config.GetString(config.SectionServer, repository.SettingGlobalDomainImage.String()) + "/" + v.Images[0].ImagePath
 		}
 		posts = append(posts, map[string]interface{}{
 			"content":    v.Content,
@@ -105,7 +105,7 @@ func (c *service) Index(ctx context.Context) (rs map[string]interface{}, err err
 		for _, vv := range v.Posts {
 			var imgUrl string
 			if len(vv.Images) > 0 {
-				imgUrl = c.config.GetString("server", "image_domain") + "/" + vv.Images[0].ImagePath
+				imgUrl = c.config.GetString(config.SectionServer, repository.SettingGlobalDomainImage.String()) + "/" + vv.Images[0].ImagePath
 			}
 			categoryPosts[v.Id] = append(categoryPosts[v.Id], map[string]string{
 				"title":     vv.Title,

@@ -36,7 +36,7 @@ const (
 	DefaultHttpPort   = ":8080"
 	DefaultConfigPath = "./app.cfg"
 	//DefaultStaticPath = "./static/"
-	AdminViewPath = "./dist/"
+	AdminViewPath = "./views/admin/"
 )
 
 var (
@@ -199,6 +199,7 @@ func start() {
 
 	for _, v := range settings {
 		sets[v.Key] = v.Value
+		cf.SetValue(config.SectionServer, v.Key, v.Value)
 	}
 
 	httpLogger := log.With(logger, "component", "http")

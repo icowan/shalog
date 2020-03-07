@@ -32,6 +32,7 @@ const (
 	SettingSiteGitalkSetting          SettingKey = "site-gtialk-setting"           // gitalk的配置 // todo: 是否需要开启的功能呢？
 	SettingSiteShareSetting           SettingKey = "site-share-setting"            // 分享给件的配置
 	SettingSiteMediaUploadPath        SettingKey = "site-media-upload-path"        // 上传资源所存放的路径
+	SettingSiteContentImageSuffix     SettingKey = "site-content-image-suffix"     // 文章图片后缀
 	SettingWechatOfficialAccountName  SettingKey = "wechat-official-account-name"  // 微信公众号名称
 	SettingWechatOfficialAccountDesc  SettingKey = "wechat-official-account-desc"  // 微信公众号描述
 	SettingWechatOfficialAccountImage SettingKey = "wechat-official-account-image" // 微信公众号名称 todo: cdn地址或本地相对路径

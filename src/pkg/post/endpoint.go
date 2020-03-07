@@ -47,6 +47,7 @@ type Endpoints struct {
 	RestoreEndpoint   endpoint.Endpoint
 	AdminListEndpoint endpoint.Endpoint
 	DetailEndpoint    endpoint.Endpoint
+	StarEndpoint      endpoint.Endpoint
 }
 
 type (
@@ -94,6 +95,7 @@ func NewEndpoint(s Service, mdw map[string][]endpoint.Middleware) Endpoints {
 		RestoreEndpoint:   makeRestoreEndpoint(s),
 		AdminListEndpoint: makeAdminListEndpoint(s),
 		DetailEndpoint:    makeDetailEndpoint(s),
+		StarEndpoint:      makeStarEndpoint(s),
 	}
 
 	for _, m := range mdw["Get"] {
@@ -124,6 +126,14 @@ func NewEndpoint(s Service, mdw map[string][]endpoint.Middleware) Endpoints {
 	}
 
 	return eps
+}
+
+func makeStarEndpoint(s Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(postRequest)
+		err = s.Star(ctx, req.Id)
+		return encode.Response{Error: err}, err
+	}
 }
 
 func makeDetailEndpoint(s Service) endpoint.Endpoint {

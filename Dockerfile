@@ -11,5 +11,6 @@ FROM alpine:latest
 
 COPY --from=build-env /go/bin/blog /go/bin/blog
 COPY ./views /go/bin/views
+
 WORKDIR /go/bin/
 CMD ["/go/bin/blog", "start", "-p", ":8080", "-c", "/etc/blog/app.cfg"]

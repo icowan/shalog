@@ -60,6 +60,9 @@ type Service interface {
 
 	// 后台获取详情
 	Detail(ctx context.Context, id int64) (rs *types.Post, err error)
+
+	// 标星的会显示在首页Banner上
+	Star(ctx context.Context, id int64) (err error)
 }
 
 type service struct {
@@ -68,14 +71,27 @@ type service struct {
 	config     *config.Config
 }
 
+func (c *service) Star(ctx context.Context, id int64) (err error) {
+	p, err := c.repository.Post().FindOnce(id)
+	if err != nil {
+		return errors.Wrap(err, ErrPostFind.Error())
+	}
+
+	p.Star = 1
+	if err = c.repository.Post().Update(p); err != nil {
+		err = errors.Wrap(err, ErrPostUpdate.Error())
+	}
+	return
+}
+
 func (c *service) Detail(ctx context.Context, id int64) (rs *types.Post, err error) {
 	rs, err = c.repository.Post().Find(id)
 	if err != nil {
-		return
+		return nil, errors.Wrap(err, ErrPostFind.Error())
 	}
 
 	for k, v := range rs.Images {
-		v.ImagePath = imageUrl(v.ImagePath, c.config.GetString("server", "image_domain"))
+		v.ImagePath = imageUrl(v.ImagePath, c.config.GetString(config.SectionServer, repository.SettingGlobalDomainImage.String()))
 		rs.Images[k] = v
 	}
 
@@ -88,7 +104,7 @@ func (c *service) AdminList(ctx context.Context, order, by, category, tag string
 	for k, v := range posts {
 		var imgs []types.Image
 		for _, img := range v.Images {
-			img.ImagePath = imageUrl(img.ImagePath, c.config.GetString("server", "image_domain"))
+			img.ImagePath = imageUrl(img.ImagePath, c.config.GetString(config.SectionServer, repository.SettingGlobalDomainImage.String()))
 			imgs = append(imgs, img)
 		}
 		posts[k].Images = imgs
@@ -304,7 +320,7 @@ func (c *service) Get(ctx context.Context, id int64) (rs map[string]interface{},
 	var headerImage string
 
 	if image, err := c.repository.Image().FindByPostIdLast(id); err == nil && image != nil {
-		headerImage = c.config.GetString("server", "image_domain") + "/" + image.ImagePath
+		headerImage = c.config.GetString(config.SectionServer, repository.SettingGlobalDomainImage.String()) + "/" + image.ImagePath
 	}
 
 	var category types.Category
@@ -377,7 +393,7 @@ func (c *service) List(ctx context.Context, order, by, category string, pageSize
 
 	imageMap := make(map[int64]string, len(images))
 	for _, image := range images {
-		imageMap[image.PostID] = imageUrl(image.ImagePath, c.config.GetString("server", "image_domain"))
+		imageMap[image.PostID] = imageUrl(image.ImagePath, c.config.GetString(config.SectionServer, repository.SettingGlobalDomainImage.String()))
 	}
 
 	_ = c.logger.Log("count", count)
@@ -432,7 +448,7 @@ func (c *service) Popular(ctx context.Context) (rs []map[string]interface{}, err
 
 	imageMap := make(map[int64]string, len(images))
 	for _, image := range images {
-		imageMap[image.PostID] = imageUrl(image.ImagePath, c.config.GetString("server", "image_domain"))
+		imageMap[image.PostID] = imageUrl(image.ImagePath, c.config.GetString(config.SectionServer, repository.SettingGlobalDomainImage.String()))
 	}
 
 	for _, post := range posts {
@@ -457,9 +473,9 @@ func imageUrl(path, imageDomain string) string {
 	return imageDomain + "/" + path
 }
 
-func NewService(logger log.Logger, cf *config.Config, repository repository.Repository) Service {
+func NewService(logger log.Logger, cf *config.Config, repo repository.Repository) Service {
 	return &service{
-		repository: repository,
+		repository: repo,
 		logger:     logger,
 		config:     cf,
 	}

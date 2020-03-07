@@ -50,6 +50,8 @@ CREATE:
 	_ = level.Debug(logger).Log("create table", db.CreateTable(types.Comment{}).Error)
 	_ = level.Debug(logger).Log("create table", db.CreateTable(types.Tag{}).Error)
 	_ = level.Debug(logger).Log("create table", db.CreateTable(types.Category{}).Error)
+	_ = level.Debug(logger).Log("create table", db.CreateTable(types.Setting{}).Error)
+	_ = level.Debug(logger).Log("create table", db.CreateTable(types.Link{}).Error)
 
 	//u := strings.Split(adminEmail, "@")
 

@@ -55,6 +55,7 @@ func MakeHandler(ps Service, logger kitlog.Logger, repository repository.Reposit
 		"Delete":  ems[2:],
 		"Restore": ems[2:],
 		"Detail":  ems[2:],
+		"Star":    ems[2:],
 	})
 
 	r := mux.NewRouter()
@@ -122,6 +123,12 @@ func MakeHandler(ps Service, logger kitlog.Logger, repository repository.Reposit
 	)).Methods(http.MethodDelete)
 	r.Handle("/post/{id:[0-9]+}/restore", kithttp.NewServer(
 		eps.RestoreEndpoint,
+		decodeDetailRequest,
+		encode.EncodeJsonResponse,
+		adminOpts...,
+	)).Methods(http.MethodPut)
+	r.Handle("/post/{id:[0-9]+}/star", kithttp.NewServer(
+		eps.StarEndpoint,
 		decodeDetailRequest,
 		encode.EncodeJsonResponse,
 		adminOpts...,
