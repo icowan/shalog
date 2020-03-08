@@ -11,8 +11,12 @@ import (
 	"errors"
 	"github.com/go-kit/kit/log/level"
 	"github.com/go-sql-driver/mysql"
+	"github.com/icowan/blog/src/encode"
 	"github.com/icowan/blog/src/repository/types"
+	"io/ioutil"
+	"path/filepath"
 	"regexp"
+	"strings"
 )
 
 var (
@@ -44,6 +48,7 @@ func importToDb() error {
 	return nil
 
 CREATE:
+	db = db.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci")
 	_ = level.Debug(logger).Log("create table", db.CreateTable(types.User{}).Error)
 	_ = level.Debug(logger).Log("create table", db.CreateTable(types.Post{}).Error)
 	_ = level.Debug(logger).Log("create table", db.CreateTable(types.Image{}).Error)
@@ -53,19 +58,29 @@ CREATE:
 	_ = level.Debug(logger).Log("create table", db.CreateTable(types.Setting{}).Error)
 	_ = level.Debug(logger).Log("create table", db.CreateTable(types.Link{}).Error)
 
-	//u := strings.Split(adminEmail, "@")
+	path, err := filepath.Abs(sqlPath)
+	if err != nil {
+		_ = level.Error(logger).Log("filepath", "Abs", "err", err.Error())
+		return err
+	}
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		_ = level.Error(logger).Log("ioutil", "ReadFile", "err", err.Error())
+		return err
+	}
 
-	//member := &types.User{
-	//	Email:      adminEmail,
-	//	Username:   u[0],
-	//	Password:   null.StringFrom(encode.EncodePassword(adminPassword, appKey)),
-	//	Roles:      roles,
-	//	Namespaces: nss,
-	//}
-	//return store.User().(member)
+	ds := strings.Split(string(data), "');")
+	for _, v := range ds {
+		if !strings.Contains(v, "');") {
+			v += "');"
+		}
+		if v == "');" {
+			continue
+		}
+		db.Exec(v)
+	}
 
-	return nil
-
+	return store.User().Create(username, encode.EncodePassword(password, appKey), "")
 }
 
 func logLevel(logLevel string) (opt level.Option) {

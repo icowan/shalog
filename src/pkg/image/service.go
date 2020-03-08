@@ -68,10 +68,10 @@ func (s *service) UploadMedia(ctx context.Context, f *multipart.FileHeader) (res
 
 	fileName := time.Now().Format("20060102") + "-" + fileSha + extName
 	simPath := time.Now().Format("2006/01/") + fileSha[len(fileSha)-5:len(fileSha)-3] + "/" + fileSha[24:26] + "/" + fileSha[16:17] + fileSha[12:13] + "/"
-	fileFullPath := uploadPath + "/" + simPath + fileName
+	fileFullPath := uploadPath + simPath + fileName
 
-	if !file2.PathExist(uploadPath + "/" + simPath) {
-		if err = os.MkdirAll(uploadPath+"/"+simPath, os.ModePerm); err != nil {
+	if !file2.PathExist(uploadPath + simPath) {
+		if err = os.MkdirAll(uploadPath+simPath, os.ModePerm); err != nil {
 			_ = level.Error(s.logger).Log("os", "MkdirAll", "err", err.Error())
 			return
 		}

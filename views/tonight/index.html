@@ -7,8 +7,10 @@
 {% block body %}
 <article>
     <!--lbox begin-->
+
     <div class="lbox">
         <!--banbox begin-->
+        {% if stars %}
         <div class="banbox">
             <div class="banner">
                 <div id="banner" class="fader">
@@ -28,6 +30,7 @@
                 </div>
             </div>
         </div>
+
         <!--banbox end-->
         <!--headline begin-->
         <div class="headline">
@@ -44,6 +47,8 @@
         </div>
         <!--headline end-->
         <div class="clearblank"></div>
+        {% endif %}
+
         <div class="tab_box whitebg">
             <div class="tab_buttons">
                 <ul>
@@ -103,11 +108,11 @@
         -->
 
         <!-- 广告 -->
+        {% if site_ad_home_left %}
         <div class="ad whitebg">
-            <a href="https://www.aliyun.com/minisite/goods?userCode=21fgqulk" target="_blank">
-                <img src="http://source.qiniu.cnd.nsini.com/ad-image/1000x90.jpg">
-            </a>
+            {{site_ad_home_left|safe}}
         </div>
+        {% endif %}
 
         <div class="whitebg bloglist">
             <h2 class="htitle">最新博文</h2>
@@ -168,7 +173,7 @@
                 </li>
             </ul>
         </div>
-        <div class="whitebg notice">
+        <!--<div class="whitebg notice">
             <h2 class="htitle">网站公告</h2>
             <ul>
                 <li><a href="#">2020-02 全新升级</a></li>
@@ -176,7 +181,7 @@
                 <li><a href="#">2017-02 使用golang重构</a></li>
                 <li><a href="#">2014-02 更换模板</a></li>
             </ul>
-        </div>
+        </div>-->
         <!--<div class="whitebg paihang">
             <h2 class="htitle">点击排行</h2>
             <section class="topnews imgscale">
@@ -217,16 +222,11 @@
             </ul>
         </div>
         <!-- 广告位 -->
+        {% if site_ad_home_right %}
         <div class="ad whitebg imgscale">
-            <h2 class="htitle">腾讯云</h2>
-            <ul>
-                <li>
-                    <a href="https://cloud.tencent.com/act/cps/redirect?redirect=1052&cps_key=d7fa941b22714852fa704cc3e74e85a2&from=console"
-                       target="_blank" title="【腾讯云】云产品精选秒杀，云服务器1核2G 99元/年">
-                        <img src="http://source.qiniu.cnd.nsini.com/ad-image/560.300.jpg">
-                    </a></li>
-            </ul>
+            {{site_ad_home_right|safe}}
         </div>
+        {% endif %}
 
         <!-- 广告 -->
         <!--

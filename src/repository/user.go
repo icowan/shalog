@@ -10,10 +10,24 @@ type UserRepository interface {
 	FindAndPwd(username, password string) (res *types.User, err error)
 	FindById(id int64) (res types.User, err error)
 	Update(user *types.User) (err error)
+	Create(username, password, email string) error
 }
 
 type user struct {
 	db *gorm.DB
+}
+
+func (c *user) Create(username, password, email string) error {
+	return c.db.Save(&types.User{
+		Username:          username,
+		UsernameCanonical: username,
+		Email:             email,
+		EmailCanonical:    email,
+		Enabled:           1,
+		Salt:              "",
+		Password:          password,
+		ConfirmationToken: "",
+	}).Error
 }
 
 func (c *user) Update(user *types.User) (err error) {

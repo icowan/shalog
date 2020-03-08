@@ -77,7 +77,11 @@ func (c *service) Star(ctx context.Context, id int64) (err error) {
 		return errors.Wrap(err, ErrPostFind.Error())
 	}
 
-	p.Star = 1
+	if p.Star == 1 {
+		p.Star = -1
+	} else {
+		p.Star = 1
+	}
 	if err = c.repository.Post().Update(p); err != nil {
 		err = errors.Wrap(err, ErrPostUpdate.Error())
 	}
@@ -359,6 +363,19 @@ func (c *service) List(ctx context.Context, order, by, category string, pageSize
 	// 取列表 判断搜索、分类、Tag条件
 	// 取最多阅读
 
+	categoriesCh := make(chan []*types.Category)
+	tagsCh := make(chan []*types.Tag)
+
+	go func() {
+		cateRes, _ := c.repository.Category().FindAll()
+		categoriesCh <- cateRes
+	}()
+
+	go func() {
+		tagsRes, _ := c.repository.Tag().All(20)
+		tagsCh <- tagsRes
+	}()
+
 	var posts []types.Post
 	if category != "" {
 		if category, total, err := c.repository.Category().FindByName(category, pageSize, offset); err == nil {
@@ -415,10 +432,10 @@ func (c *service) List(ctx context.Context, order, by, category string, pageSize
 		})
 	}
 
-	tags, _ := c.repository.Tag().All(20)
-
-	// todo 考虑从cache里拿
-	categories, _ := c.repository.Category().FindAll()
+	categories := <-categoriesCh
+	tags := <-tagsCh
+	close(categoriesCh)
+	close(tagsCh)
 	other = map[string]interface{}{
 		"tags":       tags,
 		"category":   category,
@@ -458,9 +475,12 @@ func (c *service) Popular(ctx context.Context) (rs []map[string]interface{}, err
 		}
 
 		desc := []rune(post.Description)
+		if len(desc) > 40 {
+			desc = desc[:40]
+		}
 		rs = append(rs, map[string]interface{}{
 			"title":     post.Title,
-			"desc":      string(desc[:40]),
+			"desc":      string(desc),
 			"id":        post.ID,
 			"image_url": imageUrl,
 		})

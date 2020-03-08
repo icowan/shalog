@@ -36,13 +36,19 @@ const (
 	DefaultHttpPort   = ":8080"
 	DefaultConfigPath = "./app.cfg"
 	//DefaultStaticPath = "./static/"
-	AdminViewPath = "./views/admin/"
+	AdminViewPath   = "./views/admin/"
+	DefaultUsername = "root"
+	DefaultPassword = "admin"
+	DefaultSQL      = "./database/db.sql"
 )
 
 var (
 	httpAddr   = envString("HTTP_ADDR", DefaultHttpPort)
 	configPath = envString("CONFIG_PATH", DefaultConfigPath)
-	//staticPath = envString("STATIC_PATH", DefaultStaticPath)
+	username   = envString("USERNAME", DefaultUsername)
+	password   = envString("PASSWORD", DefaultPassword)
+	sqlPath    = envString("SQL_PATH", DefaultSQL)
+	appKey     = ""
 
 	rootCmd = &cobra.Command{
 		Use:               "server",
@@ -68,16 +74,18 @@ blog start -p :8080 -c ./app.cfg
 		},
 	}
 
-	logger     log.Logger
-	store      repository.Repository
-	db         *gorm.DB
-	adminEmail string
+	logger log.Logger
+	store  repository.Repository
+	db     *gorm.DB
 )
 
 func init() {
 
 	rootCmd.PersistentFlags().StringVarP(&httpAddr, "http.port", "p", DefaultHttpPort, "服务启动的端口: :8080")
 	rootCmd.PersistentFlags().StringVarP(&configPath, "config.path", "c", DefaultConfigPath, "配置文件路径: ./app.yaml")
+	rootCmd.PersistentFlags().StringVarP(&username, "username", "u", DefaultUsername, "初始化用户名")
+	rootCmd.PersistentFlags().StringVarP(&password, "password", "P", DefaultPassword, "初始化密码")
+	rootCmd.PersistentFlags().StringVarP(&sqlPath, "sql.path", "s", DefaultSQL, "初始化数据库SQL文件")
 	//startCmd.PersistentFlags().StringVarP(&staticPath, "static.path", "s", DefaultStaticPath, "静态文件目录: ./static/")
 
 	cmd.AddFlags(rootCmd)
@@ -97,7 +105,9 @@ func start() {
 		panic(err)
 	}
 
-	if cf.GetString("server", "logs_path") != "" {
+	appKey = cf.GetString(config.SectionServer, "app_key")
+
+	if cf.GetString(config.SectionServer, "logs_path") != "" {
 		logrusLogger, err := logging.LogrusLogger(cf.GetString("server", "logs_path"))
 		if err != nil {
 			panic(err)

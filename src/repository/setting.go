@@ -33,6 +33,11 @@ const (
 	SettingSiteShareSetting           SettingKey = "site-share-setting"            // 分享给件的配置
 	SettingSiteMediaUploadPath        SettingKey = "site-media-upload-path"        // 上传资源所存放的路径
 	SettingSiteContentImageSuffix     SettingKey = "site-content-image-suffix"     // 文章图片后缀
+	SettingSiteAdHomeLeft             SettingKey = "site-ad-home-left"             // 首页左侧广告位
+	SettingSiteAdHomeRight            SettingKey = "site-ad-home-right"            // 首页右侧广告位
+	SettingSiteAdListRight            SettingKey = "site-ad-list-right"            // 列表页右侧广告位
+	SettingSiteAdDetailRight          SettingKey = "site-ad-detail-right"          // 文章详情页右侧广告位
+	SettingSiteAdDetailLeft           SettingKey = "site-ad-detail-left"           // 文章详情页左侧广告位
 	SettingWechatOfficialAccountName  SettingKey = "wechat-official-account-name"  // 微信公众号名称
 	SettingWechatOfficialAccountDesc  SettingKey = "wechat-official-account-desc"  // 微信公众号描述
 	SettingWechatOfficialAccountImage SettingKey = "wechat-official-account-image" // 微信公众号名称 todo: cdn地址或本地相对路径

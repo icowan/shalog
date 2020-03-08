@@ -113,11 +113,11 @@
         </div>
 
         <!-- 广告位 -->
+        {% if site_ad_list_right %}
         <div class="ad whitebg imgscale">
-            <ul>
-                <a href="https://u.jd.com/8NHIFo"><img src="http://source.qiniu.cnd.nsini.com/ad-image/336x280.png"></a>
-            </ul>
+            {{site_ad_list_right|safe}}
         </div>
+        {% endif %}
 
         <div class="whitebg tongji">
             <h2 class="htitle">站点信息</h2>

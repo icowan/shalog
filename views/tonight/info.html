@@ -64,12 +64,7 @@
                     <p>下一篇：<a href="/post/{{next.id|stringformat:"%0.f"}}">{{next.title}}</a></p>
                     {% endif %}
                 </div>
-                <div>
-                    <a href="https://cloud.tencent.com/act/cps/redirect?redirect=1052&cps_key=d7fa941b22714852fa704cc3e74e85a2&from=console"
-                       target="_blank">
-                        <img src="http://source.qiniu.cnd.nsini.com/ad-image/1040.100.jpg">
-                    </a>
-                </div>
+                {{site_ad_detail_left|safe}}
             </div>
         </div>
         <!--<div class="whitebg">
@@ -133,12 +128,12 @@
         </div>
 
         <!-- 广告 -->
+        {% if site_ad_detail_right %}
         <div class="ad whitebg imgscale">
-            <ul>
-                <a href="https://u.jd.com/35o3bx" target="_blank" title="京东阅读加油站"><img
-                            src="http://source.qiniu.cnd.nsini.com/ad-image/PC-360x300.jpg"></a>
-            </ul>
+            {{site_ad_detail_right|safe}}
         </div>
+        {% endif %}
+
         <div class="whitebg cloud">
             <h2 class="htitle">标签</h2>
             <ul>
@@ -170,7 +165,7 @@
             <h2 class="htitle">站点信息</h2>
             <ul>
                 <li style="text-align: center"><b>微信公众号</b></li>
-                <img src="https://lattecake.oss-cn-beijing.aliyuncs.com/static%2Fimages%2Fweixin%2Fqrcode_for_gh_354bc8e8b814_1280.jpg"
+                <img src="{{wechat_official_account_image}}"
                      class="tongji_gzh">
             </ul>
         </div>
