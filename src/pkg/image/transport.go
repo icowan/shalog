@@ -45,7 +45,18 @@ func MakeHTTPHandler(s Service, logger kitlog.Logger, settings map[string]string
 		opts...,
 	)).Methods("POST")
 
+	r.PathPrefix("/storage/").Handler(kithttp.NewServer(
+		eps.ListEndpoint,
+		decodeGetRequest,
+		encodeImageResponse,
+	)).Methods(http.MethodGet)
 	return r
+}
+
+func decodeGetRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
+	return imageRequest{
+		Path: r.RequestURI,
+	}, nil
 }
 
 func decodeListRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
@@ -83,4 +94,8 @@ func decodeUploadRequest(_ context.Context, r *http.Request) (request interface{
 	}
 
 	return uploadRequest{Files: form.File["file"]}, nil
+}
+
+func encodeImageResponse(ctx context.Context, w http.ResponseWriter, response interface{}) (err error) {
+	return
 }

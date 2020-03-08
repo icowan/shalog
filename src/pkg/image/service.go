@@ -21,12 +21,19 @@ import (
 type Service interface {
 	List(ctx context.Context, pageSize, offset int) (images []types.Image, count int64, err error)
 	UploadMedia(ctx context.Context, f *multipart.FileHeader) (resImg *imageResponse, err error)
+
+	// 实时渲染图片
+	Get(ctx context.Context, path string)
 }
 
 type service struct {
 	logger     log.Logger
 	repository repository.Repository
 	config     *config.Config
+}
+
+func (s *service) Get(ctx context.Context, path string) {
+	panic("implement me")
 }
 
 func (s *service) UploadMedia(ctx context.Context, f *multipart.FileHeader) (resImg *imageResponse, err error) {

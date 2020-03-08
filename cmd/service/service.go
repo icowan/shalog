@@ -244,6 +244,8 @@ func start() {
 	http.Handle("/admin/", http.StripPrefix("/admin/", http.FileServer(http.Dir(AdminViewPath))))
 	http.Handle("/storage/", http.StripPrefix("/storage/", http.FileServer(http.Dir(storagePath))))
 
+	//http.Handle("/storage/", image.MakeHTTPHandler(imageSvc, logger, sets))
+
 	handlers := make(map[string]string, 3)
 	if cf.GetBool("cors", "allow") {
 		handlers["Access-Control-Allow-Origin"] = cf.GetString("cors", "origin")

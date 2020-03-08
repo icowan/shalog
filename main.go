@@ -9,7 +9,12 @@ package main
 
 import (
 	"github.com/icowan/blog/cmd/service"
+	"runtime"
 )
+
+func init() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+}
 
 func main() {
 	service.Run()

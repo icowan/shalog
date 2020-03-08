@@ -95,7 +95,7 @@ func (c *post) Count() (total int64, err error) {
 func (c *post) Prev(publishTime *time.Time, action []int64) (res *types.Post, err error) {
 	var p types.Post
 	err = c.db.Where("push_time < ?", publishTime).
-		Where("action in (?)", action).
+		//Where("action in (?)", action). // todo: 注释掉后可能会是个bug ，下一帖跟下一贴的bug
 		Where("post_status = ?", PostStatusPublish).
 		Order("push_time desc").Limit(1).First(&p).Error
 	return &p, err
@@ -104,7 +104,7 @@ func (c *post) Prev(publishTime *time.Time, action []int64) (res *types.Post, er
 func (c *post) Next(publishTime *time.Time, action []int64) (res *types.Post, err error) {
 	var p types.Post
 	err = c.db.Where("push_time > ?", publishTime).
-		Where("action in (?)", action).
+		//Where("action in (?)", action). // todo: 注释掉后可能会是个bug ，下一帖跟下一贴的bug
 		Where("post_status = ?", PostStatusPublish).
 		Order("push_time asc").Limit(1).First(&p).Error
 	return &p, err

@@ -11,6 +11,7 @@ import (
 type Endpoints struct {
 	ListEndpoint   endpoint.Endpoint
 	UploadEndpoint endpoint.Endpoint
+	GetEndpoint    endpoint.Endpoint
 }
 
 type (
@@ -20,6 +21,10 @@ type (
 	}
 	uploadRequest struct {
 		Files []*multipart.FileHeader
+	}
+
+	imageRequest struct {
+		Path string `json:"path"`
 	}
 
 	imageResponse struct {
@@ -65,6 +70,11 @@ func NewEndpoint(s Service, mdw map[string][]endpoint.Middleware) Endpoints {
 				Data:  resData,
 				Error: err,
 			}, err
+		},
+		GetEndpoint: func(ctx context.Context, request interface{}) (response interface{}, err error) {
+			req := request.(imageRequest)
+			s.Get(ctx, req.Path)
+			return encode.Response{}, nil
 		},
 	}
 
