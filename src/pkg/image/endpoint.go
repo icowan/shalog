@@ -3,7 +3,7 @@ package image
 import (
 	"context"
 	"github.com/go-kit/kit/endpoint"
-	"github.com/icowan/blog/src/encode"
+	"github.com/icowan/shalom/src/encode"
 	"github.com/pkg/errors"
 	"mime/multipart"
 )

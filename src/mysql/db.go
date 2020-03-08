@@ -3,7 +3,7 @@ package mysql
 import (
 	"fmt"
 	"github.com/go-kit/kit/log"
-	"github.com/icowan/blog/src/config"
+	"github.com/icowan/shalom/src/config"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"time"
@@ -31,16 +31,16 @@ func NewDb(logger log.Logger, cf *config.Config) (*gorm.DB, error) {
 	//}
 	//
 
-	if err = db.Raw("set global sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';").Error; err != nil {
+	if err = db.Raw("set global sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';").Error; err != nil {
 		_ = logger.Log("db.Raw", err.Error())
 	}
-	if err = db.Raw("set session sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';").Error; err != nil {
+	if err = db.Raw("set session sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';").Error; err != nil {
 		_ = logger.Log("db.Raw", err.Error())
 	}
 	if err = db.DB().Ping(); err != nil {
 		_ = logger.Log("db", "ping", "err", err)
 	}
-
+	
 	_ = logger.Log("mysql", "connect", "success", true)
 
 	return db, nil

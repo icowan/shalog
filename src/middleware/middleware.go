@@ -7,7 +7,7 @@ import (
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	kithttp "github.com/go-kit/kit/transport/http"
-	sjwt "github.com/icowan/blog/src/jwt"
+	sjwt "github.com/icowan/shalom/src/jwt"
 	"github.com/pkg/errors"
 	"golang.org/x/time/rate"
 )

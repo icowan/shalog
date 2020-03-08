@@ -20,17 +20,17 @@ type User struct {
 	Enabled             int       `gorm:"column:enabled" json:"enabled"`
 	Salt                string    `gorm:"column:salt" json:"salt"`
 	Password            string    `gorm:"column:password" json:"password"`
-	LastLogin           time.Time `gorm:"column:last_login" json:"last_login"`
+	LastLogin           time.Time `gorm:"column:last_login;type:datetime" json:"last_login"`
 	Locked              int       `gorm:"column:locked" json:"locked"`
 	Expired             int       `gorm:"column:expired" json:"expired"`
-	ExpiresAt           time.Time `gorm:"column:expires_at" json:"expires_at"`
+	ExpiresAt           time.Time `gorm:"column:expires_at;type:datetime" json:"expires_at"`
 	ConfirmationToken   string    `gorm:"column:confirmation_token" json:"confirmation_token"`
-	PasswordRequestedAt time.Time `gorm:"column:password_requested_at" json:"password_requested_at"`
+	PasswordRequestedAt time.Time `gorm:"column:password_requested_at;type:datetime" json:"password_requested_at"`
 	Roles               string    `gorm:"column:roles" json:"roles"`
 	CredentialsExpired  int       `gorm:"column:credentials_expired" json:"credentials_expired"`
-	CredentialsExpireAt time.Time `gorm:"column:credentials_expire_at" json:"credentials_expire_at"`
-	CreatedAt           time.Time `gorm:"column:created_at" json:"created_at"`
-	UpdatedAt           time.Time `gorm:"column:updated_at" json:"updated_at"`
+	CredentialsExpireAt time.Time `gorm:"column:credentials_expire_at;type:datetime" json:"credentials_expire_at"`
+	CreatedAt           time.Time `gorm:"column:created_at;type:datetime" json:"created_at"`
+	UpdatedAt           time.Time `gorm:"column:updated_at;type:datetime" json:"updated_at"`
 }
 
 func (p *User) TableName() string {

@@ -1,8 +1,9 @@
 package repository
 
 import (
-	"github.com/icowan/blog/src/repository/types"
+	"github.com/icowan/shalom/src/repository/types"
 	"github.com/jinzhu/gorm"
+	"time"
 )
 
 type UserRepository interface {
@@ -18,15 +19,20 @@ type user struct {
 }
 
 func (c *user) Create(username, password, email string) error {
+	now := time.Now()
 	return c.db.Save(&types.User{
-		Username:          username,
-		UsernameCanonical: username,
-		Email:             email,
-		EmailCanonical:    email,
-		Enabled:           1,
-		Salt:              "",
-		Password:          password,
-		ConfirmationToken: "",
+		Username:            username,
+		UsernameCanonical:   username,
+		Email:               email,
+		EmailCanonical:      email,
+		Enabled:             1,
+		Salt:                "",
+		Password:            password,
+		ConfirmationToken:   "",
+		LastLogin:           now,
+		ExpiresAt:           now,
+		PasswordRequestedAt: now,
+		CredentialsExpireAt: now,
 	}).Error
 }
 

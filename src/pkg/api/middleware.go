@@ -13,8 +13,8 @@ import (
 	"github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
-	encode2 "github.com/icowan/blog/src/encode"
-	"github.com/icowan/blog/src/repository"
+	encode2 "github.com/icowan/shalom/src/encode"
+	"github.com/icowan/shalom/src/repository"
 )
 
 type ASDContext string

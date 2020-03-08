@@ -8,7 +8,7 @@
 package repository
 
 import (
-	"github.com/icowan/blog/src/repository/types"
+	"github.com/icowan/shalom/src/repository/types"
 	"github.com/jinzhu/gorm"
 )
 

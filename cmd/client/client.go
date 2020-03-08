@@ -10,8 +10,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/icowan/blog/src/repository"
-	"github.com/icowan/blog/src/repository/types"
+	"github.com/icowan/shalom/src/repository"
+	"github.com/icowan/shalom/src/repository/types"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"log"

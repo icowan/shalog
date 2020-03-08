@@ -3,9 +3,9 @@ package setting
 import (
 	"context"
 	"github.com/go-kit/kit/log"
-	"github.com/icowan/blog/src/config"
-	"github.com/icowan/blog/src/repository"
-	"github.com/icowan/blog/src/repository/types"
+	"github.com/icowan/shalom/src/config"
+	"github.com/icowan/shalom/src/repository"
+	"github.com/icowan/shalom/src/repository/types"
 	"github.com/pkg/errors"
 )
 

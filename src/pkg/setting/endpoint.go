@@ -3,8 +3,8 @@ package setting
 import (
 	"context"
 	"github.com/go-kit/kit/endpoint"
-	"github.com/icowan/blog/src/encode"
-	"github.com/icowan/blog/src/repository"
+	"github.com/icowan/shalom/src/encode"
+	"github.com/icowan/shalom/src/repository"
 	"github.com/pkg/errors"
 	"net/textproto"
 )
