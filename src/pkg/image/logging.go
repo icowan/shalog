@@ -5,6 +5,7 @@ import (
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	"github.com/icowan/blog/src/repository/types"
+	"net/url"
 	"time"
 )
 
@@ -32,4 +33,16 @@ func (s *loggingServer) List(ctx context.Context, pageSize, offset int) (images 
 		)
 	}(time.Now())
 	return s.Service.List(ctx, pageSize, offset)
+}
+
+func (s *loggingServer) Get(ctx context.Context, req *url.URL) (res []byte, err error) {
+	defer func(begin time.Time) {
+		_ = s.logger.Log(
+			"method", "Get",
+			"path", req.RequestURI(),
+			"took", time.Since(begin),
+			"err", err,
+		)
+	}(time.Now())
+	return s.Service.Get(ctx, req)
 }

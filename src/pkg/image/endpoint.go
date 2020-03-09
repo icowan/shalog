@@ -6,6 +6,8 @@ import (
 	"github.com/icowan/blog/src/encode"
 	"github.com/pkg/errors"
 	"mime/multipart"
+	"net/http"
+	"net/url"
 )
 
 type Endpoints struct {
@@ -24,7 +26,9 @@ type (
 	}
 
 	imageRequest struct {
-		Path string `json:"path"`
+		Path string
+		Url  *url.URL
+		Req  *http.Request
 	}
 
 	imageResponse struct {
@@ -73,8 +77,11 @@ func NewEndpoint(s Service, mdw map[string][]endpoint.Middleware) Endpoints {
 		},
 		GetEndpoint: func(ctx context.Context, request interface{}) (response interface{}, err error) {
 			req := request.(imageRequest)
-			s.Get(ctx, req.Path)
-			return encode.Response{}, nil
+			imgPath, err := s.Get(ctx, req.Url)
+			return encode.Response{
+				Data:  imgPath,
+				Error: err,
+			}, err
 		},
 	}
 

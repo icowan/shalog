@@ -8,8 +8,10 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/icowan/blog/src/encode"
 	"github.com/icowan/blog/src/middleware"
+	"github.com/icowan/blog/src/repository"
 	"github.com/pkg/errors"
 	"net/http"
+	"net/url"
 	"strconv"
 )
 
@@ -19,6 +21,12 @@ func MakeHTTPHandler(s Service, logger kitlog.Logger, settings map[string]string
 		kithttp.ServerErrorEncoder(encode.EncodeJsonError),
 		kithttp.ServerBefore(kithttp.PopulateRequestContext),
 		kithttp.ServerBefore(middleware.SettingsRequest(settings)),
+	}
+
+	getImgOpts := []kithttp.ServerOption{
+		kithttp.ServerBefore(middleware.SettingsRequest(settings)),
+		kithttp.ServerErrorLogger(logger),
+		kithttp.ServerErrorEncoder(encode.EncodeError),
 	}
 
 	ems := []endpoint.Middleware{
@@ -45,17 +53,21 @@ func MakeHTTPHandler(s Service, logger kitlog.Logger, settings map[string]string
 		opts...,
 	)).Methods("POST")
 
-	r.PathPrefix("/storage/").Handler(kithttp.NewServer(
-		eps.ListEndpoint,
+	imageDomain := settings[repository.SettingGlobalDomainImage.String()]
+	u, _ := url.Parse(imageDomain)
+
+	r.PathPrefix(u.Path + "/").Handler(kithttp.NewServer(
+		eps.GetEndpoint,
 		decodeGetRequest,
 		encodeImageResponse,
+		getImgOpts...,
 	)).Methods(http.MethodGet)
 	return r
 }
 
 func decodeGetRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
 	return imageRequest{
-		Path: r.RequestURI,
+		Url: r.URL,
 	}, nil
 }
 
@@ -97,5 +109,14 @@ func decodeUploadRequest(_ context.Context, r *http.Request) (request interface{
 }
 
 func encodeImageResponse(ctx context.Context, w http.ResponseWriter, response interface{}) (err error) {
+	if e, ok := response.(encode.Errorer); ok && e.Error() != nil {
+		encode.EncodeError(ctx, e.Error(), w)
+		return err
+	}
+
+	res := response.(encode.Response)
+	b := res.Data.([]byte)
+
+	_, err = w.Write(b)
 	return
 }

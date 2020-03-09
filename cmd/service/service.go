@@ -27,6 +27,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
 	"net/http"
+	"net/url"
 	"os"
 	"os/signal"
 	"syscall"
@@ -40,6 +41,7 @@ const (
 	DefaultUsername = "root"
 	DefaultPassword = "admin"
 	DefaultSQL      = "./database/db.sql"
+	DefaultImage    = "local"
 )
 
 var (
@@ -48,7 +50,9 @@ var (
 	username   = envString("USERNAME", DefaultUsername)
 	password   = envString("PASSWORD", DefaultPassword)
 	sqlPath    = envString("SQL_PATH", DefaultSQL)
-	appKey     = ""
+	imagePath  = envString("Image_Path", DefaultImage)
+
+	appKey = ""
 
 	rootCmd = &cobra.Command{
 		Use:               "server",
@@ -86,7 +90,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&username, "username", "u", DefaultUsername, "初始化用户名")
 	rootCmd.PersistentFlags().StringVarP(&password, "password", "P", DefaultPassword, "初始化密码")
 	rootCmd.PersistentFlags().StringVarP(&sqlPath, "sql.path", "s", DefaultSQL, "初始化数据库SQL文件")
-	//startCmd.PersistentFlags().StringVarP(&staticPath, "static.path", "s", DefaultStaticPath, "静态文件目录: ./static/")
+	startCmd.PersistentFlags().StringVarP(&imagePath, "static.path", "i", DefaultImage, "是否使用本地资源对图片进行处理: local | remote")
 
 	cmd.AddFlags(rootCmd)
 	rootCmd.AddCommand(startCmd)
@@ -234,7 +238,6 @@ func start() {
 	mux.Handle("/", home.MakeHandler(homeSvc, httpLogger, sets))
 
 	viewsPath := sets[repository.SettingViewTemplate.String()]
-	storagePath := sets[repository.SettingSiteMediaUploadPath.String()]
 
 	http.Handle("/metrics", promhttp.Handler())
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir(viewsPath+"/images/"))))
@@ -242,9 +245,16 @@ func start() {
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir(viewsPath+"/css/"))))
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir(viewsPath+"/js/"))))
 	http.Handle("/admin/", http.StripPrefix("/admin/", http.FileServer(http.Dir(AdminViewPath))))
-	http.Handle("/storage/", http.StripPrefix("/storage/", http.FileServer(http.Dir(storagePath))))
 
-	//http.Handle("/storage/", image.MakeHTTPHandler(imageSvc, logger, sets))
+	imageDomain := sets[repository.SettingGlobalDomainImage.String()]
+	u, _ := url.Parse(imageDomain)
+
+	if imagePath == DefaultImage {
+		http.Handle(u.Path+"/", image.MakeHTTPHandler(imageSvc, logger, sets))
+	} else {
+		storagePath := sets[repository.SettingSiteMediaUploadPath.String()]
+		http.Handle(u.Path+"/", http.StripPrefix(u.Path+"/", http.FileServer(http.Dir(storagePath))))
+	}
 
 	handlers := make(map[string]string, 3)
 	if cf.GetBool("cors", "allow") {
