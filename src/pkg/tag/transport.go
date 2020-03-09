@@ -14,8 +14,8 @@ import (
 	"github.com/go-kit/kit/log"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
-	"github.com/icowan/blog/src/encode"
-	"github.com/icowan/blog/src/middleware"
+	"github.com/icowan/shalom/src/encode"
+	"github.com/icowan/shalom/src/middleware"
 	"net/http"
 	"strconv"
 )

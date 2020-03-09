@@ -9,6 +9,8 @@ import (
 	"github.com/icowan/blog/src/encode"
 	"github.com/icowan/blog/src/middleware"
 	"github.com/icowan/blog/src/repository"
+	"github.com/icowan/shalom/src/encode"
+	"github.com/icowan/shalom/src/middleware"
 	"github.com/pkg/errors"
 	"net/http"
 	"net/url"

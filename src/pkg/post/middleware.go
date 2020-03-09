@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/log"
-	"github.com/icowan/blog/src/repository"
+	"github.com/icowan/shalom/src/repository"
 )
 
 func UpdatePostReadNum(logger log.Logger, repository repository.Repository) endpoint.Middleware {

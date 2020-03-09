@@ -4,10 +4,10 @@ import (
 	"context"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
-	"github.com/icowan/blog/src/config"
-	"github.com/icowan/blog/src/pkg/post"
-	"github.com/icowan/blog/src/repository"
-	"github.com/icowan/blog/src/repository/types"
+	"github.com/icowan/shalom/src/config"
+	"github.com/icowan/shalom/src/pkg/post"
+	"github.com/icowan/shalom/src/repository"
+	"github.com/icowan/shalom/src/repository/types"
 	"github.com/pkg/errors"
 	"strconv"
 )
@@ -35,78 +35,6 @@ func NewService(logger log.Logger, config *config.Config, repository repository.
 type indexCh struct {
 	List  []map[string]interface{}
 	Error error
-}
-
-func (c *service) getListChan() indexCh {
-	ch := indexCh{
-		//List: make(chan map[string][]map[string]interface{}, 1),
-		//Error: make(chan error),
-	}
-	// stars
-	{
-		go func() {
-			var res []map[string]interface{}
-			stars, err := c.repository.Post().Stars()
-			if err == nil {
-				for _, v := range stars {
-					var imgUrl string
-					if len(v.Images) > 0 {
-						imgUrl = c.config.GetString(config.SectionServer, repository.SettingGlobalDomainImage.String()) + "/" + v.Images[0].ImagePath
-					}
-					res = append(res, map[string]interface{}{
-						"content":    v.Content,
-						"title":      v.Title,
-						"publish_at": v.PushTime.Format("2006/01/02 15:04:05"),
-						"updated_at": v.UpdatedAt,
-						"author":     v.User.Username,
-						"comment":    v.Reviews,
-						"image_url":  imgUrl,
-						"desc":       v.Description,
-						"id":         strconv.Itoa(int(v.ID)),
-					})
-				}
-			} else {
-				err = errors.Wrap(err, "Post Stars")
-			}
-			ch.Error = err
-			ch.List = res
-		}()
-	}
-
-	// posts
-	{
-		go func() {
-			var res []map[string]interface{}
-			list, err := c.repository.Post().Index()
-			if err == nil {
-				for _, v := range list {
-					var imgUrl string
-					if len(v.Images) > 0 {
-						imgUrl = c.config.GetString(config.SectionServer, repository.SettingGlobalDomainImage.String()) + "/" + v.Images[0].ImagePath
-					}
-					res = append(res, map[string]interface{}{
-						"content":    v.Content,
-						"title":      v.Title,
-						"publish_at": v.PushTime.Format("2006/01/02 15:04:05"),
-						"updated_at": v.UpdatedAt,
-						"author":     v.User.Username,
-						"comment":    v.Reviews,
-						"image_url":  imgUrl,
-						"desc":       v.Description,
-						"tags":       v.Tags,
-						"id":         strconv.Itoa(int(v.ID)),
-					})
-				}
-			} else {
-				err = errors.Wrap(err, "Post Index")
-			}
-			ch.Error = err
-			//ch.List <- map[string][]map[string]interface{}{
-			//	"posts": res,
-			//}
-		}()
-	}
-	return ch
 }
 
 func (c *service) getStars(ch chan indexCh) {

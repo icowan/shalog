@@ -4,7 +4,7 @@ services:
     image: mysql:5.7.14
     environment:
       MYSQL_ROOT_PASSWORD: "admin"
-      MYSQL_DATABASE: "blog"
+      MYSQL_DATABASE: "shalom"
     command: [
       '--character-set-server=utf8mb4',
       '--collation-server=utf8mb4_unicode_ci',
@@ -14,13 +14,15 @@ services:
     ports:
       - "3306:3306"
   kplcloud:
-    image: dudulu/blog:latest
-    command: /go/bin/blog start -p :8080 -c /etc/blog/app.cfg
+    image: dudulu/shalom:v0.0.1-test
+    command: /go/bin/shalom start -p :8080 -c /etc/shalom/app.cfg
     environment:
       GOPATH: "/go"
-      ADMIN_PASSWORD: "admin" # 如果是login_type: email 那这是初始化管理员的登陆密码
+      USERNAME: "admin" # 如果是login_type: email 那这是初始化管理员的登陆密码
+      PASSWORD: "admin"
+      SQL_PATH: ./database/db.sql
     volumes:
-      - app.cfg-sample:/etc/blog/app.cfg
+      - ./app.cfg-sample:/etc/shalom/app.cfg
     depends_on:
       - mysql
     restart: always

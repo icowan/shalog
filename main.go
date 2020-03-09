@@ -8,7 +8,7 @@
 package main
 
 import (
-	"github.com/icowan/blog/cmd/service"
+	"github.com/icowan/shalom/cmd/service"
 	"runtime"
 )
 
