@@ -147,7 +147,7 @@ func (s *service) scale(in io.Reader, out io.Writer, width, height, quality int)
 		return err
 	}
 	if width == 0 || height == 0 {
-		width = origin.Bounds().Max.X
+		//width = origin.Bounds().Max.X
 		height = origin.Bounds().Max.Y
 	}
 	if quality == 0 {
@@ -177,7 +177,17 @@ func (s *service) clip(in io.Reader, out io.Writer, x0, y0, x1, y1, quality int)
 	}
 
 	// 先压缩成 1280 再进行裁切
-	origin = resize.Resize(uint(x1), uint(y1), origin, resize.Lanczos3)
+	if origin.Bounds().Max.Y < origin.Bounds().Max.X {
+		origin = resize.Resize(uint(x1), 0, origin, resize.Lanczos3)
+		//x0 = (origin.Bounds().Max.X / 2) - (x1 / 2)
+		//fmt.Println(origin.Bounds().Max.X / 2)
+		//fmt.Println(origin.Bounds().Max.X)
+		//fmt.Println(origin.Bounds().Max.Y)
+	} else {
+		origin = resize.Resize(0, uint(y1), origin, resize.Lanczos3)
+	}
+
+	//fmt.Println(x0, y0, x1, y1)
 
 	switch fm {
 	case "jpeg":

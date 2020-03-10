@@ -11,7 +11,7 @@ host = mysql
 port = 3306
 user = root
 password = admin
-database = shalom
+database = shalog
 
 [cors]
 allow = true

@@ -17,7 +17,7 @@
                     {% for post in stars|slice:":5" %}
                     <li class="slide">
                         <a href="/post/{{post.id}}" title="{{post.title}}">
-                            <img src="{{post.image_url}}?imageView2/1/w/616/h/260/q/75|imageslim">
+                            {% if post.image_url %}<img src="{{post.image_url}}?imageView2/1/w/616/h/260/q/75|imageslim">{% endif %}
                         </a>
                     </li>
                     {% endfor %}
@@ -38,7 +38,7 @@
                 {% for post in stars|slice:"5:" %}
                 <li>
                     <a href="/post/{{post.id}}" title="{{post.title}}">
-                        <img src="{{post.image_url}}?imageView2/1/w/270/h/125/q/75|imageslim" alt="{{post.title}}">
+                        {% if post.image_url %}<img src="{{post.image_url}}?imageView2/1/w/270/h/125/q/75|imageslim" alt="{{post.title}}">{% endif %}
                         <span>{{post.title}}</span>
                     </a>
                 </li>
@@ -67,8 +67,9 @@
                             {% set i = 0 %}
                             {% for p in v %}
                             {% if i < 2%}
-                            <li><a href="/post/{{p.id}}"><img
-                                            src="{{p.image_url}}?imageView2/1/w/275/h/142/q/75|imageslim"><span>{{p.title}}</span></a>
+                            <li><a href="/post/{{p.id}}">
+                                    {% if p.image_url %}<img
+                                            src="{{p.image_url}}?imageView2/1/w/275/h/142/q/75|imageslim"><span>{{p.title}}</span></a>{% endif %}
                             </li>
                             {% endif %}
                             {% set i = i + 1 %}
@@ -134,8 +135,9 @@
                     </h3>
                     <span class="blogpic imgscale">
                         <i><a href="/post/{{post.id}}">原创</a></i>
-                        <a href="/post/{{post.id}}" title=""><img
-                                    src="{{post.image_url}}?imageView2/1/w/200/h/140/q/75|imageslim" alt=""></a>
+                        <a href="/post/{{post.id}}" title="">
+                            {% if post.image_url %}<img src="{{post.image_url}}?imageView2/1/w/200/h/140/q/75|imageslim" alt="">{% endif %}
+                        </a>
                     </span>
                     <p class="blogtext">{{post.desc}}</p>
                     <p class="bloginfo">
@@ -207,15 +209,18 @@
             <section class="topnews imgscale">
                 {% for popular in populars|slice:":1" %}
                 <a href="/post/{{popular.id|stringformat:"%0.f"}}">
-                    <img src="{{popular.image_url}}?imageView2/1/w/240/h/170/q/75|imageslim">
+                    {% if popular.image_url %}<img src="{{popular.image_url}}?imageView2/1/w/240/h/170/q/75|imageslim"> {% endif %}
                     <span>{{popular.title}}</span>
                 </a>
                 {% endfor %}
             </section>
             <ul>
                 {% for popular in populars|slice:"1:" %}
-                <li><a href="/post/{{popular.id|stringformat:"%0.f"}}"><i><img
-                                    src="{{popular.image_url}}?imageView2/1/w/80/h/80/q/75|imageslim"></i>
+                <li><a href="/post/{{popular.id|stringformat:"%0.f"}}"><i>
+                            {% if popular.image_url %}<img
+                                    src="{{popular.image_url}}?imageView2/1/w/80/h/80/q/75|imageslim">
+                            {% endif %}
+                        </i>
                         <p>{{popular.title}}!</p>
                     </a></li>
                 {% endfor %}

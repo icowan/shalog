@@ -22,6 +22,7 @@ type image struct {
 func (c *image) FindAll(pageSize, offset int) (res []types.Image, count int64, err error) {
 	err = c.db.Model(&types.Image{}).
 		Select("id,image_name,image_path,post_id,created_at,image_size,image_status,client_original_mame").
+		Where("post_id IS NULL OR post_id = 0").
 		Count(&count).Offset(offset).Limit(pageSize).
 		Order("id desc").Find(&res).Error
 	return

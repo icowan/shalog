@@ -15,7 +15,7 @@
                     </h3>
                     <p class="blogtext">{{post.desc|striptags}}</p>
                     <p class="bloginfo">
-                        <i class="avatar"><img src="/images/avatar.jpg"></i>
+                        <i class="avatar"><img src="{{site_about_avatar}}"></i>
                         <span>{{post.author}}</span><span>{{post.publish_at}}</span>
                         <span>
                             {% for tag in post.tags %}

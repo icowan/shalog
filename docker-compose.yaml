@@ -4,7 +4,7 @@ services:
     image: mysql:5.7.14
     environment:
       MYSQL_ROOT_PASSWORD: "admin"
-      MYSQL_DATABASE: "shalom"
+      MYSQL_DATABASE: "shalog"
     command: [
       '--character-set-server=utf8mb4',
       '--collation-server=utf8mb4_unicode_ci',
@@ -14,7 +14,7 @@ services:
     ports:
       - "3306:3306"
   kplcloud:
-    image: dudulu/shalom:v0.0.1-test
+    image: dudulu/shalom:v0.0.3-test
     command: /go/bin/shalom start -p :8080 -c /etc/shalom/app.cfg
     environment:
       GOPATH: "/go"

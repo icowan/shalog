@@ -87,8 +87,8 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVarP(&httpAddr, "http.port", "p", DefaultHttpPort, "服务启动的端口: :8080")
 	rootCmd.PersistentFlags().StringVarP(&configPath, "config.path", "c", DefaultConfigPath, "配置文件路径: ./app.yaml")
-	rootCmd.PersistentFlags().StringVarP(&username, "username", "u", DefaultUsername, "初始化用户名")
-	rootCmd.PersistentFlags().StringVarP(&password, "password", "P", DefaultPassword, "初始化密码")
+	//rootCmd.PersistentFlags().StringVarP(&username, "username", "u", DefaultUsername, "初始化用户名")
+	//rootCmd.PersistentFlags().StringVarP(&password, "password", "P", DefaultPassword, "初始化密码")
 	rootCmd.PersistentFlags().StringVarP(&sqlPath, "sql.path", "s", DefaultSQL, "初始化数据库SQL文件")
 	startCmd.PersistentFlags().StringVarP(&imagePath, "static.path", "i", DefaultImage, "是否使用本地资源对图片进行处理: local | remote")
 
