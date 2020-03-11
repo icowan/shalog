@@ -3,7 +3,7 @@ package mysql
 import (
 	"fmt"
 	"github.com/go-kit/kit/log"
-	"github.com/icowan/shalom/src/config"
+	"github.com/icowan/shalog/src/config"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"time"
@@ -40,7 +40,7 @@ func NewDb(logger log.Logger, cf *config.Config) (*gorm.DB, error) {
 	if err = db.DB().Ping(); err != nil {
 		_ = logger.Log("db", "ping", "err", err)
 	}
-	
+
 	_ = logger.Log("mysql", "connect", "success", true)
 
 	return db, nil

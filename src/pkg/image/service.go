@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
-	"github.com/icowan/shalom/src/config"
-	"github.com/icowan/shalom/src/repository"
-	"github.com/icowan/shalom/src/repository/types"
-	file2 "github.com/icowan/shalom/src/util/file"
+	"github.com/icowan/shalog/src/config"
+	"github.com/icowan/shalog/src/repository"
+	"github.com/icowan/shalog/src/repository/types"
+	file2 "github.com/icowan/shalog/src/util/file"
 	"github.com/nfnt/resize"
 	"github.com/pkg/errors"
 	"image"
@@ -178,16 +178,14 @@ func (s *service) clip(in io.Reader, out io.Writer, x0, y0, x1, y1, quality int)
 
 	// 先压缩成 1280 再进行裁切
 	if origin.Bounds().Max.Y < origin.Bounds().Max.X {
-		origin = resize.Resize(uint(x1), 0, origin, resize.Lanczos3)
-		//x0 = (origin.Bounds().Max.X / 2) - (x1 / 2)
-		//fmt.Println(origin.Bounds().Max.X / 2)
-		//fmt.Println(origin.Bounds().Max.X)
-		//fmt.Println(origin.Bounds().Max.Y)
-	} else {
 		origin = resize.Resize(0, uint(y1), origin, resize.Lanczos3)
+		x0 = (origin.Bounds().Max.X / 2) - (x1 / 2)
+		x1 += x0
+	} else {
+		origin = resize.Resize(uint(x1), 0, origin, resize.Lanczos3)
+		y0 = (origin.Bounds().Max.Y / 2) - (y1 / 2)
+		y1 += y0
 	}
-
-	//fmt.Println(x0, y0, x1, y1)
 
 	switch fm {
 	case "jpeg":

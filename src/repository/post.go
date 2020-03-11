@@ -2,7 +2,7 @@ package repository
 
 import (
 	"errors"
-	"github.com/icowan/shalom/src/repository/types"
+	"github.com/icowan/shalog/src/repository/types"
 	"github.com/jinzhu/gorm"
 	"time"
 )

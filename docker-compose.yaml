@@ -1,28 +1,29 @@
 version: '3'
 services:
   mysql:
-    image: mysql:5.7.14
+    image: mysql:5.7.29
     environment:
       MYSQL_ROOT_PASSWORD: "admin"
       MYSQL_DATABASE: "shalog"
     command: [
       '--character-set-server=utf8mb4',
       '--collation-server=utf8mb4_unicode_ci',
+      '--sql_mode=""'
     ]
     expose:
       - "3306"
     ports:
       - "3306:3306"
-  kplcloud:
-    image: dudulu/shalom:v0.0.3-test
-    command: /go/bin/shalom start -p :8080 -c /etc/shalom/app.cfg
+  shalog:
+    image: dudulu/shalog:v0.0.5-test
+    command: /go/bin/shalog start -p :8080 -c /etc/shalog/app.cfg
     environment:
       GOPATH: "/go"
       USERNAME: "admin" # 如果是login_type: email 那这是初始化管理员的登陆密码
       PASSWORD: "admin"
       SQL_PATH: ./database/db.sql
     volumes:
-      - ./app.cfg-sample:/etc/shalom/app.cfg
+      - ./app.cfg-sample:/etc/shalog/app.cfg
     depends_on:
       - mysql
     restart: always

@@ -9,8 +9,8 @@ import (
 	kitlog "github.com/go-kit/kit/log"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
-	"github.com/icowan/shalom/src/config"
-	"github.com/icowan/shalom/src/repository"
+	"github.com/icowan/shalog/src/config"
+	"github.com/icowan/shalog/src/repository"
 	"io/ioutil"
 	"net/http"
 )

@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/icowan/shalom/src/repository/types"
+	"github.com/icowan/shalog/src/repository/types"
 	"github.com/jinzhu/gorm"
 )
 

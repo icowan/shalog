@@ -10,8 +10,8 @@ package encode
 import (
 	"context"
 	"encoding/json"
-	"github.com/icowan/shalom/src/repository"
-	"github.com/icowan/shalom/src/templates"
+	"github.com/icowan/shalog/src/repository"
+	"github.com/icowan/shalog/src/templates"
 	"net/http"
 )
 

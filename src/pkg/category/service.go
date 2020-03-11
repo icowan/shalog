@@ -10,8 +10,8 @@ package category
 import (
 	"context"
 	"github.com/go-kit/kit/log"
-	"github.com/icowan/shalom/src/repository"
-	"github.com/icowan/shalom/src/repository/types"
+	"github.com/icowan/shalog/src/repository"
+	"github.com/icowan/shalog/src/repository/types"
 	"github.com/pkg/errors"
 )
 

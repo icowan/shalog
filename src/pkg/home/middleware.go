@@ -10,8 +10,8 @@ package home
 import (
 	"context"
 	"github.com/gorilla/mux"
-	"github.com/icowan/shalom/src/encode"
-	"github.com/icowan/shalom/src/repository"
+	"github.com/icowan/shalog/src/encode"
+	"github.com/icowan/shalog/src/repository"
 	"net/http"
 )
 

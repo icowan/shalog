@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/flosch/pongo2"
-	"github.com/icowan/shalom/src/repository"
+	"github.com/icowan/shalog/src/repository"
 	"github.com/russross/blackfriday"
 	"io"
 	"net/http"

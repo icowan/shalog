@@ -2,7 +2,7 @@ package repository
 
 import (
 	"database/sql"
-	"github.com/icowan/shalom/src/repository/types"
+	"github.com/icowan/shalog/src/repository/types"
 	"github.com/jinzhu/gorm"
 	"time"
 )
