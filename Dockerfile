@@ -1,4 +1,4 @@
-FROM golang:1.13.4-alpine3.10 as build-env
+FROM golang:1.13.8-alpine3.11 as build-env
 
 ENV GO111MODULE=on
 ENV GOPROXY=http://goproxy.cn

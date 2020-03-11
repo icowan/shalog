@@ -1,97 +1,152 @@
 # Shalog
 
-Shalog是一个基于Golang开源的 
+Shalog是一个基于Golang开源的轻量级内容管理系统，告别PHP类的繁琐的部署方式，超底的资源占用率，并且支持图床功能当然也可以使用七牛作为存储方式。
 
-kplcloud是一个基于了kubernetes的应用管理系统，通过可视化的页面对应用进行管理，降低容器化成本，同时也降低了Docker及Kubernetes的学习门槛。
+![](http://source.qiniu.cnd.nsini.com/images/2020/03/67/15/20/20200311-b9132e2b9a0f0de82a2d2018158678e9.jpg?imageView2/2/w/1280/interlace/0/q/70)
 
-kplcloud已服务于宜人财富部分业务，稳定管理了上百个应用，近千个容器。
+## 项目设计
 
-![](http://source.qiniu.cnd.nsini.com/images/2019/08/70/29/eb/20190813-e6d29094aab8be96ecb77ad029a70896.jpeg?imageView2/2/w/1280/interlace/0/q/100)
+支持内容自定义，支持模版自定义，支持图床功能，支持Mweb API。
 
-## 架构设计
+### 内容展示
 
-该平台提供了一整套解决方案。
+项目开源地址：[https://github.com/icowan/shalog](github.com/icowan/shalog)
 
-## 平台演示
+![](http://source.qiniu.cnd.nsini.com/images/2020/03/f5/a8/fb/20200311-4d17f4b35d2fb28cf53ca480a88f57d5.jpg?imageView2/2/w/1280/interlace/0/q/70)
 
-演示地址: [https://kplcloud.nsini.com/about.html](https://kplcloud.nsini.com/about.html)
 
-- 感谢 [@icowan](https://github.com/icowan) 赞助四台服务器
+### 管理后台前端
 
-所用到的相关服务，组件分别部署在阿里云，腾讯云服务器上。资源非常有限，仅供大家体验，希望不用过度使用。
+开源地址: 
+
+使用ReaceJS作为管理后台的前端展示，如下图:
+
+![](http://source.qiniu.cnd.nsini.com/images/2020/03/d9/00/ad/20200311-ea32f012517ad52fa9aa953500bd9cf0.jpg?imageView2/2/w/1280/interlace/0/q/70)
+
+
+## 演示Demo
+
+演示地址: [https://shalog.nsini.com](https://shalog.nsini.com/)
+
+演示管理后台地址: [https://shalog.nsini.com/admin/](https://shalog.nsini.com/admin/)
+
+用户名: `shalog`
+
+密码: `admin@123`
 
 ## 安装说明
 
-平台后端基于[go-kit](https://github.com/go-kit/kit)、前端基于[ant-design](https://github.com/ant-design/ant-design)(版本略老)框架进行开发。
+平台后端基于[go-kit](https://github.com/go-kit/kit)、前端基于 [umijs](https://umijs.org/) 和 [ant-design](https://github.com/ant-design/ant-design)框架进行开发。
 
 后端所使用到的依赖全部都在[go.mod](go.mod)里，前端的依赖在`package.json`，详情的请看`yarn.lock`，感谢开源社区的贡献。
 
-后端代码: [https://github.com/kplcloud/kplcloud](https://github.com/kplcloud/kplcloud)
+后端代码: [https://github.com/icowan/shalog](https://github.com/icowan/shalog)
 
-前端代码: [https://github.com/kplcloud/kpaas-frontend](https://github.com/kplcloud/kpaas-frontend)
-
-### 安装教程
-
-[安装教程](https://docs.nsini.com/install/kpaas.html)
-
-### 依赖
-
-- Golang 1.12+ [安装手册](https://golang.org/dl/)
-- MySQL 5.7+ (大多数据都存在mysql)
-- Docker 18.x+ [安装](https://docs.docker.com/install/)
-- RabbitMQ (主要用于消息队列)
-- Jenkins 2.176.2+ (老版本对java适配可能会有问题，尽量使用新版本)
+前端代码: [https://github.com/icowan/shalog-view](https://github.com/icowan/shalog-view)
 
 ## 快速开始
 
-1. 克隆
+配置文件准备, **app.cfg**以下为参考:
+
+```ini
+[server]
+app_name = shalog
+app_key = R*9N*Q#ROFJI
+debug = false # 是否启用调试模式
+log_level = error # warning error info debug
+logs_path = /var/log/shalog.log
+session_timeout = 14400 # 管理后台登录token失效时间
+
+[mysql]
+host = mysql # 数据库地址
+port = 3306 # 数据库端口
+user = root
+password = admin
+database = shalog
+
+[cors]
+allow = false # 是否支持跨域
+origin = http://localhost:8000
+methods = GET,POST,OPTIONS,PUT,DELETE
+headers = Origin,Content-Type,Authorization,mode,cors,x-requested-with,Access-Control-Allow-Origin,Access-Control-Allow-Credentials
+```
+
+### docker-compose 启动
+
+在您的电脑上安装docker-compose命令，请参考: [https://docs.docker.com/compose/install/](https://docs.docker.com/compose/install/)
+
+创建 `docker-compose.yaml` 文件:
+
+```yaml
+version: '3'
+services:
+  mysql:
+    image: mysql:5.7.29
+    environment:
+      MYSQL_ROOT_PASSWORD: "admin"
+      MYSQL_DATABASE: "shalog"
+    command: [
+      '--character-set-server=utf8mb4',
+      '--collation-server=utf8mb4_unicode_ci',
+    ]
+    expose:
+      - "3306"
+    ports:
+      - "3306:3306"
+  shalog:
+    image: dudulu/shalog:v0.0.5-test
+    command: /go/bin/shalog start -p :8080 -c /etc/shalog/app.cfg
+    environment:
+      GOPATH: "/go"
+      USERNAME: "admin" # 如果是login_type: email 那这是初始化管理员的登陆密码
+      PASSWORD: "admin"
+      SQL_PATH: ./database/db.sql
+    volumes:
+      - ./app.cfg:/etc/shalog/app.cfg
+    depends_on:
+      - mysql
+    restart: always
+    ports:
+      - "8080:8080"
+```
+
+将上面准备好的app.cfg放到当前目录，然后执行以下命令:
 
 ```
-$ mkdir -p $GOPATH/src/github.com/kplcloud
-$ cd $GOPATH/src/github.com/kplcloud
-$ git clone https://github.com/kplcloud/kplcloud.git
-$ cd kplcloud
+$ docker-compose start
 ```
 
-2. 配置文件准备
+浏览器输入: `http://localhost:8080` 访问
 
-    - 将连接Kubernets的kubeconfig文件放到该项目目录
-    - app.cfg文件配置也放到该项目目录app.cfg配置请参考 [配置文件解析](https://docs.nsini.com/start/config.html)
+### 本地启动
 
-3. docker-compose 启动
+- Golang 1.13+ [安装手册](https://golang.org/dl/)
+- MySQL 5.7+ (大多数据都存在mysql)
 
-```
-$ cd install/docker-compose
-$ docker-compose up
-```
 
-4. make 启动
+修改 `app.cfg` 文件，将mysql地址配置为您自己的数据库地址。
+
+克隆代码，及本地启动
 
 ```
+$ git clone github.com/icowan/shalog.git
+$ cd shalog/
 $ make run
 ```
 
+浏览器输入: `http://localhost:8080` 访问
+
 ## 文档
 
-[文档](https://docs.nsini.com/)
+- [内容发布编辑]()
+- [分类及标签]()
+- [图片处理]()
+- [站点设置]()
+- [更换模版]()
+- [友链申请审核]()
 
-### 视频教程
+## 支持我们
 
-- [本地启动](https://www.bilibili.com/video/av75847198/)
-- [本地连接K8S](https://www.bilibili.com/video/av75890739/)
-- [创建一个应用](https://www.bilibili.com/video/av75898315/)
+![](http://source.qiniu.cnd.nsini.com//static/pay/wechat-pay.JPG?imageView2/2/w/360/interlace/0/q/70)
 
-## 成员
-
-- **[@icowan](https://github.com/icowan)**
-- **[@yuntinghu](https://github.com/yuntinghu)**
-- **[@soup-zhang](https://github.com/soup-zhang)**
-- **[@xzghua](https://github.com/xzghua)**
-
-### 支持我们
-
-![](http://source.qiniu.cnd.nsini.com//static/pay/wechat-pay.JPG?imageView2/2/w/360/interlace/0/q/70) ![](http://source.qiniu.cnd.nsini.com//static/pay/alipay.JPG?imageView2/2/w/360/interlace/0/q/70)
-
-### 技术交流
-
-- QQ群: 722578340
+![](http://source.qiniu.cnd.nsini.com//static/pay/alipay.JPG?imageView2/2/w/360/interlace/0/q/70)
