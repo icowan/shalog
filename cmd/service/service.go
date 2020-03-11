@@ -62,7 +62,7 @@ var (
 		Long: `# 博客系统
 可用的配置类型：
 [start]
-有关本系统的相关概述，请参阅 https://github.com/icowan/blog
+有关本系统的相关概述，请参阅 https://github.com/icowan/shalog
 `,
 	}
 
@@ -70,7 +70,7 @@ var (
 		Use:   "start",
 		Short: "启动服务",
 		Example: `## 启动命令
-blog start -p :8080 -c ./app.cfg
+shalog start -p :8080 -c ./app.cfg
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			start()
