@@ -1,4 +1,4 @@
-APPNAME = blog
+APPNAME = shalog
 BIN = $(GOPATH)/bin
 GOCMD = /usr/local/go/bin/go
 GOBUILD = $(GOCMD) build
@@ -17,12 +17,12 @@ NAMESPACE = app
 PWD = $(shell pwd)
 
 start:
-	$(BIN)/$(APPNAME) start -p :8080 -c /etc/blog/app.cfg & echo $$! > $(PID)
+	$(BIN)/$(APPNAME) start -p :8080 -c ./app.cfg & echo $$! > $(PID)
 
 restart:
 	@echo restart the app...
 	@kill `cat $(PID)` || true
-	$(BIN)/$(APPNAME) start -p :8080 -c /etc/blog/app.cfg & echo $$! > $(PID)
+	$(BIN)/$(APPNAME) start -p :8080 -c ./app.cfg & echo $$! > $(PID)
 
 install:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOINSTALL) -v
