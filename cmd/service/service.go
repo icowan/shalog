@@ -31,6 +31,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 const (
@@ -215,6 +216,8 @@ func start() {
 		sets[v.Key] = v.Value
 		cf.SetValue(config.SectionServer, v.Key, v.Value)
 	}
+
+	sets["service-start-time"] = time.Now().Format("20060102150405")
 
 	httpLogger := log.With(logger, "component", "http")
 

@@ -141,7 +141,7 @@
                     </span>
                     <p class="blogtext">{{post.desc}}</p>
                     <p class="bloginfo">
-                        <i class="avatar"><img src="/image/avatar.jpg"></i>
+                        <i class="avatar"><img src="/image/avatar.jpg?t={{service_start_time}}"></i>
                         <span>{{post.author}}</span><span>{{post.publish_at}}</span>
                         <span>
                             {% for tag in post.tags %}
