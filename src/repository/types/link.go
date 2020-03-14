@@ -4,8 +4,8 @@ import "time"
 
 type Link struct {
 	Id        int64     `gorm:"column:id;primary_key" json:"id"`
-	Name      string    `gorm:"column:name;unique;size:255" json:"name"`
-	Link      string    `gorm:"column:link;unique;size:500" json:"link"`
+	Name      string    `gorm:"column:name;unique;size:168" json:"name"`
+	Link      string    `gorm:"column:link;unique;size:168" json:"link"`
 	Icon      string    `gorm:"column:icon;size:500" json:"icon"`
 	State     int       `gorm:"column:state;" json:"state"`
 	CreatedAt time.Time `gorm:"column:created_at;" json:"created_at"`
