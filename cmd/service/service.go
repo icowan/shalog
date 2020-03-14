@@ -50,7 +50,7 @@ var (
 	username   = envString("USERNAME", DefaultUsername)
 	password   = envString("PASSWORD", DefaultPassword)
 	sqlPath    = envString("SQL_PATH", DefaultSQL)
-	imagePath  = envString("Image_Path", DefaultImage)
+	imagePath  = envString("IMAGE_PATH", DefaultImage)
 
 	appKey = ""
 
