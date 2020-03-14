@@ -118,3 +118,230 @@ nohup  ./kube-scheduler --address=127.0.0.1 --kubeconfig=/etc/kubernetes/schedul
 ## kubelet
 
 ## kube-proxy
+
+
+
+
+{
+  "kind": "Service",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "mysql",
+    "namespace": "kpaas",
+    "labels": {
+      "app": "mysql"
+    }
+  },
+  "spec": {
+    "ports": [
+      {
+        "name": "tcp-3306",
+        "protocol": "TCP",
+        "port": 3306,
+        "targetPort": 3306,
+        "nodePort": 32306
+      }
+    ],
+    "selector": {
+      "app": "mysql"
+    },
+    "type": "NodePort",
+    "externalTrafficPolicy": "Cluster"
+  },
+  "status": {
+    "loadBalancer": {}
+  }
+}
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: harbor-hub
+  labels:
+    app: harbor-hub
+spec:
+  ports:
+    - name: http-80
+      protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+  sessionAffinity: ClientIP
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: harbor-hub
+subsets:
+- addresses:
+  - ip: 39.106.40.14
+  ports:
+  - port: 80
+    protocol: TCP
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: kplcloud
+spec:
+  rules:
+    - host: hub.kpaas.nsini.com
+      http:
+        paths:
+          - backend:
+              serviceName: harbor-hub
+              servicePort: 80
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  generation: 1
+  labels:
+    app: cardbill
+    language: Golang
+  name: cardbill
+  namespace: kpaas
+spec:
+  minReadySeconds: 10
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: cardbill
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: cardbill
+        language: Golang
+    spec:
+      containers:
+      - env:
+        - name: ENV
+          value: prod
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: INSTANCE_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        image: hub.kpaas.nsini.com/golang
+        imagePullPolicy: IfNotPresent
+        name: cardbill
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:
+          limits:
+            memory: 64Mi
+          requests:
+            memory: 64Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/localtime
+          name: tz-config
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: regcred
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - hostPath:
+          path: /usr/share/zoneinfo/Asia/Shanghai
+          type: ""
+        name: tz-config
+status: {}
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    app: cardbill
+  name: cardbill
+  namespace: kpaas
+spec:
+  ports:
+  - name: http-8080
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: cardbill
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+
+
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: traefik
+  name: cardbill
+  namespace: kpaas
+spec:
+  rules:
+  - host: cardbill.nsini.com
+    http:
+      paths:
+      - backend:
+          serviceName: cardbill
+          servicePort: 8080
+status:
+  loadBalancer: {}
+
+apiVersion: v1
+data:
+  app.cfg: |
+
+[server]
+app_name = cardbill
+debug = true
+session_timeout = 7200
+app_key = ab23&f9a812bd!@3r-=1203
+http_static = ./dist/
+
+[mysql]
+mysql_host = mysql
+mysql_port = 3306
+mysql_user = root
+mysql_password = gbA^zLR$FQsg
+mysql_database = cardbill
+
+
+[github]
+client_id = 84a8596e2d0efc53e9d0
+client_secret = 3fe726d8dfc0bb22a4f1cf797698edc72178052a
+
+[cors]
+allow = true
+origin = http://localhost:8000
+methods = GET,POST,OPTIONS,PUT,DELETE
+headers = Origin,Content-Type,Authorization,mode,cors,x-requested-with,Access-Control-Allow-Origin,Access-Control-Allow-Credentials
+
+kind: ConfigMap
+metadata:
+  name: cardbill
+  namespace: kpaas
