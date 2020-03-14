@@ -243,7 +243,7 @@ func start() {
 	viewsPath := sets[repository.SettingViewTemplate.String()]
 
 	http.Handle("/metrics", promhttp.Handler())
-	http.Handle("/image/", http.StripPrefix("/image/", http.FileServer(http.Dir(viewsPath+"/image/"))))
+	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir(viewsPath+"/img/"))))
 	http.Handle("/fonts/", http.StripPrefix("/fonts/", http.FileServer(http.Dir(viewsPath+"/fonts/"))))
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir(viewsPath+"/css/"))))
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir(viewsPath+"/js/"))))

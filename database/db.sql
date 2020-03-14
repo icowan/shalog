@@ -1,4 +1,4 @@
-INSERT INTO setting (`key`, value, description, created_at, updated_at) VALUES ('site-about-avatar', '/image/avatar.jpg', '用户头像', null, '2020-03-08 18:07:42');
+INSERT INTO setting (`key`, value, description, created_at, updated_at) VALUES ('site-about-avatar', '/img/avatar.jpg', '用户头像', null, '2020-03-08 18:07:42');
 INSERT INTO setting (`key`, value, description, created_at, updated_at) VALUES ('site-about-content', '<p style="text-align:start;text-indent:2em;">生于南方，2012年毕业一路北上成为一名城续猿，如今已从业了9年了。从2013年开始喜欢跑马拉松，已跑过了6个城市累计1600km里程。目前主要做研发工作，以Golang语言为主，曾经用过很多其他编程语言: PHP,Python,Java等等。</p><p></p><blockquote><em><span style="color:#666666"><span style="font-size:16px"><span style="background-color:#f1f2f3">人生最要紧的就是要保持微笑。生命如此美妙，有太多的事，都值得微笑以对...</span></span></span></em></blockquote>', 'abount内容', null, '2020-03-08 18:07:43');
 INSERT INTO setting (`key`, value, description, created_at, updated_at) VALUES ('site-about-desc', '<p>不跑马拉松的摄影师不是好程序员 。</p><p>一名漂在北京的在码农，主要使用语言Go,Python,Lua,PHP,Java,C++,React。</p>', '站点用户描述', null, '2020-03-08 18:07:43');
 INSERT INTO setting (`key`, value, description, created_at, updated_at) VALUES ('site-about-name', 'icowan', '站点用户名', null, '2020-03-08 18:07:43');
@@ -11,7 +11,7 @@ INSERT INTO setting (`key`, value, description, created_at, updated_at) VALUES (
 INSERT INTO setting (`key`, value, description, created_at, updated_at) VALUES ('site-global-foober-code', '', '站点用户职业', null, '2020-03-08 18:07:43');
 INSERT INTO setting (`key`, value, description, created_at, updated_at) VALUES ('site-global-header-code', '', '页面全局header代码 可以设置成百度统计啥的', null, '2020-03-08 18:07:43');
 INSERT INTO setting (`key`, value, description, created_at, updated_at) VALUES ('site-gtialk-setting', '{clientID:''{your github clientId}'',clientSecret:''{your github client Secret}'',repo:''your repo'',owner:''your name'',admin:[''your admin name''],distractionFreeMode:false}', 'gitalk配置', null, '2020-03-08 18:07:43');
-INSERT INTO setting (`key`, value, description, created_at, updated_at) VALUES ('site-icon', '/image/favicon.ico', '站点的ICON地址 todo: cdn地址或本地相对路径', null, '2020-03-08 18:07:42');
+INSERT INTO setting (`key`, value, description, created_at, updated_at) VALUES ('site-icon', '/img/favicon.ico', '站点的ICON地址 todo: cdn地址或本地相对路径', null, '2020-03-08 18:07:42');
 INSERT INTO setting (`key`, value, description, created_at, updated_at) VALUES ('site-keywords', '博客,技术,个人博客,个人技术博客,Golang,Linux,ReactJS,Docker,Kubernetes,k8s,拿铁蛋糕,拿铁味的摩卡,lattecake', '在head里的keywords信息', null, '2020-03-08 18:07:44');
 INSERT INTO setting (`key`, value, description, created_at, updated_at) VALUES ('site-media-upload-path', './uploads/', '上传资源所存放的路径', null, '2020-03-08 18:07:44');
 INSERT INTO setting (`key`, value, description, created_at, updated_at) VALUES ('site-name', '我的站点', '主站名称', null, '2020-03-08 18:07:43');
