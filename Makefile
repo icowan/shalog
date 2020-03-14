@@ -22,7 +22,7 @@ start:
 restart:
 	@echo restart the app...
 	@kill `cat $(PID)` || true
-	$(BIN)/$(APPNAME) start -p :8080 -c ./app.cfg & echo $$! > $(PID)
+	$(BIN)/$(APPNAME) start -p :8080 -c /etc/shalog/app.cfg -i remote & echo $$! > $(PID)
 
 install:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOINSTALL) -v
