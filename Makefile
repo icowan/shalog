@@ -17,7 +17,7 @@ NAMESPACE = app
 PWD = $(shell pwd)
 
 start:
-	$(BIN)/$(APPNAME) start -p :8080 -c ./app.cfg & echo $$! > $(PID)
+	$(BIN)/$(APPNAME) start -p :8080 -c /etc/shalog/app.cfg -i remote & echo $$! > $(PID)
 
 restart:
 	@echo restart the app...
@@ -48,4 +48,4 @@ push:
 	docker push $(HUB_ADDR)/$(NAMESPACE)/$(APPNAME):$(TAG)
 
 run:
-	GO111MODULE=on $(GORUN) ./main.go start -p :8080 -c ./app.cfg
+	GO111MODULE=on $(GORUN) ./main.go start -p :8080 -c ./app.cfg  -i local
