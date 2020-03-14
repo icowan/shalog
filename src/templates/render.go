@@ -92,7 +92,7 @@ func RenderHtml(ctx context.Context, w http.ResponseWriter, response map[string]
 	}
 
 	w.Header().Set("Content-Type", "text/html")
-	if _, err := w.Write([]byte(buf.Bytes())); err != nil {
+	if _, err := w.Write(buf.Bytes()); err != nil {
 		return err
 	}
 

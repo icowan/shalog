@@ -60,7 +60,7 @@
             <div class="newstab">
                 {% for val in categories %}
                 {% for k,v in categoryPosts %}
-                {% if k == val.id|stringformat:"%0.f" %}
+                {% if k == val.id|toString %}
                 <div class="newsitem">
                     <div class="newspic">
                         <ul>
@@ -208,7 +208,7 @@
             <h2 class="htitle">点击排行</h2>
             <section class="topnews imgscale">
                 {% for popular in populars|slice:":1" %}
-                <a href="/post/{{popular.id|stringformat:"%0.f"}}">
+                <a href="/post/{{popular.id|toString}}">
                     {% if popular.image_url %}<img src="{{popular.image_url}}?imageView2/1/w/240/h/170/q/75|imageslim"> {% endif %}
                     <span>{{popular.title}}</span>
                 </a>
@@ -216,7 +216,7 @@
             </section>
             <ul>
                 {% for popular in populars|slice:"1:" %}
-                <li><a href="/post/{{popular.id|stringformat:"%0.f"}}"><i>
+                <li><a href="/post/{{popular.id|toString}}"><i>
                             {% if popular.image_url %}<img
                                     src="{{popular.image_url}}?imageView2/1/w/80/h/80/q/75|imageslim">
                             {% endif %}
@@ -243,7 +243,7 @@
         <div class="whitebg tongji">
             <h2 class="htitle">站点信息</h2>
             <ul>
-                <li><b>文章统计</b>：{{total|stringformat:"%0.f"}}</li>
+                <li><b>文章统计</b>：{{total|toString}}</li>
                 <li><b>微信公众号</b>：扫描二维码，关注我</li>
                 <img src="{{wechat_official_account_image}}"
                      class="tongji_gzh">

@@ -66,7 +66,7 @@
             <h2 class="htitle">点击排行</h2>
             <section class="topnews imgscale">
                 {% for popular in populars|slice:":1" %}
-                <a href="/post/{{popular.id|stringformat:"%0.f"}}">
+                <a href="/post/{{popular.id|toString}}">
                     {% if popular.image_url %}<img src="{{popular.image_url}}?imageView2/1/w/240/h/170/q/75|imageslim">{% endif %}
                     <span>{{popular.title}}</span>
                 </a>
@@ -74,7 +74,7 @@
             </section>
             <ul>
                 {% for popular in populars|slice:"1:" %}
-                <li><i></i><a href="/post/{{popular.id|stringformat:"%0.f"}}">{{popular.title}}</a></li>
+                <li><i></i><a href="/post/{{popular.id|toString}}">{{popular.title}}</a></li>
                 {% endfor %}
             </ul>
         </div>
@@ -82,7 +82,7 @@
             <h2 class="htitle">本栏推荐</h2>
             <section class="topnews imgscale">
                 {% for popular in populars|slice:":1" %}
-                <a href="/post/{{popular.id|stringformat:"%0.f"}}">
+                <a href="/post/{{popular.id|toString}}">
                     <img src="{{popular.image_url}}?imageView2/1/w/240/h/170/q/75|imageslim">
                     <span>{{popular.title}}</span>
                 </a>
@@ -90,7 +90,7 @@
             </section>
             <ul>
                 {% for popular in populars|slice:"1:" %}
-                <li><a href="/post/{{popular.id|stringformat:"%0.f"}}"><i><img src="{{popular.image_url}}?imageView2/1/w/80/h/80/q/75|imageslim"></i>
+                <li><a href="/post/{{popular.id|toString}}"><i><img src="{{popular.image_url}}?imageView2/1/w/80/h/80/q/75|imageslim"></i>
                         <p>{{popular.title}}!</p>
                     </a></li>
                 {% endfor %}
