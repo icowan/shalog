@@ -1,16 +1,16 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: blog
+  name: shalog
   labels:
-    app: blog
+    app: shalog
     language: Golang
     version: latest
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: blog
+      app: shalog
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -19,24 +19,26 @@ spec:
   template:
     metadata:
       labels:
-        app: blog
-        name: blog
+        app: shalog
+        name: shalog
         version: latest
     spec:
       containers:
-        - image: dudulu/blog:latest
-          name: blog
+        - image: dudulu/shalog:latest
+          name: shalog
           ports:
             - name: http-8080
               containerPort: 8080
           command:
-            - /go/bin/blog
+            - /go/bin/shalog
           args:
             - start
             - -p
             - :8080
             - -c
-            - /etc/blog/app.cfg
+            - /etc/shalog/app.cfg
+            - -i
+            - local
           resources:
             requests:
               memory: 64Mi
