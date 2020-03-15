@@ -36,7 +36,7 @@ build-linux:
 login:
 	docker login -u $(DOCKER_USER) -p $(DOCKER_PWD) $(HUB_ADDR)
 
-build:
+docker-build:
 #	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) -o kplcloud -v ./main.go
 	docker build --rm -t $(APPNAME):$(TAG) .
 
