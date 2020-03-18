@@ -177,7 +177,7 @@ func (c *service) Authentication(ctx context.Context, req postRequest) (rs getUs
 
 func (c *service) EditPost(ctx context.Context, id int64, req postRequest) (rs newPostResponse, err error) {
 
-	post, err := c.repository.Post().Find(id)
+	post, err := c.repository.Post().FindOnce(id)
 	if err != nil {
 		return
 	}
