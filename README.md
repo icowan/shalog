@@ -1,8 +1,8 @@
 # Shalog
 
-Shalog是一个基于Golang开源的轻量级内容管理系统，告别PHP类的繁琐的部署方式，超底的资源占用率，并且支持图床功能当然也可以使用七牛作为存储方式。
+Shalog是一个基于Golang开源的轻量级内容管理系统，告别PHP类的繁琐的部署方式，超底的资源占用率，并且支持图床功能当然也可以使用七牛作为存储方式，支持Docker、k8s部署。
 
-![](http://source.qiniu.cnd.nsini.com/images/2020/03/67/15/20/20200311-b9132e2b9a0f0de82a2d2018158678e9.jpg?imageView2/2/w/1280/interlace/0/q/70)
+![](http://source.qiniu.cnd.nsini.com/images/2020/03/b9/d7/37/20200318-de49e256577173333dd85ec0d7fb9dda.jpg?imageView2/2/w/1280/interlace/0/q/70)
 
 ## 项目设计
 
@@ -14,10 +14,9 @@ Shalog是一个基于Golang开源的轻量级内容管理系统，告别PHP类�
 
 ![](http://source.qiniu.cnd.nsini.com/images/2020/03/f5/a8/fb/20200311-4d17f4b35d2fb28cf53ca480a88f57d5.jpg?imageView2/2/w/1280/interlace/0/q/70)
 
-
 ### 管理后台前端
 
-开源地址: 
+开源地址: [https://github.com/icowan/blog-view](https://github.com/icowan/blog-view)
 
 使用ReaceJS作为管理后台的前端展示，如下图:
 
@@ -32,7 +31,7 @@ Shalog是一个基于Golang开源的轻量级内容管理系统，告别PHP类�
 
 用户名: `shalog`
 
-密码: `admin@123`
+密码: `admin`
 
 ## 安装说明
 
@@ -94,11 +93,11 @@ services:
     ports:
       - "3306:3306"
   shalog:
-    image: dudulu/shalog:v0.0.5-test
+    image: dudulu/shalog:latest
     command: /go/bin/shalog start -p :8080 -c /etc/shalog/app.cfg
     environment:
       GOPATH: "/go"
-      USERNAME: "admin" # 如果是login_type: email 那这是初始化管理员的登陆密码
+      USERNAME: "shalog"
       PASSWORD: "admin"
       SQL_PATH: ./database/db.sql
     volumes:
@@ -138,14 +137,15 @@ $ make run
 
 ## 文档
 
-- [内容发布编辑]()
-- [分类及标签]()
-- [图片处理]()
-- [站点设置]()
-- [更换模版]()
-- [友链申请审核]()
+- [内容发布编辑](https://www.lattecake.com/post/20135)
+- [图片处理](https://lattecake.com/post/20132)
+- [站点设置和更换模版](https://www.lattecake.com/post/20136)
+- [友链申请审核](https://lattecake.com/post/20131)
+- [通过mweb发布](https://lattecake.com/post/20134)
+- [开普勒云平台部署](https://lattecake.com/post/20133)
+- 更多内容请访问[https://lattecake.com/search?tag=Shalog](https://lattecake.com/search?tag=Shalog)
 
-## 支持我们
+## 支持我
 
 ![](http://source.qiniu.cnd.nsini.com//static/pay/wechat-pay.JPG?imageView2/2/w/360/interlace/0/q/70)
 
