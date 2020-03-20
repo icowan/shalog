@@ -121,7 +121,7 @@ func (c *tag) Find(id int64) (meta types.Tag, err error) {
 }
 
 func (c *tag) All(limit int) (metas []*types.Tag, err error) {
-	err = c.db.Model(&types.Tag{}).Order("id desc").Limit(limit).Find(&metas).Error
+	err = c.db.Model(&types.Tag{}).Order("count desc").Limit(limit).Find(&metas).Error
 	return
 }
 
