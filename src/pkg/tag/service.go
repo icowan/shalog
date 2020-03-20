@@ -9,6 +9,7 @@ package tag
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	"github.com/icowan/shalog/src/repository"
@@ -36,14 +37,14 @@ type service struct {
 }
 
 func (s *service) UpdateTagCount(ctx context.Context) (err error) {
-	tags, err := s.repository.Tag().All(5000)
+	tags, err := s.repository.Tag().TagCount()
 	if err != nil {
 		return
 	}
 
 	for _, v := range tags {
-		v.Count = int64(s.repository.Tag().TagCountById(v.Id))
-		if err = s.repository.Tag().UpdateCount(v); err != nil {
+		fmt.Println(v.Count)
+		if err = s.repository.Tag().UpdateTag(v); err != nil {
 			_ = level.Error(s.logger).Log("repository.Tag", "UpdateCount", "err", err.Error())
 		}
 	}
