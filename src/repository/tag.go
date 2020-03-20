@@ -45,7 +45,7 @@ func (c *tag) UpdateTag(tag *types.Tag) (err error) {
 
 func (c *tag) TagCount() (tags []*types.Tag, err error) {
 	err = c.db.Model(&types.Tag{}).
-		Select("*,(select count(*) from post_tags where tag_id = id ) as count").
+		Select("*,(select count(*) from post_tags where tag_id = id ) as total").
 		Find(&tags).Error
 	return
 }

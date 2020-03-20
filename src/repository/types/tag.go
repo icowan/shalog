@@ -16,6 +16,7 @@ type Tag struct {
 	Order       int    `gorm:"column:order;default(0)" json:"order"`
 	Parent      int64  `gorm:"column:parent;default(0)" json:"parent"`
 
+	Total   int64   `gorm:"-" json:"total"`
 	PostIds []int64 `gorm:"-" json:"post_ids"`
 	Posts   []Post  `gorm:"many2many:post_tags;association_jointable_foreignkey:post_id;jointable_foreignkey:tag_id;" json:"posts"`
 }

@@ -9,7 +9,6 @@ package tag
 
 import (
 	"context"
-	"fmt"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	"github.com/icowan/shalog/src/repository"
@@ -43,7 +42,7 @@ func (s *service) UpdateTagCount(ctx context.Context) (err error) {
 	}
 
 	for _, v := range tags {
-		fmt.Println(v.Count)
+		v.Count = v.Total
 		if err = s.repository.Tag().UpdateTag(v); err != nil {
 			_ = level.Error(s.logger).Log("repository.Tag", "UpdateCount", "err", err.Error())
 		}
