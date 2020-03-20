@@ -31,10 +31,20 @@ type TagRepository interface {
 	List(tagName string, limit, offset int) (metas []*types.Tag, count int64, err error)
 	Delete(id int64) (err error)
 	Update(id int64, name string) (err error)
+	TagCountById(id int64) int
+	UpdateCount(tag *types.Tag) (err error)
 }
 
 type tag struct {
 	db *gorm.DB
+}
+
+func (c *tag) UpdateCount(tag *types.Tag) (err error) {
+	return c.db.Model(&types.Tag{Id: tag.Id}).Where("id = ?", tag.Id).Update(tag).Error
+}
+
+func (c *tag) TagCountById(id int64) int {
+	return c.db.Model(&types.Tag{Id: id}).Where("id = ?", id).Association("Posts").Count()
 }
 
 func (c *tag) Update(id int64, name string) (err error) {

@@ -10,6 +10,7 @@ package tag
 import (
 	"context"
 	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log/level"
 	"github.com/icowan/shalog/src/repository"
 	"github.com/icowan/shalog/src/repository/types"
 	"github.com/pkg/errors"
@@ -26,11 +27,28 @@ type Service interface {
 	Delete(ctx context.Context, id int64) (err error)
 	Get(ctx context.Context, name string) (tags types.Tag, err error)
 	List(ctx context.Context, tagName string, limit, offset int) (tags []*types.Tag, count int64, err error)
+	UpdateTagCount(ctx context.Context) (err error)
 }
 
 type service struct {
 	logger     log.Logger
 	repository repository.Repository
+}
+
+func (s *service) UpdateTagCount(ctx context.Context) (err error) {
+	tags, err := s.repository.Tag().All(5000)
+	if err != nil {
+		return
+	}
+
+	for _, v := range tags {
+		v.Count = int64(s.repository.Tag().TagCountById(v.Id))
+		if err = s.repository.Tag().UpdateCount(v); err != nil {
+			_ = level.Error(s.logger).Log("repository.Tag", "UpdateCount", "err", err.Error())
+		}
+	}
+
+	return nil
 }
 
 func (s *service) List(ctx context.Context, tagName string, limit, offset int) (tags []*types.Tag, count int64, err error) {

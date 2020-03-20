@@ -25,6 +25,7 @@ import (
 	"github.com/jinzhu/gorm"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/robfig/cron"
 	"github.com/spf13/cobra"
 	"net/http"
 	"net/url"
@@ -266,6 +267,13 @@ func start() {
 		handlers["Access-Control-Allow-Headers"] = cf.GetString("cors", "headers")
 	}
 	http.Handle("/", accessControl(mux, logger, handlers))
+
+	{
+		cornTab := cron.New()
+		countTag(cornTab, tagSvc, cf.GetString("server", "cron_tag"))
+		cornTab.Start()
+		defer cornTab.Stop()
+	}
 
 	errs := make(chan error, 2)
 	go func() {
