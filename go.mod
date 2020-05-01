@@ -3,6 +3,7 @@ module github.com/icowan/shalog
 require (
 	github.com/Unknwon/goconfig v0.0.0-20190425194916-3dba17dd7b9e
 	github.com/VividCortex/gohistogram v1.0.0 // indirect
+	github.com/chanxuehong/wechat v0.0.0-20200409104612-0a1fd76d7a3a
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
 	github.com/flosch/pongo2 v0.0.0-20190505152737-8914e1cf9164

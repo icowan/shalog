@@ -3,12 +3,27 @@ package service
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"net/url"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	kitlogrus "github.com/go-kit/kit/log/logrus"
 	"github.com/go-kit/kit/metrics/prometheus"
+	kithttp "github.com/go-kit/kit/transport/http"
+	"github.com/jinzhu/gorm"
+	stdprometheus "github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/robfig/cron"
+	"github.com/spf13/cobra"
+
 	"github.com/icowan/shalog/src/cmd"
 	"github.com/icowan/shalog/src/config"
+	"github.com/icowan/shalog/src/encode"
 	"github.com/icowan/shalog/src/logging"
 	"github.com/icowan/shalog/src/mysql"
 	"github.com/icowan/shalog/src/pkg/about"
@@ -21,18 +36,8 @@ import (
 	"github.com/icowan/shalog/src/pkg/post"
 	"github.com/icowan/shalog/src/pkg/setting"
 	"github.com/icowan/shalog/src/pkg/tag"
+	"github.com/icowan/shalog/src/pkg/wechat"
 	"github.com/icowan/shalog/src/repository"
-	"github.com/jinzhu/gorm"
-	stdprometheus "github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/robfig/cron"
-	"github.com/spf13/cobra"
-	"net/http"
-	"net/url"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
 const (
@@ -205,6 +210,12 @@ func start() {
 	imageSvc := image.NewService(logger, store, cf)
 	imageSvc = image.NewLoggingServer(logger, imageSvc)
 
+	wechatSvc := wechat.NewService(logger,
+		cf.GetString("wechat", "ori_id"),
+		cf.GetString("wechat", "app_id"),
+		cf.GetString("wechat", "token"),
+		cf.GetString("wechat", "encoding_aes_key"))
+
 	settings, err := settingSvc.List(context.Background())
 	if err != nil {
 		_ = level.Error(logger).Log("SettingSvc", "List", "err", err.Error())
@@ -222,6 +233,12 @@ func start() {
 
 	httpLogger := log.With(logger, "component", "http")
 
+	opts := []kithttp.ServerOption{
+		kithttp.ServerErrorLogger(httpLogger),
+		kithttp.ServerErrorEncoder(encode.EncodeJsonError),
+		kithttp.ServerBefore(kithttp.PopulateRequestContext),
+	}
+
 	mux := http.NewServeMux()
 
 	mux.Handle("/search", post.MakeHandler(ps, httpLogger, store, sets))
@@ -238,6 +255,8 @@ func start() {
 	mux.Handle("/image/", image.MakeHTTPHandler(imageSvc, httpLogger, sets))
 
 	mux.Handle("/api/", api.MakeHandler(apiSvc, httpLogger, store, cf))
+	mux.Handle("/wechat/", wechat.MakeHTTPHandler(wechatSvc, opts...))
+
 	//mux.Handle("/board", board.MakeHandler(boardSvc, httpLogger))
 	mux.Handle("/", home.MakeHandler(homeSvc, httpLogger, sets))
 
