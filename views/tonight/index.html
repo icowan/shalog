@@ -1,9 +1,7 @@
 {% extends "default-layout.html" %}
 
 {% block stylesheet %}
-<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-{% endblock %}
-
+<link href="https://cdn.bootcdn.net/ajax/libs/jqueryui/1.12.1/jquery-ui.css" rel="stylesheet">{% endblock %}
 {% block body %}
 <article>
     <!--lbox begin-->
@@ -283,7 +281,7 @@
 {% endblock %}
 
 {% block script %}
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script>
     // todo: 获取 友链
     $.get("/link/list", function (res) {
