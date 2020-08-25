@@ -202,7 +202,10 @@ func (c *post) FindBy(categoryIds []int64, order, by string, pageSize, offset in
 }
 
 func (c *post) Popular() (posts []*types.Post, err error) {
-	if err = c.db.Order("read_num DESC").Limit(9).Find(&posts).Error; err != nil {
+	if err = c.db.Where("created_at > ?", time.Now().AddDate(-1, 0, 0).Format("2006-01-02 15:04:05")).
+		Order("read_num DESC").
+		Limit(9).
+		Find(&posts).Error; err != nil {
 		return
 	}
 	return

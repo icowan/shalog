@@ -225,8 +225,6 @@ func makeGetEndpoint(s Service) endpoint.Endpoint {
 	}
 }
 
-// TODO: 继续下楼取快递
-
 func makeListEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(listRequest)
