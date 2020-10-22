@@ -21,8 +21,8 @@ import (
 	"github.com/robfig/cron"
 	"github.com/spf13/cobra"
 
+	"github.com/icowan/config"
 	"github.com/icowan/shalog/src/cmd"
-	"github.com/icowan/shalog/src/config"
 	"github.com/icowan/shalog/src/encode"
 	"github.com/icowan/shalog/src/logging"
 	"github.com/icowan/shalog/src/mysql"

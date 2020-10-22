@@ -1,7 +1,6 @@
 module github.com/icowan/shalog
 
 require (
-	github.com/Unknwon/goconfig v0.0.0-20190425194916-3dba17dd7b9e
 	github.com/VividCortex/gohistogram v1.0.0 // indirect
 	github.com/chanxuehong/wechat v0.0.0-20200409104612-0a1fd76d7a3a
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -10,6 +9,7 @@ require (
 	github.com/go-kit/kit v0.8.0
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gorilla/mux v1.7.2
+	github.com/icowan/config v0.0.0-20200926110528-b95deb7acc31
 	github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869 // indirect
 	github.com/jinzhu/gorm v1.9.8
 	github.com/jonboulle/clockwork v0.1.0 // indirect
@@ -22,7 +22,6 @@ require (
 	github.com/robfig/cron v1.2.0
 	github.com/russross/blackfriday v1.5.2
 	github.com/sirupsen/logrus v1.2.0
-	github.com/smartystreets/goconvey v0.0.0-20190731233626-505e41936337 // indirect
 	github.com/spf13/cobra v0.0.5
 	github.com/tebeka/strftime v0.1.3 // indirect
 	golang.org/x/time v0.0.0-20181108054448-85acf8d2951c

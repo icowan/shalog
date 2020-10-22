@@ -64,6 +64,8 @@ func NewService(logger log.Logger, oriId, appId, token, base64AESKey string) Ser
 	mux.DefaultEventHandleFunc(s.defaultEventHandler)
 	mux.MsgHandleFunc(request.MsgTypeText, s.textMsgHandler)
 	mux.EventHandleFunc(menu.EventTypeClick, s.menuClickEventHandler)
-	s.server = core.NewServer(oriId, appId, token, base64AESKey, mux, nil)
+	if token != "" {
+		s.server = core.NewServer(oriId, appId, token, base64AESKey, mux, nil)
+	}
 	return s
 }

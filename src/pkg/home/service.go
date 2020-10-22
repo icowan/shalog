@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
-	"github.com/icowan/shalog/src/config"
+	"github.com/icowan/config"
 	"github.com/icowan/shalog/src/pkg/post"
 	"github.com/icowan/shalog/src/repository"
 	"github.com/icowan/shalog/src/repository/types"

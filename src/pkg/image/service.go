@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
-	"github.com/icowan/shalog/src/config"
+	"github.com/icowan/config"
 	"github.com/icowan/shalog/src/repository"
 	"github.com/icowan/shalog/src/repository/types"
 	file2 "github.com/icowan/shalog/src/util/file"

@@ -3,7 +3,7 @@ package mysql
 import (
 	"fmt"
 	"github.com/go-kit/kit/log"
-	"github.com/icowan/shalog/src/config"
+	"github.com/icowan/config"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"time"

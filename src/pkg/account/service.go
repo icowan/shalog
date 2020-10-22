@@ -5,7 +5,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
-	"github.com/icowan/shalog/src/config"
+	"github.com/icowan/config"
 	"github.com/icowan/shalog/src/encode"
 	sjwt "github.com/icowan/shalog/src/jwt"
 	"github.com/icowan/shalog/src/middleware"
