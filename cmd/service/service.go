@@ -262,21 +262,21 @@ func start() {
 
 	viewsPath := sets[repository.SettingViewTemplate.String()]
 
-	http.Handle("/metrics", promhttp.Handler())
-	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir(viewsPath+"/img/"))))
-	http.Handle("/fonts/", http.StripPrefix("/fonts/", http.FileServer(http.Dir(viewsPath+"/fonts/"))))
-	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir(viewsPath+"/css/"))))
-	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir(viewsPath+"/js/"))))
-	http.Handle("/admin/", http.StripPrefix("/admin/", http.FileServer(http.Dir(AdminViewPath))))
+	mux.Handle("/metrics", promhttp.Handler())
+	mux.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir(viewsPath+"/img/"))))
+	mux.Handle("/fonts/", http.StripPrefix("/fonts/", http.FileServer(http.Dir(viewsPath+"/fonts/"))))
+	mux.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir(viewsPath+"/css/"))))
+	mux.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir(viewsPath+"/js/"))))
+	mux.Handle("/admin/", http.StripPrefix("/admin/", http.FileServer(http.Dir(AdminViewPath))))
 
 	imageDomain := sets[repository.SettingGlobalDomainImage.String()]
 	u, _ := url.Parse(imageDomain)
 
 	if imagePath == DefaultImage {
-		http.Handle(u.Path+"/", image.MakeHTTPHandler(imageSvc, logger, sets))
+		mux.Handle(u.Path+"/", image.MakeHTTPHandler(imageSvc, logger, sets))
 	} else {
 		storagePath := sets[repository.SettingSiteMediaUploadPath.String()]
-		http.Handle(u.Path+"/", http.StripPrefix(u.Path+"/", http.FileServer(http.Dir(storagePath))))
+		mux.Handle(u.Path+"/", http.StripPrefix(u.Path+"/", http.FileServer(http.Dir(storagePath))))
 	}
 
 	handlers := make(map[string]string, 3)
