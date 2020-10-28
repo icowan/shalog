@@ -8,8 +8,8 @@ Documentation=
 
 [Service]
 Type=notify
-Environment="SHALOG_CONFIG_ARGS=-p :8080 -c /etc/shalog/app.cfg"
-ExecStart=$(GOPATH)/bin/shalog start $SHALOG_CONFIG_ARGS
+Environment="SHALOG_CONFIG_ARGS=-p :8080 -c /user/local/shalog/app.cfg"
+ExecStart=/user/local/shalog/bin/shalog start $SHALOG_CONFIG_ARGS
 TimeoutSec=0
 RestartSec=2
 Restart=always
