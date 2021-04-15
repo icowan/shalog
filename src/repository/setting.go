@@ -41,6 +41,7 @@ const (
 	SettingWechatOfficialAccountName  SettingKey = "wechat-official-account-name"  // 微信公众号名称
 	SettingWechatOfficialAccountDesc  SettingKey = "wechat-official-account-desc"  // 微信公众号描述
 	SettingWechatOfficialAccountImage SettingKey = "wechat-official-account-image" // 微信公众号名称 todo: cdn地址或本地相对路径
+	SettingWechatOfficialMenu         SettingKey = "wechat-official-menu"          // 微信公众号菜单
 )
 
 func (s SettingKey) String() string {

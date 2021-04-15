@@ -2,6 +2,7 @@ package setting
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/chanxuehong/wechat/mp/core"
 	"github.com/chanxuehong/wechat/mp/menu"
 	"github.com/go-kit/kit/log"
@@ -50,25 +51,18 @@ type service struct {
 
 func (s *service) WechatMenu(ctx context.Context) (err error) {
 	logger := log.With(s.logger, s.traceId, ctx.Value(s.traceId), "method", "WechatMenu")
+	var buttons []menu.Button
+	if st, err := s.repository.Setting().Find(repository.SettingWechatOfficialMenu); err == nil {
+		if err = json.Unmarshal([]byte(st.Value), &buttons); err != nil {
+			_ = level.Error(logger).Log("json", "Unmarshal", "err", err.Error())
+			return err
+		}
+	} else {
+		return err
+	}
 
-	buttons := []menu.Button{
-		{
-			Name:     "薛定谔的猿",
-			AppId:    "wx7a80548009a2d40a",
-			PagePath: "/pages/dashboard/dashboard",
-		},
-		{
-			Name: "有钱得",
-			//AppId:      "wx00dfa6eafd4162ac",
-			//PagePath:   "/pages/index/index?scene=37e9a7ba7d018b8fd39047afe1469ecc",
-			SubButtons: []menu.Button{
-				{
-					Name:     "饿了么返现",
-					AppId:    "wx00dfa6eafd4162ac",
-					PagePath: "/pages/index/index?scene=37e9a7ba7d018b8fd39047afe1469ecc",
-				},
-			},
-		},
+	if buttons == nil {
+		return
 	}
 
 	menuId, err := menu.AddConditionalMenu(s.wechatClient, &menu.Menu{
@@ -118,6 +112,25 @@ func (s *service) List(ctx context.Context) (settings []*types.Setting, err erro
 }
 
 func NewService(logger log.Logger, repository repository.Repository, config *config.Config) Service {
+	//var proxy func(r *http.Request) (*url.URL, error)
+	//proxy = func(_ *http.Request) (*url.URL, error) {
+	//	return url.Parse("http://127.0.0.1:1087")
+	//}
+	//
+	//dialer := &net.Dialer{
+	//	Timeout:   time.Duration(5 * int64(time.Second)),
+	//	KeepAlive: time.Duration(5 * int64(time.Second)),
+	//}
+	//
+	//cli := &http.Client{
+	//	Transport: &http.Transport{
+	//		Proxy: proxy, DialContext: dialer.DialContext,
+	//		TLSClientConfig: &tls.Config{
+	//			InsecureSkipVerify: false,
+	//		},
+	//	},
+	//}
+
 	var (
 		accessTokenServer core.AccessTokenServer = core.NewDefaultAccessTokenServer(
 			config.GetString("wechat", "app_id"),
