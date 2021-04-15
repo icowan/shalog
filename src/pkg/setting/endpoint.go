@@ -24,6 +24,7 @@ type Endpoints struct {
 	ListEndpoint        endpoint.Endpoint
 	UploadImageEndpoint endpoint.Endpoint
 	UpdateEndpoint      endpoint.Endpoint
+	WechatMenuEndpoint  endpoint.Endpoint
 }
 
 type (
@@ -50,6 +51,7 @@ func NewEndpoint(s Service, mdw map[string][]endpoint.Middleware) Endpoints {
 		ListEndpoint:        makeListEndpoint(s),
 		UploadImageEndpoint: makeUploadImageEndpoint(s),
 		UpdateEndpoint:      makeUpdateEndpoint(s),
+		WechatMenuEndpoint:  makeWechatMenuEndpoint(s),
 	}
 
 	for _, m := range mdw["Get"] {
@@ -73,10 +75,21 @@ func NewEndpoint(s Service, mdw map[string][]endpoint.Middleware) Endpoints {
 	for _, m := range mdw["UploadImage"] {
 		eps.UploadImageEndpoint = m(eps.UploadImageEndpoint)
 	}
+	for _, m := range mdw["WechatMenu"] {
+		eps.WechatMenuEndpoint = m(eps.WechatMenuEndpoint)
+	}
 
 	return eps
 }
 
+func makeWechatMenuEndpoint(s Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		err = s.WechatMenu(ctx)
+		return encode.Response{
+			Error: err,
+		}, err
+	}
+}
 func makeUpdateEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(settingsRequest)

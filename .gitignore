@@ -8,3 +8,4 @@ blog
 logs/
 *.log
 uploads/
+app.cfg

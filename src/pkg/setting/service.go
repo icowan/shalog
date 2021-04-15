@@ -2,7 +2,10 @@ package setting
 
 import (
 	"context"
+	"github.com/chanxuehong/wechat/mp/core"
+	"github.com/chanxuehong/wechat/mp/menu"
 	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log/level"
 	"github.com/icowan/config"
 	"github.com/icowan/shalog/src/repository"
 	"github.com/icowan/shalog/src/repository/types"
@@ -32,12 +35,53 @@ type Service interface {
 
 	// 配置列表
 	List(ctx context.Context) (settings []*types.Setting, err error)
+
+	// 微信菜单
+	WechatMenu(ctx context.Context) (err error)
 }
 
 type service struct {
-	logger     log.Logger
-	repository repository.Repository
-	config     *config.Config
+	logger       log.Logger
+	repository   repository.Repository
+	config       *config.Config
+	wechatClient *core.Client
+	traceId      string
+}
+
+func (s *service) WechatMenu(ctx context.Context) (err error) {
+	logger := log.With(s.logger, s.traceId, ctx.Value(s.traceId), "method", "WechatMenu")
+
+	buttons := []menu.Button{
+		{
+			Name:     "薛定谔的猿",
+			AppId:    "wx7a80548009a2d40a",
+			PagePath: "/pages/dashboard/dashboard",
+		},
+		{
+			Name: "有钱得",
+			//AppId:      "wx00dfa6eafd4162ac",
+			//PagePath:   "/pages/index/index?scene=37e9a7ba7d018b8fd39047afe1469ecc",
+			SubButtons: []menu.Button{
+				{
+					Name:     "饿了么返现",
+					AppId:    "wx00dfa6eafd4162ac",
+					PagePath: "/pages/index/index?scene=37e9a7ba7d018b8fd39047afe1469ecc",
+				},
+			},
+		},
+	}
+
+	menuId, err := menu.AddConditionalMenu(s.wechatClient, &menu.Menu{
+		Buttons: buttons,
+	})
+	if err != nil {
+		_ = level.Error(logger).Log("menu", "AddConditionalMenu", "err", err.Error())
+		return
+	}
+
+	_ = level.Debug(logger).Log("menuId", menuId)
+
+	return
 }
 
 func (s *service) Get(ctx context.Context, key repository.SettingKey) (setting types.Setting, err error) {
@@ -74,9 +118,17 @@ func (s *service) List(ctx context.Context) (settings []*types.Setting, err erro
 }
 
 func NewService(logger log.Logger, repository repository.Repository, config *config.Config) Service {
+	var (
+		accessTokenServer core.AccessTokenServer = core.NewDefaultAccessTokenServer(
+			config.GetString("wechat", "app_id"),
+			config.GetString("wechat", "app_secret"), nil)
+		wechatClient *core.Client = core.NewClient(accessTokenServer, nil)
+	)
+
 	return &service{
-		logger:     logger,
-		repository: repository,
-		config:     config,
+		logger:       logger,
+		repository:   repository,
+		config:       config,
+		wechatClient: wechatClient,
 	}
 }

@@ -35,10 +35,17 @@ func MakeHTTPHandler(s Service, logger log.Logger) http.Handler {
 		"Put":         ems,
 		"UploadImage": ems,
 		"Update":      ems,
+		"WechatMenu":  ems,
 	})
 
 	r := mux.NewRouter()
 
+	r.Handle("/setting/wechat/menu", kithttp.NewServer(
+		eps.WechatMenuEndpoint,
+		kithttp.NopRequestDecoder,
+		encode.EncodeJsonResponse,
+		opts...,
+	)).Methods(http.MethodPost)
 	r.Handle("/setting/{key}", kithttp.NewServer(
 		eps.GetEndpoint,
 		decodeGetRequest,
