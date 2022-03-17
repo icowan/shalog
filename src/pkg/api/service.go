@@ -205,8 +205,8 @@ func (c *service) EditPost(ctx context.Context, id int64, req postRequest) (rs n
 		case PostTitle:
 			postTitle = member.Value.String
 		case PostDateCreated:
-			load, _ := time.LoadLocation("Asia/Shanghai")
-			if postDateCreated, err = time.ParseInLocation("20060102T15:04:05Z", member.Value.DateTimeIso8601, load); err == nil {
+			// 20220317T09:51:49Z
+			if postDateCreated, err = time.Parse("20060102T15:04:05Z", member.Value.DateTimeIso8601); err == nil {
 				_ = c.logger.Log("time", "Parse", "err", err)
 				postDateCreated = postDateCreated.Add(8 * 3600 * time.Second)
 			} else {
@@ -439,8 +439,8 @@ func (c *service) Post(ctx context.Context, req postRequest) (rs newPostResponse
 		case PostTitle:
 			postTitle = member.Value.String
 		case PostDateCreated:
-			load, _ := time.LoadLocation("Asia/Shanghai")
-			if postDateCreated, err = time.ParseInLocation("20060102T15:04:05Z", member.Value.DateTimeIso8601, load); err == nil {
+			// 20220317T09:51:49Z
+			if postDateCreated, err = time.Parse("20060102T15:04:05Z", member.Value.DateTimeIso8601); err == nil {
 				_ = c.logger.Log("time", "Parse", "err", err)
 				postDateCreated = postDateCreated.Add(8 * 3600 * time.Second)
 			} else {
